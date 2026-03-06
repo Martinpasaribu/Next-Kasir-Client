@@ -30,18 +30,6 @@ const isOnline = useOnline()
         </div>
       </div>
 
-      <div class="relative w-full sm:w-64 landscape:w-48 transition-all">
-        <span class="absolute inset-y-0 left-3 flex items-center text-nuxt-gray-400">
-          <LucideSearch :size="16" />
-        </span>
-        <input 
-          :value="modelValue"
-          @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
-          type="text" 
-          placeholder="Cari..." 
-          class="w-full pl-9 pr-4 py-2 landscape:py-0.5 landscape:lg:py-1.5 text-sm bg-nuxt-gray-100 dark:bg-nuxt-gray-800 border-none rounded-xl focus:ring-2 focus:ring-nuxt-green/30 outline-none transition-all placeholder:text-nuxt-gray-400"
-        />
-      </div>
     </div>
 
   </header>

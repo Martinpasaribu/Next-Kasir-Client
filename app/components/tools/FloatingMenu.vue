@@ -182,7 +182,7 @@ const toggleTheme = () => {
       @mouseup="isDragging = false"
       @touchend="isDragging = false"
       @click="!isDragging && (showMenu = !showMenu)"
-      class="w-14 h-14 bg-gray-300  dark:bg-white/10 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center shadow-2xl cursor-move active:scale-90 transition-transform"
+      class="w-14 h-14 bg-gray-200  dark:bg-white/2 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center shadow-2xl cursor-move active:scale-90 transition-transform"
       :class="{ 'ring-4 ring-nuxt-green/30': showMenu }"
     >
       <div class="w-10 h-10 rounded-full border-2 border-white/30 flex items-center justify-center">

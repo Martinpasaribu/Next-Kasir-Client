@@ -1,0 +1,41 @@
+@import "tailwindcss" layer(base);
+
+
+@theme {
+  /* Nuxt Green (Primary) */
+  --color-nuxt-green: #00dc82;
+  --color-nuxt-green-dark: #00c16a;
+  --color-nuxt-green-light: #42ffaf;
+
+  /* Nuxt Slate (Grayscale) */
+  --color-nuxt-gray-50: #f8fafc;
+  --color-nuxt-gray-100: #f1f5f9;
+  --color-nuxt-gray-200: #e2e8f0;
+  --color-nuxt-gray-800: #1e293b;
+  --color-nuxt-gray-900: #0f172a;
+  --color-nuxt-gray-950: #020420;
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: #00dc8233; border-radius: 10px; }
+}
+
+/* Tambahkan di app/assets/css/main.css */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out forwards;
+}
+/* Import Typography secara langsung di v4 */
+@plugin "@tailwindcss/typography";
+
+
+@variant dark (&:where(.dark, .dark *));

@@ -69,7 +69,7 @@ const setExactAmount = () => {
 
 <template>
   <Transition name="modal-bounce">
-    <div v-if="isOpen" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div v-if="isOpen" class="fixed inset-0 z-100 flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-nuxt-gray-950/40 backdrop-blur-md" @click="!isProcessing && emit('close')"></div>
 
       <div class="relative bg-white dark:bg-nuxt-gray-900 w-full max-w-3xl rounded-[2.5rem] shadow-2xl overflow-hidden border border-white/20 flex flex-col md:flex-row h-full max-h-[600px]">

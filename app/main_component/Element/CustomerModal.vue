@@ -93,7 +93,7 @@ const saveNewCustomer = async () => {
 
 <template>
   <Transition name="fade">
-    <div v-if="isOpen" class="fixed inset-0 z-[80] flex items-center justify-center p-4">
+    <div v-if="isOpen" class="fixed inset-0 z-100 flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-nuxt-gray-950/60 backdrop-blur-sm" @click="emit('close')"></div>
       
       <div class="relative bg-white dark:bg-nuxt-gray-900 w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl border border-nuxt-gray-200 dark:border-nuxt-gray-800 flex flex-col max-h-[90vh]">

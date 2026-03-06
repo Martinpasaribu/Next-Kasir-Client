@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen flex flex-col items-center justify-center py-20 text-nuxt-gray-400 ">
+  <div class="min-h-full max-h-screen flex flex-col items-center justify-center py-20 text-nuxt-gray-400 ">
     <div v-if="type === 'loading'" class="relative flex flex-col items-center">
       <div class="w-10 h-10 border-4 border-nuxt-green border-t-transparent rounded-full animate-spin mb-4">
     </div>

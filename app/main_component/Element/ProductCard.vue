@@ -1,6 +1,6 @@
 <template>
   <div 
-    class="group bg-white dark:bg-nuxt-gray-900 p-3 rounded-2xl border transition-all cursor-pointer shadow-sm active:scale-95 overflow-hidden relative"
+    class="group bg-white dark:bg-nuxt-gray-900 p-2 md:p-3 rounded-2xl border transition-all cursor-pointer shadow-sm active:scale-95 overflow-hidden relative"
     :class="[
       isMaxStock 
         ? 'border-gray-400 dark:border-gray-800 opacity-80 cursor-not-allowed' 
@@ -35,22 +35,22 @@
       />
       <Box v-else :size="40" class="text-nuxt-gray-300 group-hover:scale-110 transition-transform" />
 
-      <div class="absolute top-2 right-2 bg-white/90 dark:bg-black/50 backdrop-blur px-2 py-1 rounded-lg text-[10px] font-black uppercase">
+      <div class="absolute top-2 right-2 bg-white/90 dark:bg-black/50 backdrop-blur px-2 py-1 rounded-lg text-[8px] md:text-[10px] font-black uppercase">
         {{ product.category_key?.name || 'Umum' }}
       </div>
 
       <div 
-        class="absolute bottom-1 left-1 backdrop-blur px-2 py-1 rounded-lg text-[10px] font-black uppercase transition-colors"
+        class="absolute bottom-1 left-1 backdrop-blur px-2 py-1 rounded-lg text-[8px] md:text-[10px] font-black uppercase transition-colors"
         :class="availableStock <= 2 ? 'bg-red-400 text-white' : 'bg-white/90 dark:bg-black/50 text-nuxt-gray-900 dark:text-white'"
       >
        {{ availableStock }}
       </div>
     </div>
 
-    <h3 class="text-sm font-bold text-nuxt-gray-800 dark:text-nuxt-gray-100 mb-1 truncate">
+    <h3 class="text-[12px] text-sm font-bold text-nuxt-gray-800 dark:text-nuxt-gray-100 mb-1 truncate">
       {{ product.name }}
     </h3>
-    <p class="text-sm font-black text-nuxt-green">
+    <p class="text-[12px] md:text-sm font-black text-nuxt-green">
       Rp {{ product.price_sell?.toLocaleString() || 0 }}
     </p>
   </div>

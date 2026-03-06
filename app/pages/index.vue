@@ -47,7 +47,7 @@ const filteredProducts = computed(() => {
 
   <div  
     class="bg-white dark:bg-nuxt-gray-900 border-b border-nuxt-gray-200 dark:border-nuxt-gray-800 
-           px-4 flex-shrink-0 transition-all
+           px-4 shrink-0 transition-all
            /* Default Mobile Portrait */
            py-2 
            /* Mode Landscape HP (Layar Pendek) */
@@ -55,35 +55,35 @@ const filteredProducts = computed(() => {
            /* Mode Tablet/Desktop (Layar Tinggi & Lebar) */
            md:py-3 xl:py-4"
   >
-    <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
-      <button 
-        v-for="cat in productStore.categories" 
-        :key="cat._id"
-        @click="productStore.activeCategory = cat._id"
-        class="font-black uppercase tracking-wider whitespace-nowrap transition-all border
-               /* Ukuran Default */
-               px-4 py-1.5 rounded-lg text-[9px]
-               /* Tablet & Desktop: Tombol lebih besar & lega */
-               md:px-5 md:py-2 md:rounded-xl md:text-[10px]
-               /* HP Landscape: Tombol dibuat se-gepeng mungkin agar konten produk naik */
-               landscape:py-1 landscape:px-3
-               /* Layar Sangat Lebar (Ultrawide/Large Desktop): Kembali tebal agar proporsional */
-               2xl:py-3 2xl:px-6"
-        :class="productStore.activeCategory === cat._id 
-          ? 'bg-nuxt-green text-nuxt-gray-950 border-nuxt-green shadow-md shadow-nuxt-green/10' 
-          : 'bg-transparent text-nuxt-gray-400 border-nuxt-gray-100 dark:border-nuxt-gray-800 hover:bg-nuxt-gray-50 dark:hover:bg-nuxt-gray-800'"
-      >
-        {{ cat.name }}
-      </button>
-    </div>
+      <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+        <button 
+          v-for="cat in productStore.categories" 
+          :key="cat._id"
+          @click="productStore.activeCategory = cat._id"
+          class="font-black uppercase tracking-wider whitespace-nowrap transition-all border
+                /* Ukuran Default */
+                px-4 py-1.5 rounded-lg text-[9px]
+                /* Tablet & Desktop: Tombol lebih besar & lega */
+                md:px-5 md:py-2 md:rounded-xl md:text-[10px]
+                /* HP Landscape: Tombol dibuat se-gepeng mungkin agar konten produk naik */
+                landscape:py-1 landscape:px-3
+                /* Layar Sangat Lebar (Ultrawide/Large Desktop): Kembali tebal agar proporsional */
+                2xl:py-3 2xl:px-6"
+          :class="productStore.activeCategory === cat._id 
+            ? 'bg-nuxt-green text-nuxt-gray-950 border-nuxt-green shadow-md shadow-nuxt-green/10' 
+            : 'bg-transparent text-nuxt-gray-400 border-nuxt-gray-100 dark:border-nuxt-gray-800 hover:bg-nuxt-gray-50 dark:hover:bg-nuxt-gray-800'"
+        >
+          {{ cat.name }}
+        </button>
+      </div>
     </div>
 
-      <div class="flex-1 overflow-y-auto p-4 md:p-6 landscape:p-3 custom-scrollbar">
+      <div class="flex-1 overflow-y-auto p-2 sm:p-4 md:p-6 landscape:p-3 custom-scrollbar">
         
         <SharedStateMessage v-if="productStore.loading" type="loading" />
 
         <div v-else-if="filteredProducts.length > 0" 
-             class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 2xl:grid-cols-6 gap-3 md:gap-4">
+          class="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5 3xl:grid-cols-6 gap-2 sm:gap-3 md:gap-4">
           <ProductCard
             v-for="p in filteredProducts" 
             :key="p._id" 

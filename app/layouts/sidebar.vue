@@ -72,7 +72,7 @@ const menuItems = [
         class="absolute left-1/2 -translate-x-1/2 -top-7 w-15 h-15 bg-nuxt-green text-nuxt-gray-950 rounded-full shadow-2xl shadow-nuxt-green/40 flex items-center justify-center border-4 border-nuxt-gray-50 dark:border-nuxt-gray-950 active:scale-90 transition-transform z-10"
       >
         <div class="relative">
-          <Icon name="lucide:shopping-cart" size="28" stroke-width="2" />
+          <Icon name="lucide:shopping-cart" size="28" stroke-width="2" class="mt-1 mr-0.5" />
           <span v-if="cartStore.items.length > 0" 
                 class="absolute -top-3 -right-3 bg-red-500 text-white text-[9px] w-5 h-5 flex items-center justify-center rounded-full font-black border-2 border-nuxt-green">
             {{ cartStore.items.length }}

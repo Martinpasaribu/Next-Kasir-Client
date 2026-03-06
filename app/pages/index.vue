@@ -76,7 +76,7 @@ const filteredProducts = computed(() => {
                   :size="12" 
                 /> -->
 
-                <Icon :name="getCategoryIcon(cat.category_key?.refCode)" size="12" />
+                <Icon :name="getCategoryIcon(cat?.ref_code)" size="12" />
 
                 {{ cat.name }}
 
@@ -92,7 +92,7 @@ const filteredProducts = computed(() => {
         <SharedStateMessage v-if="productStore.loading" type="loading" />
 
         <div v-else-if="filteredProducts.length > 0" 
-          class="grid grid-cols-3 xs:grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5 3xl:grid-cols-6 gap-2 sm:gap-3 md:gap-4 pb-10">
+          class="grid grid-cols-3 xs:grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-5 3xl:grid-cols-6 gap-2 sm:gap-3 md:gap-4 pb-15">
           <ProductCard
             v-for="p in filteredProducts" 
             :key="p._id" 

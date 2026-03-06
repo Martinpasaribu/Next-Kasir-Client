@@ -15,9 +15,10 @@ export const categoryIcons: Record<string, string> = {
 
 // Fungsi ini sekarang mengembalikan string, bukan komponen
 export const getCategoryIcon = (refCode: string | undefined): string => {
-  return categoryIcons[refCode || ''] || 'lucide:utensils';
+  // Pastikan refCode di-trim dan di-uppercase jika data dari database tidak konsisten
+  const code = refCode?.trim().toUpperCase() || '';
+  return categoryIcons[code] || 'lucide:utensils';
 };
-
 
 
 // // utils/category.ts

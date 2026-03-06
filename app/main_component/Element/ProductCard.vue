@@ -41,7 +41,7 @@
 
       <div 
         class="absolute top-1 right-1 backdrop-blur px-2 py-1 rounded-lg text-[8px] md:text-[10px] font-black uppercase transition-colors"
-        :class="availableStock <= 2 ? 'bg-red-400 text-white' : 'bg-white/90 dark:bg-black/50 text-nuxt-gray-900 dark:text-white'"
+        :class="availableStock <= 2 ? 'bg-orange-400 text-white' : 'bg-white/90 dark:bg-black/50 text-nuxt-gray-900 dark:text-white'"
       >
        {{ availableStock }}
       </div>
@@ -57,7 +57,7 @@
     <div class="w-full flex justify-start  mt-2">
       <!-- anak -->
       <div 
-        class=" flex justify-center items-center gap-1 bg-nuxt-gray-200 dark:bg-nuxt-gray-950 text-nuxt-gray-400 dark:text-nuxt-gray-100
+        class=" flex justify-center items-center gap-1 bg-nuxt-gray-200 dark:bg-nuxt-gray-950 text-nuxt-gray-500 dark:text-nuxt-gray-100
           backdrop-blur px-2 md:px-4 py-0.5 rounded-xl text-[10px] md:text-[13px] font-semibold ">
         
           <!-- <component 
@@ -65,8 +65,7 @@
             :size="12" 
           /> -->
 
-          <Icon :name="getCategoryIcon(product.category_key?.refCode)" size="12" />
-
+        <Icon :name="getCategoryIcon(product.category_key?.ref_code)" size="12" />
         <span>{{ product.category_key?.name || 'Umum' }}</span>
       </div>
     </div>

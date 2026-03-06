@@ -36,14 +36,14 @@ export const useProductStore = defineStore('products', () => {
       // Sesuai contohmu: { success: true, data: [...] } atau array langsung
       const categoryData = resCategories.data || resCategories
       if (Array.isArray(categoryData)) {
-        categories.value = [{ _id: 'all', name: 'Semua' }, ...categoryData]
+        categories.value = [{ _id: 'all', name: 'Semua', ref_code: 'SEM' }, ...categoryData]
       }
 
     } catch (error) {
       console.warn("Offline Mode: Load dari Dexie")
       products.value = await database_dexie.products.toArray()
       if (categories.value.length === 0) {
-        categories.value = [{ _id: 'all', name: 'Semua' }]
+        categories.value = [{ _id: 'all', name: 'Semua', ref_code: 'SEM' }]
       }
     } finally {
       loading.value = false

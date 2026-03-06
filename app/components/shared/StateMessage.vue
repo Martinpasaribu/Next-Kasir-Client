@@ -3,7 +3,7 @@
     
     <div v-if="type === 'loading'" class="relative flex flex-col items-center">
       <div class="relative flex items-center justify-center mb-6">
-        <div class="w-14 h-14 border-4 border-nuxt-green border-t-transparent rounded-full animate-spin"></div>
+        <div class="w-14 h-14 border-2 border-nuxt-green border-t-transparent rounded-full animate-spin"></div>
         <LucideShoppingBasket :size="20" class="absolute text-nuxt-green animate-pulse" />
       </div>
       <p class="text-[10px] font-black uppercase tracking-[0.4em] animate-pulse text-nuxt-green/60">

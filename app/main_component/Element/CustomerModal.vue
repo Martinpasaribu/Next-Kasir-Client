@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useCartStore } from '~/stores/cart';
-import { database_dexie } from '~/utils/database_dexie';
 import { LucideUserPlus, LucideSearch, LucideX, LucideUser, LucidePhone, LucideMapPin, LucideCheck } from 'lucide-vue-next';
 
 const props = defineProps<{ isOpen: boolean }>();

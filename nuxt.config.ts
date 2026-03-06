@@ -4,29 +4,52 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineNuxtConfig({
   compatibilityDate: '2026-02-20',
   devtools: { enabled: true },
+  app: {
+    head: {
+      title: 'Next Kasir',
+      link: [
+        // Tambahkan baris ini
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      ]
+    }
+  },
+
+    // 1. Aktifkan Mode Nuxt 4 (Struktur folder app/)
+  future: {
+    compatibilityVersion: 4,
+  },
+  
+  runtimeConfig: {
+    public: {
+      node_env: process.env.NUXT_PUBLIC_NODE_ENV || 'development',
+      server_api:  process.env.NUXT_SERVER_API,
+      server_url: process.env.NUXT_SERVER_API,
+      API_AUTH_URL: process.env.NUXT_PUBLIC_API_AUTH_URL,
+      CLIENT_HASH_SECRET: process.env.NUXT_PUBLIC_CLIENT_HASH_SECRET,
+      API_WEB: process.env.NUXT_PUBLIC_API_WEB,
+    }
+  },
 
   devServer: {
     port: 3003,
     host: '0.0.0.0', 
   },
+  
 
   // 2. Tambahkan allowedHosts di dalam blok vite.server
   vite: {
-    server: {
-      allowedHosts: [
-        'squirrelish-perishing-cyndi.ngrok-free.dev',
-        '.ngrok-free.dev' // Mengizinkan semua subdomain ngrok
-      ]
-    },
+    // server: {
+    //   allowedHosts: [
+    //     'squirrelish-perishing-cyndi.ngrok-free.dev',
+    //     '.ngrok-free.dev' // Mengizinkan semua subdomain ngrok
+    //   ]
+    // },
     plugins: [
       (tailwindcss as any)()
     ],
   },
 
-  // 1. Aktifkan Mode Nuxt 4 (Struktur folder app/)
-  future: {
-    compatibilityVersion: 4,
-  },
+
 
   // 3. Daftarkan Modules (Tanpa @nuxtjs/tailwindcss)
   modules: [
@@ -34,11 +57,17 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     'dayjs-nuxt',
     '@nuxtjs/color-mode',
-    'nuxt-lucide-icons'
+    'nuxt-lucide-icons',
+    '@nuxt/icon',
   ],
 
   // 4. CSS Utama
   css: ['~/assets/css/main.css'],
+  icon: {
+      serverBundle: {
+        collections: ['lucide', 'ph', 'heroicons'] // Tambahkan lucide di sini
+      }
+  },
 
   colorMode: {
     // Tailwind v4 mendeteksi .dark pada class secara otomatis 
@@ -48,6 +77,10 @@ export default defineNuxtConfig({
     fallback: 'light',
   },
   
+  nitro: {
+    // Konfigurasi untuk Local Development
+    serveStatic: true,
+  },
 
   // 5. Konfigurasi PWA
   pwa: {
@@ -77,4 +110,7 @@ export default defineNuxtConfig({
   pinia: {
     storesDirs: ['./app/stores/**'],
   }
+
+
+
 })

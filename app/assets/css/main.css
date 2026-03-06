@@ -10,7 +10,11 @@
   /* Nuxt Slate (Grayscale) */
   --color-nuxt-gray-50: #f8fafc;
   --color-nuxt-gray-100: #f1f5f9;
-  --color-nuxt-gray-200: #e2e8f0;
+  --color-nuxt-gray-200: #f0f3f6;
+  --color-nuxt-gray-300: #e2e8f0;
+  --color-nuxt-gray-400: #cbd5e1;
+  --color-nuxt-gray-500: #3e5273;
+  --color-nuxt-gray-600: #36455e;
   --color-nuxt-gray-800: #1e293b;
   --color-nuxt-gray-900: #0f172a;
   --color-nuxt-gray-950: #020420;

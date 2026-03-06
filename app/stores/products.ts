@@ -1,7 +1,7 @@
 // app/stores/products.ts
+import { formToJSON } from 'axios'
 import { defineStore } from 'pinia'
-import { database_dexie } from '~/utils/database_dexie'
-
+import {database_dexie} from '../../server/utils/database_dexie'
 export const useProductStore = defineStore('products', () => {
   const products = ref<any[]>([])
   const categories = ref<any[]>([])
@@ -11,22 +11,25 @@ export const useProductStore = defineStore('products', () => {
   async function fetchAllData() {
     loading.value = true
     try {
-      const [resProducts, resCategories] = await Promise.all([
-        $fetch<any>('https://nextkasir-server.vercel.app/api/v1/products', { 
-           headers: { 'x-tenant-id': 'toko_budi' },
-        }),
-        $fetch<any>('https://nextkasir-server.vercel.app/api/v1/categories/options', { 
-           headers: { 'x-tenant-id': 'toko_budi' },
-        })
-      ])
 
-      // 1. Handle Produk
-      // Jika response produk dibungkus .data, gunakan resProducts.data
-      const productData = Array.isArray(resProducts) ? resProducts : resProducts.data
-      if (productData) {
-        await database_dexie.products.clear()
-        await database_dexie.products.bulkPut(JSON.parse(JSON.stringify(productData)))
-        products.value = productData
+
+      const resProducts = await $fetch<any>('/api/products/get');
+      console.log('Struktur Full Response:', resProducts.data);
+  
+      // Ambil array produk berdasarkan struktur API Anda
+      const productData = resProducts?.data.product;
+      const resCategories = resProducts?.data.category_option;
+
+
+      if (productData && Array.isArray(productData)) {
+        await database_dexie.products.clear();
+        await database_dexie.products.bulkPut(productData);
+        products.value = productData;
+
+         console.log('Struktur Full Final:', products.value);
+
+      } else {
+        console.error("Data produk tidak ditemukan atau bukan array:", productData);
       }
 
       // 2. Handle Kategori (Options)

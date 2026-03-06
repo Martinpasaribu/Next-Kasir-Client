@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import { database_dexie } from '~/utils/database_dexie'
 import { useMyNotification } from './useMyNotification'
 import type { IDiscount, ITransaction, IPayment } from '~/types/transaction/transaction'
 import { useProductStore } from './products'

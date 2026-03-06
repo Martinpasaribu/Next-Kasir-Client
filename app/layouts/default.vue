@@ -15,15 +15,17 @@ const isCalcOpen = ref(false);
 
     <Sidebar @open-bucket="isBucketOpen = true" />
 
-    <main class="flex-1 flex flex-col h-screen overflow-hidden relative">
+    <main class="flex-1 flex flex-col h-screen overflow-hidden relative pb-12">
       <slot />
     </main>
     
 
     <!-- Componenet Yang di tampilakan -->
     <CalculatorModal :is-open="isCalcOpen" @close="isCalcOpen = false" />
-
-    <Bucket :is-open="isBucketOpen" @close="isBucketOpen = false" />
-
+    <Bucket 
+      :is-open="isBucketOpen" 
+      @close="isBucketOpen = false" 
+      @open="isBucketOpen = true" 
+    />
   </div>
 </template>

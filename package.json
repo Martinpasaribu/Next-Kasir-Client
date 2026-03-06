@@ -15,8 +15,10 @@
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.2.0",
     "@vite-pwa/nuxt": "^1.1.1",
+    "axios": "^1.13.6",
     "dayjs-nuxt": "^2.1.11",
     "dexie": "^4.3.0",
+    "dotenv": "^17.3.1",
     "nuxt": "^4.3.1",
     "nuxt-lucide-icons": "^2.0.0",
     "rollup": "^4.57.1",
@@ -26,6 +28,10 @@
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
+    "@iconify-json/heroicons": "^1.2.3",
+    "@iconify-json/lucide": "^1.2.95",
+    "@iconify-json/ph": "^1.2.2",
+    "@nuxt/icon": "^2.2.1",
     "@nuxtjs/color-mode": "^4.0.0",
     "@types/node": "^25.3.0"
   }

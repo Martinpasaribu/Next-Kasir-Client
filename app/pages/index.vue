@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { getCategoryIcon } from '~/constant/IconCategory'
 import Bucket from '~/main_component/Element/Bucket.vue'
 import FilterHeader from '~/main_component/Element/FilterHeader.vue'
 import Header from '~/main_component/Element/Header.vue'
@@ -62,13 +63,24 @@ const filteredProducts = computed(() => {
               :key="cat._id"
               @click="productStore.activeCategory = cat._id"
               class="font-black uppercase tracking-wider whitespace-nowrap transition-all border
-                    px-4 py-1.5 rounded-lg text-[9px] md:px-5 md:py-2 md:rounded-xl md:text-[10px]
+                    px-2 py-1.5 rounded-lg text-[9px] md:px-3 md:py-2 md:rounded-xl md:text-[10px]
                     landscape:py-1 landscape:px-3 2xl:py-3 2xl:px-6"
               :class="productStore.activeCategory === cat._id 
-                ? 'bg-nuxt-green text-nuxt-gray-950 border-nuxt-green shadow-md shadow-nuxt-green/10' 
+                ? 'bg-nuxt-green-dark text-nuxt-gray-100 border-nuxt-green-dark shadow-md shadow-nuxt-green/10' 
                 : 'bg-transparent text-nuxt-gray-400 border-nuxt-gray-100 dark:border-nuxt-gray-800 hover:bg-nuxt-gray-50 dark:hover:bg-nuxt-gray-800'"
             >
-              {{ cat.name }}
+              <div class="flex text-center gap-2">
+
+                <!-- <component 
+                  :is="getCategoryIcon(cat?.ref_code)" 
+                  :size="12" 
+                /> -->
+
+                <Icon :name="getCategoryIcon(cat.category_key?.refCode)" size="12" />
+
+                {{ cat.name }}
+
+              </div>
             </button>
           </div>
         </div>

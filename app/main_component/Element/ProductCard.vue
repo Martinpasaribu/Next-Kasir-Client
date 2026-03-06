@@ -35,9 +35,9 @@
       />
       <Box v-else :size="40" class="text-nuxt-gray-300 group-hover:scale-110 transition-transform" />
 
-      <div class="absolute bottom-0.5 lift-2 bg-white/90 dark:bg-black/50 backdrop-blur px-2 py-1 rounded-lg text-[8px] md:text-[10px] font-black uppercase">
-        {{ product.category_key?.name || 'Umum' }}
-      </div>
+      <!-- <div class="absolute bottom-0.5 lift-2 flex gap-1 bg-white/90 dark:bg-black/50 backdrop-blur px-2 py-1 rounded-lg text-[8px] md:text-[10px] font-black uppercase">
+        <Utensils :size="12"/> {{ product.category_key?.name || 'Umum' }}
+      </div> -->
 
       <div 
         class="absolute top-1 right-1 backdrop-blur px-2 py-1 rounded-lg text-[8px] md:text-[10px] font-black uppercase transition-colors"
@@ -47,17 +47,35 @@
       </div>
     </div>
 
-    <h3 class="text-[12px] text-sm font-bold text-nuxt-gray-800 dark:text-nuxt-gray-100 mb-1 truncate">
+    <h3 class="text-[12px] md:text-sm font-bold text-nuxt-gray-800 dark:text-nuxt-gray-100 mb-1 truncate">
       {{ product.name }}
     </h3>
     <p class="text-[12px] md:text-sm font-black text-nuxt-green">
       Rp {{ product.price_sell?.toLocaleString() || 0 }}
     </p>
+
+    <div class="w-full flex justify-start  mt-2">
+      <!-- anak -->
+      <div 
+        class=" flex justify-center items-center gap-1 bg-nuxt-gray-200 dark:bg-nuxt-gray-950 text-nuxt-gray-400 dark:text-nuxt-gray-100
+          backdrop-blur px-2 md:px-4 py-0.5 rounded-xl text-[10px] md:text-[13px] font-semibold ">
+        
+          <!-- <component 
+            :is="getCategoryIcon(product.category_key?.ref_code)" 
+            :size="12" 
+          /> -->
+
+          <Icon :name="getCategoryIcon(product.category_key?.refCode)" size="12" />
+
+        <span>{{ product.category_key?.name || 'Umum' }}</span>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { LucideCoffee, Box, PackageX } from 'lucide-vue-next'
+import { LucideCoffee, Box, PackageX, Utensils } from 'lucide-vue-next'
+import { getCategoryIcon } from '~/constant/IconCategory';
 import { useCartStore } from '~/stores/cart'
 
 const props = defineProps<{ product: any }>()

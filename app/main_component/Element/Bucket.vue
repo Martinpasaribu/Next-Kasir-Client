@@ -30,27 +30,82 @@ const saveNote = () => {
   isNoteModalOpen.value = false
 }
 
+// Tambahkan di dalam <script setup>
+let touchStartX = 0;
+let touchEndX = 0;
+
+const handleTouchStart = (e: TouchEvent) => {
+  if (e.changedTouches && e.changedTouches.length > 0) {
+    touchStartX = e.changedTouches?.[0]?.screenX ?? 0;
+  }
+};
+
+// Tambahkan variabel ini di script setup
+const handleTouchEnd = (e: TouchEvent) => {
+  touchEndX = e.changedTouches?.[0]?.screenX ?? 0;
+  const deltaX = touchEndX - touchStartX;
+
+  // 1. Jika keranjang terbuka, geser ke KANAN menutup
+  if (props.isOpen && deltaX > 50) {
+    emit('close');
+  } 
+  // 2. Jika keranjang tertutup, geser ke KIRI membuka
+  else if (!props.isOpen && deltaX < -50) {
+    // Membuka keranjang (panggil fungsi yang sama dengan tombol buka)
+    emit('open'); // Pastikan parent menangani event 'open' ini
+  }
+};
+
+// const checkSwipe = () => {
+//   // Jika geser ke kanan lebih dari 100px, tutup modal
+//   if (touchEndX - touchStartX > 100) {
+//     emit('close');
+//   }
+// };
+
+// Di dalam checkSwipe, sesuaikan arahnya
+const checkSwipe = () => {
+  // Karena posisi drawer ada di kanan (right-0),
+  // Untuk menutup drawer, kita swipe ke KANAN (x positif)
+  if (touchEndX - touchStartX > 50) { 
+    emit('close');
+  }
+};
+
+
 </script>
 
 
 <template>
-  
   <Transition name="fade">
     <div v-if="isOpen" 
          class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[90] xl:hidden" 
          @click="emit('close')"></div>
   </Transition>
 
+  <div v-if="!isOpen" 
+       @touchstart="handleTouchStart" 
+       @touchend="handleTouchEnd"
+       class="fixed -right-2 top-1/2 -translate-y-1/2 z-80 p-2 flex sm:hidden pointer-events-auto">
+    <div class="w-2.5 h-20 bg-nuxt-gray-400 rounded-l-full shadow-lg hover:bg-nuxt-green transition-all"></div>
+  </div>
+
   <aside 
-      :class="[
-        'bg-white dark:bg-nuxt-gray-900 border-l border-nuxt-gray-200 dark:border-nuxt-gray-800 flex flex-col transition-transform duration-500 ease-in-out',
-        // Desktop: Tetap Sidebar
-        'xl:relative xl:translate-x-0 xl:flex xl:w-96',
-        // Mobile & Tablet: Menjadi Drawer/Slide-over
-        'fixed right-0 top-0 h-full z-[100] w-[90%] sm:w-[400px]',
-        isOpen ? 'translate-x-0' : 'translate-x-full'
-      ]"
-    >
+    @touchstart="handleTouchStart"
+    @touchend="handleTouchEnd"
+    :class="[
+      'bg-white dark:bg-nuxt-gray-900 border-l border-nuxt-gray-200 dark:border-nuxt-gray-800 flex flex-col transition-transform duration-500 ease-in-out',
+      'xl:relative xl:translate-x-0 xl:flex xl:w-96',
+      'fixed right-0 top-0 h-full z-[100] w-[90%] sm:w-[400px]',
+      isOpen ? 'translate-x-0' : 'translate-x-full',
+      'touch-pan-y'
+    ]"
+  >
+
+    <div class="absolute -left-[12.2px] top-1/2 -translate-y-1/2 p-2 flex sm:hidden z-100 pointer-events-auto">
+      <div class="w-2.5 h-26 bg-nuxt-gray-400 dark:bg-nuxt-gray-400 rounded-full shadow-lg hover:bg-nuxt-green transition-all"></div>
+    </div>
+
     <div class="p-6 border-b border-nuxt-gray-200 dark:border-nuxt-gray-800 flex justify-between items-center">
       <h2 class="font-black text-lg uppercase tracking-tight">Keranjang</h2>
       <div class="flex items-center gap-3">
@@ -179,7 +234,7 @@ const saveNote = () => {
   
   <div>
     <Transition name="fade">
-      <div v-if="isNoteModalOpen" class="fixed inset-0 z-[60] flex items-center justify-center p-4">
+      <div v-if="isNoteModalOpen" class="fixed inset-0 z-100 flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="isNoteModalOpen = false"></div>
         
         <div class="relative bg-white dark:bg-nuxt-gray-900 w-full max-w-md rounded-3xl p-6 shadow-2xl animate-zoom-in">

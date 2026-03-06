@@ -44,7 +44,7 @@ const filteredProducts = computed(() => {
 <template>
   <div class="flex h-screen overflow-hidden bg-nuxt-gray-50 dark:bg-nuxt-gray-950 text-nuxt-gray-900 dark:text-white">
     
-    <main class="flex-1 overflow-y-auto min-w-0 h-full custom-scrollbar">
+    <main class="flex-1 overflow-y-auto min-w-0 h-full overflow-x-hidden">
       
       <Header v-model="search" />
 
@@ -87,7 +87,7 @@ const filteredProducts = computed(() => {
       </div>
 
       <!-- Main Content -->
-      <div class="p-2 sm:p-4 md:p-6 landscape:p-3 flex flex-col min-h-[70vh]">
+      <div class="p-2 sm:p-4 md:p-6 landscape:p-3 flex flex-col min-h-[70vh] overflow-x-hidden">
         
         <SharedStateMessage v-if="productStore.loading" type="loading" />
 

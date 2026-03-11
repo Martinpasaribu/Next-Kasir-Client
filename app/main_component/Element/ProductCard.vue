@@ -47,10 +47,10 @@
       </div>
     </div>
 
-    <h3 class="text-[12px] md:text-sm font-bold text-nuxt-gray-800 dark:text-nuxt-gray-100 mb-1 truncate">
+    <h3 class="text-[12px] md:text-xs lg:text-[13px] xl:text-[14px]  font-bold text-nuxt-gray-800 dark:text-nuxt-gray-100 mb-1 truncate">
       {{ product.name }}
     </h3>
-    <p class="text-[12px] md:text-sm font-black text-nuxt-green">
+    <p class="text-[12px] md:text-xs lg:text-[13px] xl:text-[14px] font-black text-nuxt-green">
       Rp {{ product.price_sell?.toLocaleString() || 0 }}
     </p>
 
@@ -66,7 +66,7 @@
           /> -->
 
         <Icon :name="getCategoryIcon(product.category_key?.ref_code)" size="12" />
-        <span>{{ product.category_key?.name || 'Umum' }}</span>
+        <span class="text-[10px] lg:text-[11px] xl:text-[12px] ">{{ product.category_key?.name || 'Umum' }}</span>
       </div>
     </div>
   </div>

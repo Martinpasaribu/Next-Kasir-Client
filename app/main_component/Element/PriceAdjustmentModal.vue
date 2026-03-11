@@ -27,21 +27,25 @@ const applyAdjustments = () => {
 
 <template>
   <Transition name="fade">
-    <div v-if="isOpen" class="fixed inset-0 z-100 flex items-center justify-center p-4">
+    <div v-if="isOpen" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-nuxt-gray-950/60 backdrop-blur-sm" @click="emit('close')"></div>
       
-      <div class="relative bg-white dark:bg-nuxt-gray-900 w-full max-w-lg rounded-[2.5rem] p-8 shadow-2xl border border-nuxt-gray-200 dark:border-nuxt-gray-800">
+      <div class="relative bg-white dark:bg-nuxt-gray-900 w-full max-w-lg rounded-[2.5rem] p-6 md:p-8 shadow-2xl border border-nuxt-gray-200 dark:border-nuxt-gray-800 max-h-[90vh] overflow-y-auto">
+        
         <div class="flex items-center justify-between mb-8">
           <div class="flex items-center gap-3">
             <div class="p-3 bg-nuxt-green/10 rounded-2xl text-nuxt-green">
               <LucideSettings2 :size="24" />
             </div>
-            <h3 class="font-black uppercase tracking-tight text-xl">Penyesuaian Transaksi</h3>
+            <h3 class="font-black uppercase tracking-tight text-lg md:text-xl">Penyesuaian</h3>
           </div>
+          <button @click="emit('close')" class="p-2 rounded-full hover:bg-nuxt-gray-100 dark:hover:bg-nuxt-gray-800">
+            <LucideX :size="20" />
+          </button>
         </div>
 
         <div class="space-y-6">
-          <div class="p-5 rounded-3xl bg-nuxt-gray-50 dark:bg-nuxt-gray-800/50 border border-nuxt-gray-100 dark:border-nuxt-gray-800">
+          <div class="p-4 md:p-5 rounded-3xl bg-nuxt-gray-50 dark:bg-nuxt-gray-800/50 border border-nuxt-gray-100 dark:border-nuxt-gray-800">
             <label class="flex items-center gap-2 text-[10px] font-black uppercase text-nuxt-gray-400 mb-4 ml-1">
               <LucidePercent :size="12" /> Konfigurasi Diskon
             </label>
@@ -60,34 +64,29 @@ const applyAdjustments = () => {
             </div>
 
             <input 
-              v-model="form.discountNominal" type="number"
+              v-model="form.discountNominal" type="number" inputmode="decimal"
               class="w-full bg-white dark:bg-nuxt-gray-800 p-4 rounded-2xl border border-nuxt-gray-200 dark:border-nuxt-gray-700 font-bold outline-none focus:ring-2 focus:ring-nuxt-green transition-all"
               :placeholder="form.discountType === 'fixed' ? 'Nominal Rp' : 'Persentase %'"
             />
           </div>
 
-          <div class="grid grid-cols-1 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="space-y-2">
               <label class="flex items-center gap-2 text-[10px] font-black uppercase text-nuxt-gray-400 ml-2">
                 <LucideBanknote :size="12" /> Uang Muka (DP)
               </label>
               <input 
-                v-model="form.downPayment" type="number"
+                v-model="form.downPayment" type="number" inputmode="decimal"
                 class="w-full bg-nuxt-gray-50 dark:bg-nuxt-gray-800 p-4 rounded-2xl border border-nuxt-gray-100 dark:border-nuxt-gray-700 font-bold outline-none focus:ring-2 focus:ring-nuxt-green"
               />
             </div>
 
-            <div class="space-y-2 text-center mt-1">
-
-              <label class="w-full text-center ext-[15px] font-black uppercase text-nuxt-gray-400 ">
-                 Tambahan
-              </label>
-
+            <div class="space-y-2">
               <label class="flex items-center gap-2 text-[10px] font-black uppercase text-nuxt-gray-400 ml-2">
                 <LucideTruck :size="12" /> Ongkos Kirim
               </label>
               <input 
-                v-model="form.shippingFee" type="number"
+                v-model="form.shippingFee" type="number" inputmode="decimal"
                 class="w-full bg-nuxt-gray-50 dark:bg-nuxt-gray-800 p-4 rounded-2xl border border-nuxt-gray-100 dark:border-nuxt-gray-700 font-bold outline-none focus:ring-2 focus:ring-nuxt-green"
               />
             </div>

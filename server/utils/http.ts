@@ -7,7 +7,7 @@ const http = axios.create({
 
 http.interceptors.request.use((config) => {
   const runtime = useRuntimeConfig()
-  const baseURL = runtime.public.server_api || process.env.NUXT_BASE_API_WEB
+  const baseURL = runtime.public.server_api || process.env.NUXT_SERVER_API
   
   if (!baseURL) {
     throw new Error("NUXT_BASE_API_WEB belum diset di environment variables")

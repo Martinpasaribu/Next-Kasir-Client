@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
 
       return {
         success: response?.data.success,
-        message: response?.data.message || "data reschedule",
+        message: response?.data.message || "data product",
         data : response?.data.data
       }
 
@@ -38,7 +38,7 @@ export default defineEventHandler(async (event) => {
     // Lempar error tapi pakai POJO (plain object)
     throw createError({
       statusCode: error?.response?.status || 500,
-      statusMessage: "Failed to fetch additional",
+      statusMessage: "Failed to fetch product",
       data: {
         backendMessage,
         requestId: backendError?.requestId ?? null,

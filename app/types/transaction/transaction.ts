@@ -1,6 +1,6 @@
 // src/types/transaction.ts
 
-export type PaymentStatus = 'dp' | 'pending' | 'paid' | '';
+export type PaymentStatus = 'dp' | 'pending' | 'paid' | 'partial' | '';
 export type TransactionStatus = 'PAID' | 'CANCELLED' | 'REFUND' | 'PARTIAL';
 
 export interface IPayment {

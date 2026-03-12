@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia'
 import { useMyNotification } from './useMyNotification'
-import type { IDiscount, ITransaction, IPayment } from '~/types/transaction/transaction'
+import type { IDiscount, ITransaction, IPayment, TransactionStatus } from '~/types/transaction/transaction'
 import { useProductStore } from './products'
 import type { ITransactionForm } from '~/types/transaction/form'
 import { database_dexie } from '../../server/utils/database_dexie'
+import http from '../../server/utils/http'
 
 export const useCartStore = defineStore('cart', () => {
   
@@ -100,45 +101,61 @@ export const useCartStore = defineStore('cart', () => {
 
     if (items.value.length === 0) return
 
-    // Bangun data sesuai interface ITransaction
-    // syncStatus disempitkan ke union literal supaya cocok dengan tipe tabel
-    const transactionData: Omit<ITransactionForm, '_id'> & { syncStatus: 'P' | 'S' | 'F' } = {
+  // PERBAIKAN: Pastikan payments sudah ada isinya dari modal pembayaran
+    // Jika payments kosong, kita buat default cash sesuai total
+// Pastikan struktur payments memenuhi syarat validator server
+    const finalPayments = payments.value.map(p => ({
+      type: p.method || p.type || 'cash', // Sesuaikan dengan key yang dipakai di UI
+      label: p.name || p.label || 'Tunai', // Sesuaikan dengan key yang dipakai di UI
+      price: Number(p.price || total_amount.value),
+      reference_no: p.reference_no || ''
+    }));
+
+    const transactionData = {
       trx_id: `TRX-${Date.now()}`,
-      outlet_id: '699faf5dccde2f6e9e9aede5', // Sesuaikan
-      cashier_key: 'KASIR-01', // Sesuaikan
+      outlet_id: '699faf5dccde2f6e9e9aede5', 
+      cashier_key: 'KASIR-01', 
       customer_data: selectedCustomer.value ? {
           name: selectedCustomer.value.name,
           phone: selectedCustomer.value.phone,
           address: selectedCustomer.value.address,
-          // Tambahkan flag jika ini customer baru yang belum ada di server
           is_new: !selectedCustomer.value._id 
       } : null,
+      // PERBAIKAN: Pastikan mapping menghasilkan array murni tanpa slot kosong
       product_key: items.value.map(item => ({
         product_id: item._id,
         name: item.name,
-        price: item.price_sell,
-        qty: item.quantity,
-        subtotal: item.price_sell * item.quantity,
+        price: Number(item.price_sell),
+        qty: Number(item.quantity),
+        subtotal: Number(item.price_sell * item.quantity),
         discount_item: 0
       })),
-      down_payment: downPaymentAmount.value || 0,
-      sub_amount: sub_amount.value,
-      total_amount: total_amount.value,
-      discount: { ...discount.value },
-      tax_amount: tax_amount.value,
-      shippingFee: shippingFee.value,
-      note: customerNote.value,
-      payments: [], // Nanti diisi oleh CheckoutModal saat pelunasan
-      status: remainingBill.value > 0 ? 'PARTIAL' : 'PAID',
+      down_payment: Number(downPaymentAmount.value || 0),
+      sub_amount: Number(sub_amount.value),
+      total_amount: Number(total_amount.value),
+      discount: { 
+        type: discount.value.type, 
+        nominal: Number(discount.value.nominal) 
+      },
+      tax_amount: Number(tax_amount.value),
+      shippingFee: Number(shippingFee.value),
+      note: customerNote.value || "",
+      payments: finalPayments, // Gunakan payments yang sudah divalidasi
+      status: (remainingBill.value > 0 ? 'PARTIAL' : 'PAID') as TransactionStatus,
       created_by: 'KASIR-01',
-      syncStatus: 'P' // Flag untuk Dexie
+      syncStatus: 'P' as 'P' | 'S' | 'F'
     }
 
     try {
-      await database_dexie.orders.add(transactionData)
+      // 1. Konversi objek Proxy Vue menjadi Plain Object
+      // Cara tercepat dan teraman untuk deep-clone tanpa Proxy:
+      const cleanData = JSON.parse(JSON.stringify(transactionData));
+
+      // 2. Simpan ke Dexie
+      await database_dexie.orders.add(cleanData);
       clearCart() // Gunakan fungsi reset
       await syncToRemote()
-      notify.addToast('Sync Local ', 'success')
+      // notify.addToast('Sync Local ', 'success')
     } catch (error) {
       console.error("Gagal simpan transaksi:", error)
       notify.addToast('Gagal menyimpan transaksi', 'error')
@@ -149,7 +166,7 @@ async function syncToRemote() {
 
   if (isSyncing.value || !navigator.onLine) return 
 
-  const loadingId = notify.addToast('sync to server ', 'loading');
+  const loadingId = notify.addToast('Membayar ', 'loading');
   isSyncing.value = true
 
   try {
@@ -162,15 +179,24 @@ async function syncToRemote() {
         // Hapus ID lokal Dexie agar backend tidak protes
         const { trx_id, syncStatus, ...orderPayload } = order;
 
-        const response: any = await $fetch('http://localhost:5007/api/v1/transactions/checkout', {
-          method: 'POST',
-          headers: { 'x-tenant-id': 'toko_budi' },
-          body: orderPayload
-        })
+        console.log("PAYLOAD YANG DIKIRIM:", JSON.stringify(orderPayload, null, 2));
 
+        // 2. Kirim data. 
+        // Jika server menolak 'body' dan 'headers', sesuaikan dengan kebutuhan endpoint Anda
+        const response: any = await http.post('/transactions/checkout', orderPayload, {
+          headers: { 'x-tenant-id': 'toko_budi' }
+        });
+
+        // --- KUNCI: UPDATE DATA LOKAL ---
+        // Setelah sukses transaksi, fetch ulang semua produk dari server ke Dexie
+        await productStore.fetchAllData();
+        
         // Jika berhasil, update status transaksi di lokal
         await database_dexie.orders.update(trx_id, { syncStatus: 'S' })
 
+        // Tandai transaksi lokal sebagai sudah sinkron
+        // await database_dexie.orders.delete(trx_id); // Saya sarankan delete agar antrean bersih
+    
         // OPTIONAL: Jika di dalam orderPayload ada customer baru, 
         // Anda mungkin ingin mengupdate tabel customer lokal juga agar tidak 'P' lagi
         if (order.customer_key && order.customer_key.phone) {
@@ -179,7 +205,7 @@ async function syncToRemote() {
              .modify({ syncStatus: 'S' });
         }
 
-        notify.addToast('Transaksi Berhasil Sync!', 'success')
+        notify.addToast('Transaksi Berhasil', 'success')
 
       } catch (e) {
         console.error("Gagal sync order:", order.trx_id, e)

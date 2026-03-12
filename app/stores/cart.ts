@@ -3,6 +3,7 @@ import { useMyNotification } from './useMyNotification'
 import type { IDiscount, ITransaction, IPayment } from '~/types/transaction/transaction'
 import { useProductStore } from './products'
 import type { ITransactionForm } from '~/types/transaction/form'
+import { database_dexie } from '../../server/utils/database_dexie'
 
 export const useCartStore = defineStore('cart', () => {
   

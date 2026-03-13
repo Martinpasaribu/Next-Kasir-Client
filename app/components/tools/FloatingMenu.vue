@@ -9,7 +9,7 @@ const colorMode = useColorMode()
 const isFullscreen = ref(false);
 const isDragging = ref(false);
 const showMenu = ref(false);
-const position = ref({ x: -100, y: -100 }); 
+const position = ref({ x: -100, y: 350 }); 
 
 const updateSafePosition = () => {
   if (!process.client) return;

@@ -10,7 +10,11 @@ export const categoryIcons: Record<string, string> = {
   BRG: 'lucide:package',
   ATK: 'lucide:pencil',
   ELK: 'lucide:zap',
-  CLEAN: 'lucide:spray-can'
+  CLEAN: 'lucide:spray-can',
+  CTG: 'lucide:layout-template',
+  PDF: 'lucide:package-x',
+  PRD: 'lucide:box'
+  // PRD: 'lucide:Box'
 };
 
 // Fungsi ini sekarang mengembalikan string, bukan komponen

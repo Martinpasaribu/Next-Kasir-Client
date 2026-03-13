@@ -15,7 +15,7 @@ const isCalcOpen = ref(false);
 
     <Sidebar @open-bucket="isBucketOpen = true" />
 
-    <main class="flex-1 flex flex-col h-screen overflow-hidden relative ">
+    <main class="flex-1 flex flex-col h-screen overflow-auto relative ">
       <slot />
     </main>
     

@@ -24,7 +24,7 @@ const subdomain = computed(() => {
   const hostname = url.hostname // 'hostname' tidak termasuk port (:3000)
   
   // 1. Cek jika di localhost
-  if (hostname === 'localhost' || hostname === '127.0.0.1' || 'next-kasir-client.vercel.app') {
+  if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === 'next-kasir-client.vercel.app') {
     // Jika kamu sedang dev, kita paksa ke tenant 'budi_berkarya'
     // import.meta.dev lebih akurat di Nuxt 3/4 daripada process.dev
     if (import.meta.dev) {
@@ -98,7 +98,7 @@ const handleLogin = async () => {
   try {
     const { data } = await http.post('/auth/merchant-admin/login', form, {
       headers: {
-        'x-tenant-id': subdomain.value
+        'x-tenant-id': 'tenant_yenishope_77n4b.nextkasir.com' // subdomain.value
       }
     })
 

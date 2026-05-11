@@ -30,7 +30,7 @@ http.interceptors.request.use((config) => {
       const host = window.location.hostname
       
       // Jika localhost atau vercel, arahkan ke dummy
-      if (host.includes('localhost') || host.includes('vercel.app')) {
+      if (host.includes('localhost') || host.includes('vercel.app') || host.includes('next-kasir-client.vercel.app') ) {
         config.headers['x-tenant-id'] = 'tenant_yenishope_77n4b'
       } else {
         const parts = host.split('.')

@@ -95,7 +95,7 @@ const handleLogin = async () => {
 
   loading.value = true
   try {
-    const { data } = await http.post('/auth/merchant-admin/login', form, {
+    const { data } = await http.post('/auth/merchant-admin/login/////', form, {
       headers: {
         'x-tenant-id': subdomain.value
       }

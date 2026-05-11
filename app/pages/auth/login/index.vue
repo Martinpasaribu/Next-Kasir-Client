@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { Rocket, Mail, Lock, ChevronRight } from 'lucide-vue-next'
-import http from '../../../utils/http'
 import { useMyNotification } from '~/stores/useMyNotification';
 
 definePageMeta({
@@ -97,7 +96,7 @@ const handleLogin = async () => {
   try {
     const { data } = await http.post('/auth/merchant-admin/login', form, {
       headers: {
-        'x-tenant-id': "tenant_yenishope_77n4b" // subdomain.value
+        'x-tenant-id': subdomain.value
       }
     })
 

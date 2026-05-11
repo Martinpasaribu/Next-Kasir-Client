@@ -97,7 +97,7 @@ const handleLogin = async () => {
       // --- PERBAIKAN DI SINI ---
       // 1. Simpan Token & Tenant ID saja di Cookie (Kunci pintu)
       useCookie('auth_token', cookieConfig).value = data.access_token
-      useCookie('tenant_id', cookieConfig).value = subdomain.value
+      useCookie('tenant_id', cookieConfig).value = "tenant_yenishope_77n4b"  // subdomain.value
 
       // 2. Simpan SEMUA data user ke Pinia (Memory/RAM)
       // Ini AMAN karena tidak bisa diintip di tab Application > Cookies

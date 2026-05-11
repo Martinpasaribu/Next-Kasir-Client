@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { Rocket, Mail, Lock, ChevronRight } from 'lucide-vue-next'
-import { useAuthStore } from '~/stores/auth';
+import http from '../../../utils/http'
 import { useMyNotification } from '~/stores/useMyNotification';
 
 definePageMeta({
   layout: false
 })
+
 const isSubmitting = ref(false)
 const notify = useMyNotification();
 
@@ -16,6 +17,33 @@ const form = reactive({
 
 const loading = ref(false)
 const url = useRequestURL()
+
+// Logika Subdomain yang Anti-Gagal
+// const subdomain = computed(() => {
+//   const hostname = url.hostname // 'hostname' tidak termasuk port (:3000)
+  
+//   // 1. Cek jika di localhost
+//   if (hostname === 'localhost' || hostname === '127.0.0.1') {
+//     // Jika kamu sedang dev, kita paksa ke tenant 'budi_berkarya'
+//     // import.meta.dev lebih akurat di Nuxt 3/4 daripada process.dev
+//     if (import.meta.dev) {
+//       // return 'nagatama_corporation.nextkasir.com' 
+//       return 'tenant_yenishope_77n4b.nextkasir.com'
+//     }
+//   }
+
+//   // 2. Logic untuk Production (domain.com) atau lvh.me
+//   const parts = hostname.split('.')
+  
+//   // Jika akses budi.nextkasir.pro -> ['budi', 'nextkasir', 'pro']
+//   if (parts.length > 1) {
+//     // Ambil bagian pertama kecuali jika itu 'www'
+//     return parts[0] !== 'www' ? parts[0] : parts[1]
+//   }
+
+//   return null
+// })
+
 
 const subdomain = computed(() => {
   // Jika di SSR, gunakan headers host, jika di client gunakan window.location
@@ -52,87 +80,82 @@ const subdomain = computed(() => {
   return null
 })
 
-// const subdomain = computed(() => {
-//   const hostname = url.hostname // 'hostname' tidak termasuk port (:3000)
-  
-//   if (hostname === 'localhost' || hostname === '127.0.0.1') {
-//     if (import.meta.dev) {
-//       return 'tenant_yenishope_77n4b.nextkasir.com'
-//       // return 'nagatama_corporation.nextkasir.com' 
-//     }
-//   }
-
-//   // 2. Logic untuk Production (domain.com) atau lvh.me
-//   const parts = hostname.split('.')
-  
-//   // Jika akses budi.nextkasir.pro -> ['budi', 'nextkasir', 'pro']
-//   if (parts.length > 1) {
-//     // Ambil bagian pertama kecuali jika itu 'www'
-//     return parts[0] !== 'www' ? parts[0] : parts[1]
-//   }
-
-//   return null
-// })
-
 const handleLogin = async () => {
-  const authStore = useAuthStore() // Asumsi kamu sudah buat store ini
+  // Debugging: Munculkan di console jika masih gagal
+  console.log('Current Hostname:', url.hostname)
+  console.log('Detected Subdomain:', subdomain.value)
+
   isSubmitting.value = true
-  const loadingId = notify.addToast('Mengautentikasi...', 'loading');
+  const loadingId = notify.addToast('Masuk..', 'loading');
 
   if (!subdomain.value) {
-    notify.addToast('Tenant tidak terdeteksi', 'error');
+    alert('❌ Tenant Node not detected. System cannot route your database.')
     return
   }
 
   loading.value = true
   try {
-    const { data } = await http.post('/auth/merchant-cashier/login', form, {
-      headers: { 'x-tenant-id': "tenant_yenishope_77n4b"}  // || subdomain.value }
+    const { data } = await http.post('/auth/merchant-admin/login', form, {
+      headers: {
+        'x-tenant-id': subdomain.value
+      }
     })
 
+    // Di dalam handleLogin (app/pages/login.vue)
     if (data?.access_token) {
-      // Config cookie yang aman (Session based atau 1 day)
       const cookieConfig = { maxAge: 60 * 60 * 24, path: '/' }
 
-      // --- PERBAIKAN DI SINI ---
-      // 1. Simpan Token & Tenant ID saja di Cookie (Kunci pintu)
+      // 1. Simpan Token
       useCookie('auth_token', cookieConfig).value = data.access_token
-      useCookie('tenant_id', cookieConfig).value = "tenant_yenishope_77n4b"  // subdomain.value
 
-      // 2. Simpan SEMUA data user ke Pinia (Memory/RAM)
-      // Ini AMAN karena tidak bisa diintip di tab Application > Cookies
-      authStore.setUser(data.user) 
+      // 2. Simpan Role (Sangat Penting untuk bypass OWNER)
+      useCookie('user_role', cookieConfig).value = data.user.role 
+      
+      // 3. Simpan data permissions (Objek show_xxx yang kamu kirim tadi)
+      useCookie('user_data', cookieConfig).value = data.user.permissions 
 
-      // 3. Logic Pemilihan Outlet
+      // 4. Simpan Tenant ID
+      useCookie('tenant_id', cookieConfig).value = subdomain.value
+
+      useCookie('user_outlets', cookieConfig).value = data.user.outlets
+
+      // useCookie('outlet_id', cookieConfig).value = subdomain.value
+      
+      // 3. LOGIC PEMILIHAN OUTLET
       const userOutlets = data.user.outlets || []
 
       if (userOutlets.length === 0 && data.user.role !== 'OWNER') {
-        notify.addToast('Akses ditolak: Belum ada outlet yang ditugaskan.', 'warning');
+        // Kasus: User terdaftar tapi tidak punya akses ke cabang manapun
+        notify.addToast('Akun Anda belum ditugaskan ke outlet manapun. Hubungi Admin.', 'warning');
         return
       }
 
-      notify.addToast('Berhasil masuk!', 'success');
+      notify.addToast('Autentikasi berhasil!', 'success');
 
       if (userOutlets.length === 1) {
-        // Simpan outlet_id di cookie (karena ini pilihan session)
+        // Langsung masuk jika cuma punya 1 akses (misal Kasir di 1 cabang)
         useCookie('outlet_id', cookieConfig).value = userOutlets[0]._id
         await navigateTo('/dashboard')
       } else {
-        // Simpan sementara untuk halaman pemilihan
+        // Jika OWNER atau Manager banyak cabang, arahkan ke Page Pilih Outlet
+        // Simpan sementara daftar outlet di localStorage agar bisa dipilih di page berikutnya
         localStorage.setItem('temp_outlets', JSON.stringify(userOutlets))
         await navigateTo('/auth/select-outlet')
       }
+
     }
+
   } catch (err: any) {
-    const msg = err.response?.data?.message || 'Gagal masuk, cek kembali akun Anda'
+
+    const msg = err.response?.data?.message || 'Unauthorized Access'
     notify.addToast(msg, 'error');
+
   } finally {
-    loading.value = false     
+    loading.value = false
     notify.removeToast(loadingId);
     isSubmitting.value = false
   }
 }
-
 </script>
 
 <template>

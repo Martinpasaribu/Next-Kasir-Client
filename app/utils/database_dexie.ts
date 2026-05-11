@@ -1,6 +1,5 @@
 // app/utils/db.ts
 import Dexie, { type Table } from 'dexie';
-import type { ITransaction } from '~/types/transaction/transaction';
 
 export interface Product {
   _id?: string; // ID dari MongoDB
@@ -23,7 +22,7 @@ export interface ICustomer {
 
 export class PosDatabase extends Dexie {
   // Gunakan ITransaction untuk table orders agar struktur data lokal & remote sama
-  orders!: Table<ITransaction & { id?: number; syncStatus: 'P' | 'S' | 'F' }>;
+  orders!: Table<IDBTransaction & { id?: number; syncStatus: 'P' | 'S' | 'F' }>;
   customers!: Table<ICustomer>;
   products!: Table<any>; // Gunakan any atau buat interface produk jika perlu
 

@@ -9,20 +9,15 @@
   >
     <div 
       v-if="isMaxStock" 
-      class="absolute inset-0 z-20 flex items-center justify-center backdrop-blur-[20px] bg-slate-100 dark:bg-nuxt-gray-800 transition-all duration-500"
+      class="absolute inset-0 z-20 flex items-center justify-center backdrop-blur-[20px] bg-slate-100/50 dark:bg-nuxt-gray-800/50 transition-all duration-500"
     >
       <div class="flex flex-col items-center gap-1 scale-90">
-        <div class="p-2  rounded-full shadow-xl shadow-gray-500/10 border border-gray-100 dark:border-gray-900/30">
-          <PackageX class="  text-nuxt-gray-300" :size="40"/>
+        <div class="p-2 rounded-full shadow-xl bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800">
+          <PackageX class="text-nuxt-gray-300" :size="32"/>
         </div>
-        
-        <span class=" flex flex-col justify-center items-center px-2.5 py-1 dark:border-zinc-700 rounded-lg text-[9px] md:text-[12px] font-black 
-          uppercase tracking-tighter text-slate-600 dark:text-zinc-200"
-          >
-          <!-- Mencapai Stok Max :  -->
-          <span class="text-nuxt-green text-center">{{ product.name }} </span>
-          <span> Stok habis </span>
-          
+        <span class="flex flex-col items-center text-center px-2 py-1 text-[10px] md:text-xs font-black uppercase tracking-tighter text-slate-600 dark:text-zinc-200">
+          <span class="text-nuxt-green line-clamp-1">{{ product.name }}</span>
+          <span>Stok habis</span>
         </span>
       </div>
     </div>
@@ -35,10 +30,6 @@
       />
       <Box v-else :size="40" class="text-nuxt-gray-300 group-hover:scale-110 transition-transform" />
 
-      <!-- <div class="absolute bottom-0.5 lift-2 flex gap-1 bg-white/90 dark:bg-black/50 backdrop-blur px-2 py-1 rounded-lg text-[8px] md:text-[10px] font-black uppercase">
-        <Utensils :size="12"/> {{ product.category_key?.name || 'Umum' }}
-      </div> -->
-
       <div 
         class="absolute top-1 right-1 backdrop-blur px-2 py-1 rounded-lg text-[8px] md:text-[10px] font-black uppercase transition-colors"
         :class="availableStock <= 2 ? 'bg-orange-400 text-white' : 'bg-white/90 dark:bg-black/50 text-nuxt-gray-900 dark:text-white'"
@@ -47,26 +38,25 @@
       </div>
     </div>
 
-    <h3 class="text-[12px] md:text-xs lg:text-[13px] xl:text-[14px]  font-bold text-nuxt-gray-800 dark:text-nuxt-gray-100 mb-1 truncate">
+    <h3 class="text-[12px] md:text-xs lg:text-[13px] xl:text-[14px] font-bold text-nuxt-gray-800 dark:text-nuxt-gray-100 mb-0.5 truncate">
       {{ product.name }}
     </h3>
     <p class="text-[12px] md:text-xs lg:text-[13px] xl:text-[14px] font-black text-nuxt-green">
       Rp {{ product.price_sell?.toLocaleString() || 0 }}
     </p>
 
-    <div class="w-full flex justify-start  mt-2">
-      <!-- anak -->
+    <div class="w-full flex justify-start mt-2">
       <div 
-        class=" flex justify-center items-center gap-1 bg-nuxt-gray-200 dark:bg-nuxt-gray-950 text-nuxt-gray-500 dark:text-nuxt-gray-100
-          backdrop-blur px-2 md:px-4 py-0.5 rounded-xl text-[10px] md:text-[13px] font-semibold ">
-        
-          <!-- <component 
-            :is="getCategoryIcon(product.category_key?.ref_code)" 
-            :size="12" 
-          /> -->
-
-        <Icon :name="getCategoryIcon(product.category_key?.ref_code)" size="12" />
-        <span class="text-[10px] lg:text-[11px] xl:text-[12px] ">{{ product.category_key?.name || 'Umum' }}</span>
+        class="inline-flex items-center gap-1.5 bg-gray-100 dark:bg-zinc-800/80 px-2 py-1 rounded-lg border border-transparent dark:border-zinc-700/50"
+      >
+        <Icon 
+          :name="getCategoryIcon(product.category_key?.ref_code)" 
+          size="12" 
+          class="flex-none text-gray-500 dark:text-gray-400" 
+        />
+        <span class="text-[10px] md:text-[11px] font-semibold text-gray-600 dark:text-gray-300 truncate max-w-[40px] md:max-w-[65px] leading-none">
+          {{ product.category_key?.name || 'Umum' }}
+        </span>
       </div>
     </div>
   </div>

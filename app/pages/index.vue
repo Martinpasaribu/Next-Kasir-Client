@@ -1,169 +1,57 @@
 <script setup lang="ts">
-import { getCategoryIcon } from '~/constant/IconCategory'
-import Bucket from '~/main_component/Element/Bucket.vue'
-import FilterHeader from '~/main_component/Element/FilterHeader.vue'
-import Header from '~/main_component/Element/Header.vue'
-import ProductCard from '~/main_component/Element/ProductCard.vue'
-import { useCartStore } from '~/stores/cart'
-import { useProductStore } from '~/stores/products'
+import { Rocket } from 'lucide-vue-next'
 
-const productStore = useProductStore()
-const cartStore = useCartStore()
-const search = ref('')
-const isBucketOpen = ref(false) // State untuk kontrol Bucket di mobile
 
-// Ambil semua data (Produk + Kategori) saat mount
-onMounted(() => {
-  productStore.fetchAllData()
+definePageMeta({
+  public: true // 👈 Ini yang akan dibaca middleware di atas
 })
 
-
-// Otomatis tutup bucket jika resize ke layar besar
-if (process.client) {
-  const mediaQuery = window.matchMedia('(min-width: 1280px)')
-  mediaQuery.addEventListener('change', (e) => {
-    if (e.matches) isBucketOpen.value = false
-  })
-}
-
-// Logika Filter: Search + Kategori
-const filteredProducts = computed(() => {
-  return productStore.products.filter(p => {
-    // 1. Filter Search
-    const matchSearch = p.name.toLowerCase().includes(search.value.toLowerCase())
-    
-    // 2. Filter Kategori (Mencocokkan _id)
-    const matchCategory = productStore.activeCategory === 'all' || 
-                          p.category_key?._id === productStore.activeCategory
-    
-    return matchSearch && matchCategory
-  })
-})
 </script>
 
 <template>
-  <div class="flex h-screen overflow-hidden bg-nuxt-gray-50 dark:bg-nuxt-gray-950 text-nuxt-gray-900 dark:text-white">
+  <!-- <div class="min-h-screen bg-[#010409] flex flex-col items-center justify-center text-white">
+    <div class="relative">
+      <div class="h-20 w-20 border-[3px] border-sky-500/10 border-t-sky-500 rounded-full animate-spin"></div>
+      <Rocket class="absolute inset-0 m-auto text-sky-400" :size="28" />
+    </div>
     
-    <main class="flex-1 overflow-y-auto min-w-0 h-full overflow-x-hidden">
-      
-      <Header v-model="search" />
+    <div class="mt-8 text-center space-y-2">
+      <h2 class="text-sm font-black uppercase tracking-[0.4em] text-white">
+        Initializing<span class="text-sky-400">_Terminal</span>
+      </h2>
+      <p class="text-[10px] font-bold uppercase tracking-widest text-gray-600 animate-pulse">
+        Establishing Secure Connection...
+      </p>
+    </div>
+  </div> -->
 
-      <!-- Filter -->
-      <div class="sticky top-0 z-30 shrink-0 bg-nuxt-gray-50 dark:bg-nuxt-gray-950 shadow-md">
-        
-        <FilterHeader v-model="search" />
-      
-        <div  
-          class="bg-white dark:bg-nuxt-gray-900 border-b border-nuxt-gray-200 dark:border-nuxt-gray-800 
-                px-4 transition-all py-2 landscape:py-1 md:py-3 xl:py-4"
-        >
-          <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
-            <button 
-              v-for="cat in productStore.categories" 
-              :key="cat._id"
-              @click="productStore.activeCategory = cat._id"
-              class="font-black uppercase tracking-wider whitespace-nowrap transition-all border
-                    px-2 py-1.5 rounded-lg text-[9px] md:px-3 md:py-2 md:rounded-xl md:text-[10px]
-                    landscape:py-1 landscape:px-3 2xl:py-3 2xl:px-6"
-              :class="productStore.activeCategory === cat._id 
-                ? 'bg-nuxt-green-dark text-nuxt-gray-100 border-nuxt-green-dark shadow-md shadow-nuxt-green/10' 
-                : 'bg-transparent text-nuxt-gray-400 border-nuxt-gray-100 dark:border-nuxt-gray-800 hover:bg-nuxt-gray-50 dark:hover:bg-nuxt-gray-800'"
-            >
-              <div class="flex text-center gap-2">
+  <div class="min-h-screen bg-[#010409] text-white">
+    <nav class="p-6 flex justify-between items-center border-b border-[#30363d]">
+      <h1 class="text-xl font-black italic uppercase tracking-tighter">
+        NextKasir<span class="text-sky-400">_Pro</span>
+      </h1>
+      <a href="https://admin.nextkasir.pro" class="text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-sky-400 transition-colors">
+        Console_Admin
+      </a>
+    </nav>
 
-                <!-- <component 
-                  :is="getCategoryIcon(cat?.ref_code)" 
-                  :size="12" 
-                /> -->
-
-                <Icon :name="getCategoryIcon(cat?.ref_code)" size="12" />
-
-                {{ cat.name }}
-
-              </div>
-            </button>
-          </div>
-        </div>
+    <main class="max-w-4xl mx-auto pt-32 px-6 text-center">
+      <h2 class="text-6xl font-black italic tracking-tighter leading-none uppercase mb-6">
+        The Next Generation <br/> 
+        <span class="text-sky-400">Point of Sale.</span>
+      </h2>
+      <p class="text-gray-500 max-w-lg mx-auto text-sm leading-relaxed mb-10">
+        Multi-tenant architecture designed for high-performance retail and hospitality management. 
+        Secure, scalable, and lightning fast.
+      </p>
+      <div class="flex justify-center gap-4">
+        <button class="px-8 py-4 bg-white text-black font-black uppercase text-xs rounded-2xl hover:bg-sky-400 transition-all">
+          Get Started
+        </button>
+        <button class="px-8 py-4 bg-[#0d1117] border border-[#30363d] text-white font-black uppercase text-xs rounded-2xl hover:border-sky-400 transition-all">
+          Documentation
+        </button>
       </div>
-
-      <!-- Main Content -->
-      <div class="p-2 sm:p-4 md:p-6 landscape:p-3 flex flex-col min-h-[70vh] overflow-x-hidden">
-        
-        <SharedStateMessage v-if="productStore.loading" type="loading" />
-
-        <div v-else-if="filteredProducts.length > 0 " 
-          class="grid grid-cols-3 xs:grid-cols-4 sm:grid-cols-5 md:grid-cols-6 landscape:md:grid-cols-6 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8 3xl:grid-cols-9 gap-2 sm:gap-3 md:gap-4 pb-15">
-          <ProductCard
-            v-for="p in filteredProducts" 
-            :key="p._id" 
-            :product="p" 
-            class="landscape:scale-[0.95] origin-top"
-            @click="cartStore.addToCart(p)"
-          />
-        </div>
-
-     
-      </div>
-
     </main>
-
-    <Bucket
-      :is-open="isBucketOpen"
-      @close="isBucketOpen = false"
-      @success="productStore.fetchAllData()"
-    />
   </div>
 </template>
-
-<style scoped>
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-/* OPTIMASI KHUSUS LANDSCAPE HP (Tinggi layar < 500px) */
-@media (max-height: 500px) and (orientation: landscape) {
-  /* Perkecil gap antar item grid agar muat lebih banyak */
-  .grid {
-    gap: 0.5rem !important;
-  }
-  
-  /* Pastikan padding main tidak terlalu boros */
-  main {
-    height: 100vh;
-  }
-}
-</style>
-
-
-<!-- 
-<div class="fixed bottom-6 right-6 hidden md:block xl:hidden z-[80]">
-  <button 
-    @click="isBucketOpen = true"
-    class="flex items-center gap-3 bg-nuxt-green text-black px-6 py-4 rounded-2xl shadow-2xl hover:scale-105 active:scale-95 transition-all group"
-  >
-    <div class="relative">
-      <LucideShoppingCart :size="24" />
-      <span v-if="cartStore.items.length > 0" 
-            class="absolute -top-2 -right-2 bg-white text-black text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-black border-2 border-nuxt-green">
-        {{ cartStore.items.length }}
-      </span>
-    </div>
-    <span class="font-black text-sm uppercase tracking-wider">
-      Rp {{ cartStore.total_amount.toLocaleString() }}
-    </span>
-  </button>
-</div>
-
-<div class="fixed bottom-10 left-1/2 -translate-x-1/2 block md:hidden z-[80]  px-6 ">
-  <button 
-    @click="isBucketOpen = true"
-    class="flex items-center justify-center gap-3 bg-nuxt-green text-black w-full p-4 rounded-full shadow-2xl hover:scale-105 active:scale-95 transition-all group"
-  >
-    <div class="relative">
-      <LucideShoppingCart :size="24" />
-      <span v-if="cartStore.items.length > 0" 
-            class="absolute -top-2 -right-2 bg-white text-black text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-black border-2 border-nuxt-green">
-        {{ cartStore.items.length }}
-      </span>
-    </div>
-  </button>
-</div> -->

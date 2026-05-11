@@ -3,8 +3,8 @@ import { useMyNotification } from './useMyNotification'
 import type { IDiscount, ITransaction, IPayment, TransactionStatus } from '~/types/transaction/transaction'
 import { useProductStore } from './products'
 import type { ITransactionForm } from '~/types/transaction/form'
-import { database_dexie } from '../../server/utils/database_dexie'
-import http from '../../server/utils/http'
+import { database_dexie } from '../utils/database_dexie'
+import http from '../utils/http'
 
 export const useCartStore = defineStore('cart', () => {
   

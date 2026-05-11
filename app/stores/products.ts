@@ -1,10 +1,11 @@
 // app/stores/products.ts
 import { formToJSON } from 'axios'
 import { defineStore } from 'pinia'
-import {database_dexie} from '../../server/utils/database_dexie'
+import {database_dexie} from '../utils/database_dexie'
 export const useProductStore = defineStore('products', () => {
   const products = ref<any[]>([])
   const categories = ref<any[]>([])
+  const categoriesOption = ref<any[]>([])
   const activeCategory = ref('all') // Default ke 'all' (ID), bukan string 'Semua'
   const loading = ref(false)
 
@@ -36,7 +37,8 @@ export const useProductStore = defineStore('products', () => {
       // Sesuai contohmu: { success: true, data: [...] } atau array langsung
       const categoryData = resCategories.data || resCategories
       if (Array.isArray(categoryData)) {
-        categories.value = [{ _id: 'all', name: 'Semua', ref_code: 'SEM' }, ...categoryData]
+        categoriesOption.value = [{ _id: 'all', name: 'Semua', ref_code: 'SEM' }, ...categoryData]
+        categories.value = [...categoryData]
       }
 
     } catch (error) {
@@ -50,5 +52,5 @@ export const useProductStore = defineStore('products', () => {
     }
   }
 
-  return { products, categories, activeCategory, loading, fetchAllData }
+  return { products, categoriesOption, categories, activeCategory, loading, fetchAllData }
 })

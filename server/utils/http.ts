@@ -2,22 +2,17 @@
 import axios from 'axios'
 
 const http = axios.create({
+  withCredentials: true,
   timeout: 10000,
 })
 
 http.interceptors.request.use((config) => {
   const runtime = useRuntimeConfig()
-  const baseURL = runtime.public.server_api || process.env.NUXT_SERVER_API
   
-  if (!baseURL) {
-    throw new Error("NUXT_BASE_API_WEB belum diset di environment variables")
-  }
+  // Pastikan baseURL terisi dari env
+  config.baseURL = runtime.public.server_api as string
 
-  config.baseURL = baseURL
-  
-  // LOG URL untuk memastikan apa yang dipanggil
-  console.log("🚀 Requesting to:", `${config.baseURL}${config.url}`)
-  
+  // JANGAN panggil useRequestEvent di sini, karena akan error
   return config
 })
 

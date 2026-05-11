@@ -11,7 +11,7 @@ const isOnline = useOnline()
   >
     <div class="flex flex-col sm:flex-row landscape:flex-row gap-4 landscape:gap-10 justify-between items-start sm:items-center landscape:items-center">
       
-      <div class="w-full landscape:flex flex flex-row justify-between gap-2 items-center landscape:lg:flex-col  landscape:gap-4">
+      <div class="w-full landscape:flex flex flex-row justify-between gap-2 items-center  lg:flex-row  landscape:gap-4">
         <h1 class="text-xl landscape:text-base font-black text-nuxt-gray-900 dark:text-white uppercase tracking-tight leading-none">
           Next Kasir
         </h1>

@@ -109,8 +109,9 @@ export default defineNuxtConfig({
   // 6. Pinia Store Auto-import untuk Nuxt 4
   pinia: {
     storesDirs: ['./app/stores/**'],
-  }
-
-
+  },
+  imports: {
+    dirs: ['app/utils/**', 'app/composables/**']
+  },
 
 })

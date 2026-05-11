@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ToastContainer from './components/main/ToastContainer.vue';
+import GlobalLoading from './components/main/GlobalLoading.vue';
 
 </script>
 
@@ -11,6 +12,8 @@ import ToastContainer from './components/main/ToastContainer.vue';
 
     <VitePwaManifest />
     <ToastContainer />
+
+    <GlobalLoading />
   </div>
 </template>
 

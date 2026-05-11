@@ -4,11 +4,15 @@ import { getCategoryIcon } from '~/constant/IconCategory';
 import { useProductStore } from '~/stores/products';
 import CategoryList from './sub-pages/CategoryList.vue';
 import ProductList from './sub-pages/ProductList.vue';
+import CreateProduct from './compoents/CreateProduct.vue';
+import CreateCategory from './compoents/CreateCategory.vue';
 
 const productStore = useProductStore()
 const { search, sortBy, viewMode, activeTab, filterAndSort } = useProductFilter();
 
 const filteredProducts = computed(() => filterAndSort(productStore.products));
+const showAddProd = ref(false)
+const showAddCategory = ref(false)
 
 const stats = computed(() => ({
   total: productStore.products.length,
@@ -17,6 +21,14 @@ const stats = computed(() => ({
 }));
 
 onMounted(() => productStore.fetchAllData())
+
+const addProd = () => {
+  showAddProd.value = true
+}
+const addCate = () => {
+  showAddCategory.value = true
+}
+
 </script>
 
 <template>
@@ -28,8 +40,18 @@ onMounted(() => productStore.fetchAllData())
         <p class="text-sm md:text-base text-nuxt-gray-400 font-medium">Kelola daftar menu dan harga Anda</p>
       </div>
 
-      <button class="hidden md:flex items-center justify-center gap-2 bg-nuxt-green text-nuxt-gray-950 px-6 py-3 rounded-2xl font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-nuxt-green/20">
-        <Icon name="lucide:plus" size="18" /> Tambah Produk
+      <button 
+        v-if="activeTab==='all'"
+        @click="addProd()"
+        class="hidden md:flex items-center justify-center gap-2 bg-nuxt-green text-nuxt-gray-950 px-6 py-3 rounded-2xl font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-nuxt-green/20">
+        <Icon name="lucide:plus" size="18" />Produk
+      </button>
+
+      <button 
+        v-if="activeTab==='categories'"
+        @click="addCate()"
+        class="hidden md:flex items-center justify-center gap-2 bg-nuxt-green text-nuxt-gray-950 px-6 py-3 rounded-2xl font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-nuxt-green/20">
+        <Icon name="lucide:plus" size="18" />Kategori
       </button>
 
       <button class="fixed bottom-[4rem] right-4 z-40 flex items-center justify-center gap-2 md:hidden bg-white text-nuxt-gray-950 p-2 rounded-xl font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg">
@@ -95,7 +117,7 @@ onMounted(() => productStore.fetchAllData())
     <div class="pb-20">
       <SharedStateMessage v-if="productStore.loading" type="loading" />
   
-      <div v-if="!productStore.loading && productStore.products.length > 0">
+      <div v-if="!productStore.loading ">
 
         <CategoryList 
           v-if="activeTab === 'categories'" 
@@ -107,9 +129,27 @@ onMounted(() => productStore.fetchAllData())
           v-else 
           :products="filteredProducts" 
           :view-mode="viewMode" 
+          @addNew="addProd()"
+        />
+
+
+        <CreateProduct
+          :show="showAddProd"
+          :products="null"
+          :category="null"
+          @close="showAddProd = false" 
+          @success="productStore.fetchAllData()" 
+        />
+
+
+        <CreateCategory
+          :show="showAddCategory"
+          @close="showAddCategory = false" 
+          @success="productStore.fetchAllData()" 
         />
 
       </div>
+
     </div>
     
   </div>

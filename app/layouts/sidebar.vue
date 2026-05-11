@@ -1,15 +1,39 @@
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
+<!-- eslint-disable @typescript-eslint/no-explicit-any -->
+
+
 <script setup lang="ts">
 import ThemeSwitcher from '~/components/tools/ThemeSwitcher.vue';
 import { useCartStore } from '~/stores/cart';
+import { useAuthStore } from '~/stores/auth'; // Import Store Pinia
+import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { LogOut } from 'lucide-vue-next'
 
-import { ref, onMounted, onUnmounted } from 'vue';
+/** ---------- State & Composables ---------- **/
+const authStore = useAuthStore() // Gunakan store sebagai sumber kebenaran
+const cartStore = useCartStore()
+const route = useRoute()
+const emit = defineEmits(['openBucket'])
 
 const isDesktop = ref(false);
 const isLandscape = ref(false);
 
+// Tipe data untuk Menu
+type RoleName = 'OWNER' | 'MANAGER' | 'ASSISTANT' | 'CASHIER'
+type RequiredRole = RoleName | RoleName[]
+interface MenuItem {
+  label: string
+  icon?: any
+  to?: string
+  requiredRole?: RequiredRole
+  permission?: string
+  children?: MenuItem[]
+}
+
+/** ---------- View Logic ---------- **/
 const updateView = () => {
   if (typeof window !== 'undefined') {
-    isDesktop.value = window.innerWidth >= 1024; // Sesuai 'lg'
+    isDesktop.value = window.innerWidth >= 1024;
     isLandscape.value = window.innerWidth > window.innerHeight;
   }
 };
@@ -20,18 +44,64 @@ onMounted(() => {
 });
 onUnmounted(() => window.removeEventListener('resize', updateView));
 
-const cartStore = useCartStore()
-const emit = defineEmits(['openBucket'])
-
-// Menggunakan prefix 'lucide:' untuk konsistensi
-const menuItems = [
-  { icon: 'lucide:layout-dashboard', label: 'Kasir', to: '/' },
-  { icon: 'lucide:package', label: 'Produk', to: '/products' },
-  { icon: 'lucide:bar-chart-3', label: 'Laporan', to: '/reports' },
-  { icon: 'lucide:user', label: 'Pelanggan', to: '/customers' },
-  { icon: 'lucide:contact', label: 'Shift', to: '/shift' },
+/** ---------- Menu Definition ---------- **/
+const menuItems: MenuItem[] = [
+  { icon: 'lucide:layout-dashboard', label: 'Kasir', to: '/cashier' },
+  { icon: 'lucide:package', label: 'Produk', to: '/products', permission: 'show_product' },
+  { icon: 'lucide:bar-chart-3', label: 'Laporan', to: '/reports', permission: 'show_report' },
+  { icon: 'lucide:user', label: 'Pelanggan', to: '/customers', permission: 'show_customer' },
+  { icon: 'lucide:contact', label: 'Shift', to: '/shift', permission: 'show_shift' },
   { icon: 'lucide:settings', label: 'Setelan', to: '/settings' },
 ]
+
+/** ---------- Access Checker (Secure) ---------- **/
+const canAccess = (item: MenuItem): boolean => {
+  // 1. OWNER bypass semua
+  if (authStore.user?.role === 'OWNER') return true
+
+  // 2. Role Check
+  if (item.requiredRole) {
+    const roles = Array.isArray(item.requiredRole) ? item.requiredRole : [item.requiredRole]
+    if (!roles.includes(authStore.user?.role)) return false
+  }
+
+  // 3. Permission Check (Menggunakan logic store yang aman)
+  if (item.permission) {
+    return authStore.hasPermission(item.permission)
+  }
+
+  return true
+}
+
+/** ---------- Filtered menus (Reactive) ---------- **/
+const filteredMenus = computed<MenuItem[]>(() => {
+  return menuItems
+    .map((menu: MenuItem): MenuItem | null => {
+      const hasParentAccess = canAccess(menu)
+      
+      const filteredChildren = menu.children 
+        ? menu.children.filter(child => canAccess(child)) 
+        : undefined
+      
+      const hasVisibleChildren = !!(filteredChildren && filteredChildren.length > 0)
+
+      if (menu.children) {
+        if (hasParentAccess && hasVisibleChildren) {
+          return { ...menu, children: filteredChildren } as MenuItem
+        }
+      } else if (hasParentAccess) {
+        return { ...menu } as MenuItem
+      }
+      return null
+    })
+    .filter((item): item is MenuItem => item !== null)
+})
+
+/** ---------- Actions ---------- **/
+const toggleExit = async () => {
+  // Panggil logout terpusat dari store
+  await authStore.logout()
+}
 </script>
 
 <template>
@@ -48,7 +118,7 @@ const menuItems = [
       
       <div class="flex flex-col gap-2 w-full px-3">
         <NuxtLink 
-          v-for="item in menuItems" 
+          v-for="item in filteredMenus" 
           :key="item.label"
           :to="item.to"
           class="group flex flex-col items-center justify-center p-3 rounded-2xl transition-all duration-300 text-nuxt-gray-400 hover:bg-nuxt-gray-100 dark:hover:bg-nuxt-gray-800"
@@ -64,7 +134,7 @@ const menuItems = [
     <div v-else-if="isLandscape" class="hidden landscape:flex lg:hidden items-center justify-between w-full px-0 md:px-4 max-h-4] relative h-full">
       
       <div class="flex items-center justify-around flex-1">
-        <NuxtLink v-for="item in menuItems.slice(0, 3)" :key="item.label" :to="item.to"
+        <NuxtLink v-for="item in filteredMenus.slice(0, 3)" :key="item.label" :to="item.to"
           class="flex flex-col items-center justify-center gap-1 w-12 text-nuxt-gray-400"
           active-class="text-nuxt-green"
         >
@@ -76,7 +146,7 @@ const menuItems = [
       <div class="w-11"></div>
 
       <div class="flex items-center justify-around flex-1">
-        <NuxtLink v-for="item in menuItems.slice(3, 6)" :key="item.label" :to="item.to"
+        <NuxtLink v-for="item in filteredMenus.slice(3, 6)" :key="item.label" :to="item.to"
           class="flex flex-col items-center justify-center gap-1 w-12 text-nuxt-gray-400"
           active-class="text-nuxt-green"
         >
@@ -141,13 +211,26 @@ const menuItems = [
     </div>
 
 
-    <div class="hidden lg:flex flex-col items-center gap-6 w-full pb-4">
+    <div class="hidden flex-col items-center gap-6 w-full pb-4">
       <ThemeSwitcher />
       <div class="w-10 h-10 rounded-full border-2 border-nuxt-gray-200 dark:border-nuxt-gray-800 p-0.5 overflow-hidden">
         <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" class="w-full h-full" />
       </div>
     </div>
+
+        
+    <div class="hidden lg:flex flex-col p-4 border-t border-gray-100">
+      <button 
+      class="flex items-center gap-4 p-3 text-sm rounded-xl w-full transition bg-nuxt-gray-800 hover:bg-gray-100 text-gray-500 font-medium"
+      @click="toggleExit" 
+      >
+        <LogOut class="h-5 w-5 flex-shrink-0 " />
+      </button>
+    </div>
+
   </nav>
+
+  
 </template>
 
 <style scoped>

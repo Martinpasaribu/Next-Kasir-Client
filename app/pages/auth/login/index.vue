@@ -20,24 +20,23 @@ const url = useRequestURL()
 const subdomain = computed(() => {
   const hostname = url.hostname
   
-  // 1. Cek apakah Localhost atau Preview Vercel
-  const isDevelopment = 
+  // 1. Definisikan Base Domains yang bukan merupakan tenant
+  const isBaseDomain = 
     hostname === 'localhost' || 
     hostname === '127.0.0.1' || 
-    hostname.endsWith('.vercel.app') // Menangkap semua subdomain vercel.app
+    hostname.endsWith('.vercel.app') || 
+    hostname === 'nextkasir.com' // Tambahkan domain utama Anda di sini
 
-  if (isDevelopment) {
-    // Gunakan tenant dummy untuk kebutuhan testing/dev
-    if (import.meta.dev || hostname.endsWith('.vercel.app')) {
-      return 'tenant_yenishope_77n4b.nextkasir.com'
-    }
+  if (isBaseDomain) {
+    // Jika di development atau preview Vercel, gunakan tenant dummy
+    return 'tenant_yenishope_77n4b' 
   }
 
-  // 2. Logic untuk Production (domain.com)
+  // 2. Logic untuk Production (contoh: tenant.com atau tenant.nextkasir.com)
   const parts = hostname.split('.')
   
-  // Jika akses tenant.domain.com, ambil bagian pertama
-  if (parts.length > 2) {
+  // Ambil index 0 hanya jika ini benar-benar subdomain (bukan domain utama)
+  if (parts.length >= 3) {
     return parts[0] !== 'www' ? parts[0] : parts[1]
   }
 

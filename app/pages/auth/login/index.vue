@@ -18,21 +18,26 @@ const loading = ref(false)
 const url = useRequestURL()
 
 const subdomain = computed(() => {
-  const hostname = url.hostname // 'hostname' tidak termasuk port (:3000)
+  const hostname = url.hostname
   
-  if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === 'vercel.app') {
-    if (import.meta.dev) {
+  // 1. Cek apakah Localhost atau Preview Vercel
+  const isDevelopment = 
+    hostname === 'localhost' || 
+    hostname === '127.0.0.1' || 
+    hostname.endsWith('.vercel.app') // Menangkap semua subdomain vercel.app
+
+  if (isDevelopment) {
+    // Gunakan tenant dummy untuk kebutuhan testing/dev
+    if (import.meta.dev || hostname.endsWith('.vercel.app')) {
       return 'tenant_yenishope_77n4b.nextkasir.com'
-      // return 'nagatama_corporation.nextkasir.com' 
     }
   }
 
-  // 2. Logic untuk Production (domain.com) atau lvh.me
+  // 2. Logic untuk Production (domain.com)
   const parts = hostname.split('.')
   
-  // Jika akses budi.nextkasir.pro -> ['budi', 'nextkasir', 'pro']
-  if (parts.length > 1) {
-    // Ambil bagian pertama kecuali jika itu 'www'
+  // Jika akses tenant.domain.com, ambil bagian pertama
+  if (parts.length > 2) {
     return parts[0] !== 'www' ? parts[0] : parts[1]
   }
 

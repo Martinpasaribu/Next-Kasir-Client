@@ -18,30 +18,61 @@ const loading = ref(false)
 const url = useRequestURL()
 
 const subdomain = computed(() => {
-  const hostname = url.hostname
-  
-  // 1. Definisikan Base Domains yang bukan merupakan tenant
-  const isBaseDomain = 
-    hostname === 'localhost' || 
-    hostname === '127.0.0.1' || 
-    hostname.endsWith('.vercel.app') || 
-    hostname === 'nextkasir.com' // Tambahkan domain utama Anda di sini
+  // Jika di SSR, gunakan headers host, jika di client gunakan window.location
+  const hostname = process.server 
+    ? url.hostname 
+    : window.location.hostname
 
-  if (isBaseDomain) {
-    // Jika di development atau preview Vercel, gunakan tenant dummy
-    return 'tenant_yenishope_77n4b' 
+  // 1. Definisikan list base domain (tanpa tenant)
+  const baseDomains = [
+    'localhost',
+    '127.0.0.1',
+    'next-kasir-client.vercel.app', // Domain spesifik Vercel Anda
+    'nextkasir.com',
+    'www.nextkasir.com'
+  ]
+
+  // 2. Cek apakah hostname termasuk base domain atau subdomain vercel
+  const isBase = baseDomains.includes(hostname) || hostname.endsWith('.vercel.app')
+
+  if (isBase) {
+    // RETURN TENANT DUMMY UNTUK TESTING
+    return 'tenant_yenishope_77n4b'
   }
 
-  // 2. Logic untuk Production (contoh: tenant.com atau tenant.nextkasir.com)
+  // 3. Logic untuk Production (Real Tenant Subdomain)
   const parts = hostname.split('.')
   
-  // Ambil index 0 hanya jika ini benar-benar subdomain (bukan domain utama)
+  // Kasus: tenant.nextkasir.com (3 parts)
   if (parts.length >= 3) {
     return parts[0] !== 'www' ? parts[0] : parts[1]
   }
 
+  // Jika tidak ada subdomain, return null atau dummy sebagai fallback
   return null
 })
+
+// const subdomain = computed(() => {
+//   const hostname = url.hostname // 'hostname' tidak termasuk port (:3000)
+  
+//   if (hostname === 'localhost' || hostname === '127.0.0.1') {
+//     if (import.meta.dev) {
+//       return 'tenant_yenishope_77n4b.nextkasir.com'
+//       // return 'nagatama_corporation.nextkasir.com' 
+//     }
+//   }
+
+//   // 2. Logic untuk Production (domain.com) atau lvh.me
+//   const parts = hostname.split('.')
+  
+//   // Jika akses budi.nextkasir.pro -> ['budi', 'nextkasir', 'pro']
+//   if (parts.length > 1) {
+//     // Ambil bagian pertama kecuali jika itu 'www'
+//     return parts[0] !== 'www' ? parts[0] : parts[1]
+//   }
+
+//   return null
+// })
 
 const handleLogin = async () => {
   const authStore = useAuthStore() // Asumsi kamu sudah buat store ini

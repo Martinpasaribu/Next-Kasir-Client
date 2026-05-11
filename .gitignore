@@ -22,3 +22,10 @@ logs
 .env
 .env.*
 !.env.example
+
+
+
+# Current File
+public/assets/kasir1.png
+
+

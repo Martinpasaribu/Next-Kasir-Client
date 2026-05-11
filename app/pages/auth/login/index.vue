@@ -20,7 +20,7 @@ const url = useRequestURL()
 const subdomain = computed(() => {
   const hostname = url.hostname // 'hostname' tidak termasuk port (:3000)
   
-  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+  if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === 'vercel.app') {
     if (import.meta.dev) {
       return 'tenant_yenishope_77n4b.nextkasir.com'
       // return 'nagatama_corporation.nextkasir.com' 

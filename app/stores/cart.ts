@@ -4,7 +4,7 @@ import type { IDiscount, ITransaction, IPayment, TransactionStatus } from '~/typ
 import { useProductStore } from './products'
 import type { ITransactionForm } from '~/types/transaction/form'
 import { database_dexie } from '../utils/database_dexie'
-import http from '../utils/http'
+// import http from '../utils/http'
 
 export const useCartStore = defineStore('cart', () => {
   

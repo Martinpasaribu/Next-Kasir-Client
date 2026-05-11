@@ -87,7 +87,7 @@ const handleLogin = async () => {
   loading.value = true
   try {
     const { data } = await http.post('/auth/merchant-cashier/login', form, {
-      headers: { 'x-tenant-id': subdomain.value }
+      headers: { 'x-tenant-id': "tenant_yenishope_77n4b"}  // || subdomain.value }
     })
 
     if (data?.access_token) {

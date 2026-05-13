@@ -29,10 +29,10 @@ const url = useRequestURL()
 //     // import.meta.dev lebih akurat di Nuxt 3/4 daripada process.dev
 //     if (import.meta.dev) {
 //       // return 'nagatama_corporation.nextkasir.com' 
-//       return 'tenant_yenishope_77n4b.nextkasir.com'
+//       return 'tenant_administratornextkasir_a21m3.com'
 //     }
 
-//     return 'tenant_yenishope_77n4b.nextkasir.com'
+//     return 'tenant_administratornextkasir_a21m3.com'
 //   }
 
 //   // 2. Logic untuk Production (domain.com) atau lvh.me
@@ -68,7 +68,7 @@ const subdomain = computed(() => {
 
   if (isBase) {
     // RETURN TENANT DUMMY UNTUK TESTING
-    return 'tenant_yenishope_77n4b'
+    return 'tenant_administratornextkasir_a21m3'
   }
 
   // 3. Logic untuk Production (Real Tenant Subdomain)
@@ -100,7 +100,7 @@ const handleLogin = async () => {
   try {
     const { data } = await http.post('/auth/merchant-admin/login', form, {
       headers: {
-        'x-tenant-id': 'tenant_yenishope_77n4b.nextkasir.com' // subdomain.value
+        'x-tenant-id': 'tenant_administratornextkasir_a21m3.com' // subdomain.value
       }
     })
 

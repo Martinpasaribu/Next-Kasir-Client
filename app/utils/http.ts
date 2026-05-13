@@ -31,7 +31,7 @@ http.interceptors.request.use((config) => {
       
       // Jika localhost atau vercel, arahkan ke dummy
       if (host.includes('localhost') || host.includes('vercel.app') || host.includes('next-kasir-client.vercel.app') ) {
-        config.headers['x-tenant-id'] = 'tenant_yenishope_77n4b'
+        config.headers['x-tenant-id'] = 'tenant_administratornextkasir_a21m3'
       } else {
         const parts = host.split('.')
         if (parts.length > 1) {

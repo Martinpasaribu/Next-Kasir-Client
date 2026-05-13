@@ -31,11 +31,10 @@ export default defineEventHandler(async (event) => {
     'cookie': cookie || ''
   }
 
-  try { 
+  try {
     // --- GET SETTINGS BY DOMAIN ---
     if (method === 'GET') {
-      const domain = query.domain || 'APP'
-      const res = await http.get(`/merchant-settings/general/${domain}`, { headers })
+      const res = await http.get(`/merchant-settings/receipt-summary`, { headers })
       
       return res.data 
     }
@@ -43,25 +42,18 @@ export default defineEventHandler(async (event) => {
     // --- UPDATE SETTINGS (PATCH) ---
     // Endpoint ini menangani: PATCH /api/merchant-settings
     if (method === 'PATCH' || method === 'POST') {
-
-      const domain = query.domain || 'APP'
-
       const body = await readBody(event)
-      let endpoint = `/merchant-settings/general/${domain}`
+      let endpoint = '/merchant-settings/general'
 
       // Jika body mengandung data struk, arahkan ke endpoint spesifik receipt
-      if (body.domain === 'RECEIPT' || body.settings_receipt) {
-        endpoint = `/merchant-settings/receipt/${domain}`
-      }
-      if (body.domain === 'RECEIPT_SUMMARY' || body.settings_receipt_summary) {
-        endpoint = `/merchant-settings/receipt-summary/${body.domain}`
+      if (body.domain === 'APP' || body.settings_receipt) {
+        endpoint = '/merchant-settings/receipt-summary'
       }
 
       const res = await http.patch(endpoint, body, { headers })
       return {
         success: true,
-        message: `Update settings for type ${body.domain}, endpoint : ${endpoint}`,
-        data: res.data,
+        data: res.data
       }
     }
 
@@ -70,7 +62,7 @@ export default defineEventHandler(async (event) => {
     
     throw createError({
       statusCode: err.response?.status || 500,
-      message: err.response?.data?.message || 'Gagal sinkronisasi pengaturan dengan server 2'
+      message: err.response?.data?.message || 'Gagal sinkronisasi pengaturan dengan server '
     })
   }
 })

@@ -38,7 +38,7 @@ const sections = [
     title: 'Contact Information',
     borderClass: 'border-l-4 border-l-blue-500',
     fields: {
-      address: { label: 'Alamat Lengkap', type: 'textarea' },
+      address: { label: 'Alamat Lengkap', type: 'text' },
       phone: { label: 'Nomor Telepon', type: 'text' },
       email: { label: 'Email Bisnis', type: 'text' }
     }
@@ -132,13 +132,18 @@ const saveToServer = async () => {
 </script>
 
 <template>
-  <div class="p-4 md:p-8 max-w-7xl mx-auto min-h-screen">
+  <div class="p-4 md:p-8 max-w-8xl mx-auto min-h-screen">
     
     <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
       <div>
-        <h1 class="text-4xl font-black tracking-tighter text-zinc-900 dark:text-white uppercase">Receipt <span class="text-emerald-500">Config</span></h1>
+        <div class="flex justify-between">
+          <h1 class="text-4xl font-black tracking-tighter text-zinc-900 dark:text-white uppercase">Receipt <span class="text-emerald-500">Config</span></h1>
+        </div>
         <p class="text-zinc-500 font-medium mt-1 text-sm md:text-base">Kelola identitas outlet yang akan tampil pada struk fisik.</p>
       </div>
+      <NuxtLink to="/settings/struct-summary" class="flex bg-white dark:bg-nuxt-gray-900 border border-nuxt-gray-200 dark:border-nuxt-gray-800 items-center gap-3 p-4 rounded-2xl hover:bg-nuxt-gray-50 dark:hover:bg-nuxt-gray-800 transition-colors">
+            <p class="text-sm font-bold">Format Struk Summary</p>
+      </NuxtLink>
       <button @click="saveToServer" :disabled="isSaving || settingsLoading"
               class="w-full md:w-auto bg-emerald-500 hover:bg-emerald-600 disabled:bg-zinc-300 text-white px-10 py-4 rounded-2xl font-bold shadow-xl shadow-emerald-500/20 transition-all flex items-center justify-center gap-3 active:scale-95">
         <span v-if="isSaving" class="animate-spin text-xl">↻</span>

@@ -6,56 +6,36 @@ import { getRequestTenantDTO } from '~~/server/utils/tenant'
 export default defineEventHandler(async (event) => {
   const method = event.node.req.method
   const runtime = useRuntimeConfig()
-  
-  // 1. Ambil Identitas (Tenant & Outlet)
+
+  // 1. Ambil Tenant ID (Auto-check Header/Cookie/Subdomain)
   const tenantId = getRequestTenantDTO(event)
   const outletId = getRequestOutletDTO(event)
   
-  // 2. Ambil Token secara agresif
-  // Cek di Cookie, jika kosong cek di Header Authorization (antisipasi diteruskan dari client)
-  let token = getCookie(event, 'auth_token')
-  if (!token) {
-    const authHeader = getHeader(event, 'authorization')
-    if (authHeader?.startsWith('Bearer ')) {
-      token = authHeader.split(' ')[1]
-    }
-  }
+  // 2. Ambil Token & Cookie mentah untuk diteruskan ke NestJS
+  const token = getCookie(event, 'auth_token')
+  const cookie = getHeader(event, 'cookie')
 
-  // Validasi Tenant
+  // Validasi Awal: Cegah request kosong ke database
   if (!tenantId) {
     throw createError({
       statusCode: 400,
-      message: 'Node Tenant tidak terdeteksi.'
+      message: 'Node Tenant tidak terdeteksi. Akses ditolak.'
     })
   }
 
   // 3. Susun Headers untuk NestJS
-  const headers: Record<string, string> = {
+  const headers = {
     'x-tenant-id': tenantId,
-    'Accept': 'application/json'
+    'x-outlet-id': outletId || '',
+    'Authorization': token ? `Bearer ${token}` : '',
+    'cookie': cookie || ''
   }
 
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`
-  }
 
-  if (outletId) {
-    headers['x-outlet-id'] = outletId
-  }
-
-  // Teruskan semua cookie mentah dari browser ke NestJS (Opsional tapi sering membantu)
-  const rawCookie = getHeader(event, 'cookie')
-  if (rawCookie) {
-    headers['cookie'] = rawCookie
-  }
-
+ 
   if (method === "GET") {
     try {
-      const response: any = await $fetch(`${runtime.public.server_api}/auth/merchant/profile`, {
-        method: 'GET',
-        headers,
-        query: getQuery(event)
-      })
+      const response: any = await $fetch(`${runtime.public.server_api}/auth/merchant/profile`, { headers })
 
       return {
         success: response?.success ?? true,

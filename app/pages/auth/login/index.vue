@@ -20,66 +20,68 @@ const loading = ref(false)
 const url = useRequestURL()
 
 // Logika Subdomain yang Anti-Gagal
-const subdomain = computed(() => {
-  const hostname = url.hostname // 'hostname' tidak termasuk port (:3000)
-  
-  // 1. Cek jika di localhost
-  if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === 'next-kasir-client.vercel.app') {
-    // Jika kamu sedang dev, kita paksa ke tenant 'budi_berkarya'
-    // import.meta.dev lebih akurat di Nuxt 3/4 daripada process.dev
-    if (import.meta.dev) {
-      // return 'nagatama_corporation.nextkasir.com' 
-      return 'tenant_yenishope_77n4b.nextkasir.com'
-    }
-  }
-
-  // 2. Logic untuk Production (domain.com) atau lvh.me
-  const parts = hostname.split('.')
-  
-  // Jika akses budi.nextkasir.pro -> ['budi', 'nextkasir', 'pro']
-  if (parts.length > 1) {
-    // Ambil bagian pertama kecuali jika itu 'www'
-    return parts[0] !== 'www' ? parts[0] : parts[1]
-  }
-
-  return null
-})
-
-
 // const subdomain = computed(() => {
-//   // Jika di SSR, gunakan headers host, jika di client gunakan window.location
-//   const hostname = process.server 
-//     ? url.hostname 
-//     : window.location.hostname
+//   const hostname = url.hostname // 'hostname' tidak termasuk port (:3000)
+  
+//   // 1. Cek jika di localhost
+//   if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === 'next-kasir-client.vercel.app') {
+//     // Jika kamu sedang dev, kita paksa ke tenant 'budi_berkarya'
+//     // import.meta.dev lebih akurat di Nuxt 3/4 daripada process.dev
+//     if (import.meta.dev) {
+//       // return 'nagatama_corporation.nextkasir.com' 
+//       return 'tenant_yenishope_77n4b.nextkasir.com'
+//     }
 
-//   // 1. Definisikan list base domain (tanpa tenant)
-//   const baseDomains = [
-//     'localhost',
-//     '127.0.0.1',
-//     'next-kasir-client.vercel.app', // Domain spesifik Vercel Anda
-//     'nextkasir.com',
-//     'www.nextkasir.com'
-//   ]
-
-//   // 2. Cek apakah hostname termasuk base domain atau subdomain vercel
-//   const isBase = baseDomains.includes(hostname) || hostname.endsWith('.vercel.app')
-
-//   if (isBase) {
-//     // RETURN TENANT DUMMY UNTUK TESTING
-//     return 'tenant_yenishope_77n4b'
+//     return 'tenant_yenishope_77n4b.nextkasir.com'
 //   }
 
-//   // 3. Logic untuk Production (Real Tenant Subdomain)
+//   // 2. Logic untuk Production (domain.com) atau lvh.me
 //   const parts = hostname.split('.')
   
-//   // Kasus: tenant.nextkasir.com (3 parts)
-//   if (parts.length >= 3) {
+//   // Jika akses budi.nextkasir.pro -> ['budi', 'nextkasir', 'pro']
+//   if (parts.length > 1) {
+//     // Ambil bagian pertama kecuali jika itu 'www'
 //     return parts[0] !== 'www' ? parts[0] : parts[1]
 //   }
 
-//   // Jika tidak ada subdomain, return null atau dummy sebagai fallback
 //   return null
 // })
+
+
+const subdomain = computed(() => {
+  // Jika di SSR, gunakan headers host, jika di client gunakan window.location
+  const hostname = process.server 
+    ? url.hostname 
+    : window.location.hostname
+
+  // 1. Definisikan list base domain (tanpa tenant)
+  const baseDomains = [
+    'localhost',
+    '127.0.0.1',
+    'next-kasir-client.vercel.app', // Domain spesifik Vercel Anda
+    'nextkasir.com',
+    'www.nextkasir.com'
+  ]
+
+  // 2. Cek apakah hostname termasuk base domain atau subdomain vercel
+  const isBase = baseDomains.includes(hostname) || hostname.endsWith('.vercel.app')
+
+  if (isBase) {
+    // RETURN TENANT DUMMY UNTUK TESTING
+    return 'tenant_yenishope_77n4b'
+  }
+
+  // 3. Logic untuk Production (Real Tenant Subdomain)
+  const parts = hostname.split('.')
+  
+  // Kasus: tenant.nextkasir.com (3 parts)
+  if (parts.length >= 3) {
+    return parts[0] !== 'www' ? parts[0] : parts[1]
+  }
+
+  // Jika tidak ada subdomain, return null atau dummy sebagai fallback
+  return null
+})
 
 const handleLogin = async () => {
   // Debugging: Munculkan di console jika masih gagal

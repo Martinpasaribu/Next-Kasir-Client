@@ -123,6 +123,11 @@ const doPrint = async (method) => {
         <div class="w-full md:w-auto bg-white dark:bg-zinc-900 p-2 rounded-2xl border dark:border-zinc-800 shadow-sm">
           <PrinterStatus />
         </div>
+
+        <NuxtLink to="/settings/manual-add-struct-summary" class="flex bg-white dark:bg-nuxt-gray-900 border border-nuxt-gray-200 dark:border-nuxt-gray-800 items-center gap-3 p-4 rounded-2xl hover:bg-nuxt-gray-50 dark:hover:bg-nuxt-gray-800 transition-colors">
+          <p class="text-sm font-bold">Add Summary</p>
+        </NuxtLink>
+
       </div>
 
       <div class="bg-white dark:bg-zinc-900 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 shadow-xl shadow-zinc-200/50 dark:shadow-none overflow-hidden transition-all">

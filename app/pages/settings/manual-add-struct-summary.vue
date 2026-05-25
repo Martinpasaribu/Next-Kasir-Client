@@ -13,7 +13,7 @@ const loading = useLoading();
 const notify = useMyNotification();
 
 // 2. State Utama
-const receiptConfig = ref(null);
+const receiptConfig = ref<any>(null);
 const isSaving = ref(false);
 
 // Form rekapitulasi angka
@@ -186,108 +186,125 @@ const doPrintSummary = async (method: 'USB' | 'BT') => {
       </div>
 
 <!-- Preview Struk (Kanan) -->
-      <div class="lg:col-span-5">
-        <div class="sticky top-8 flex flex-col items-center">
-          <!-- Sesuaikan border-t dengan warna emerald atau purple sesuai selera -->
-          <div class="bg-white text-zinc-900 p-6 rounded-sm font-mono leading-tight w-[310px] shadow-2xl border-t-[12px] border-emerald-500">
-            
-            <!-- Branding Section -->
-            <div class="text-center space-y-1 mb-4">
-              <div v-if="receiptConfig?.logo?.status && receiptConfig?.logo?.value" class="mb-2 flex justify-center">
-                <img :src="receiptConfig.logo.value" class="max-h-12 grayscale" />
-              </div>
-              <h2 v-if="receiptConfig?.name?.status" class="text-sm font-bold uppercase">
-                {{ receiptConfig.name.value || 'NAMA TOKO' }}
-              </h2>
-              <p v-if="receiptConfig?.address?.status" class="text-[9px] leading-none">
-                {{ receiptConfig.address.value || 'Alamat Toko' }}
-              </p>
-            </div>
+<div class="lg:col-span-5">
+  <div class="sticky top-8 flex flex-col items-center">
+    <div class="bg-white text-zinc-900 p-6 rounded-sm font-mono leading-tight w-[310px] shadow-2xl border-t-[12px] border-emerald-500">
+      
+      <div class="flex justify-between text-[8px] text-zinc-400 mb-4">
+        <span>f{{ form.date?.replace(/-/g, '.') }}.{{ new Date().toLocaleTimeString('id-ID').replace(/:/g, '.') }}</span>
+        <span>PE{{ form.trx_id || '000' }}E{{ 1234 }}</span>
+      </div>
 
-            <!-- Header Title -->
-            <div v-if="receiptConfig?.header_one?.status" class="text-center text-[10px] font-bold border-y border-dashed border-zinc-300 py-1 uppercase mb-4">
-              {{ receiptConfig.header_one.value }}
-            </div>
+      <div class="text-center space-y-1 mb-4">
+        <h2 v-if="receiptConfig?.name?.status" class="text-sm font-bold uppercase">
+          {{ receiptConfig.name.value || 'NAMA TOKO' }}
+        </h2>
+        <p v-if="receiptConfig?.address?.status" class="text-[9px] leading-none text-zinc-600">
+          {{ receiptConfig.address.value || 'Alamat Toko' }}
+        </p>
+      </div>
+      <div class="text-center text-[10px] mb-2 leading-none">-----------------------------</div>
 
-            <!-- Metadata -->
-            <div class="flex justify-between text-[9px]">
-              <span>ID: {{ trxInfo.trx_id }}</span>
-              <span>MID: 00003448822234</span>
-            </div>
-            <div class="flex justify-between text-[9px] mb-2">
-              <span v-if="receiptConfig?.show_time">DATE: {{ trxInfo.date }}</span>
-              <span v-if="receiptConfig?.show_time">TIME: {{ new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) }}</span>
-            </div>
-            
-            <!-- Header Title -->
-            <div v-if="receiptConfig?.header_two?.status" class="text-center text-[10px] font-bold border-y border-dashed border-zinc-300 py-1 uppercase mb-4">
-              {{ receiptConfig.header_two.value }}
-            </div>
+      <div class="text-center mb-4">
+        <div class="text-[11px] font-black uppercase italic">
+          {{ receiptConfig?.header_one?.value || 'SUMMARY REPORT' }}
+        </div>
+        <div class="text-[10px] leading-none">-----------------------------</div>
+      </div>
 
-            <!-- Loop Groups Preview (Sinkron dengan Config & Form) -->
-            <div v-for="(group, gIdx) in receiptConfig?.summary_groups" :key="gIdx" class="mb-5">
-              <template v-if="group.status && group.label">
-                <div class="text-[11px] font-bold uppercase border-b border-zinc-100 pb-1 mb-2">
-                  {{ group.label }}
+      <div class="space-y-0.5 mb-4">
+        <div class="flex justify-between text-[9px]">
+          <span>ID: {{ form.trx_id || '000' }}</span>
+          <span>MID: 000034</span>
+        </div>
+        <div v-if="receiptConfig?.show_time" class="flex justify-between text-[9px]">
+          <span>DATE: {{ form.date }}</span>
+          <span>TIME: {{ new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) }}</span>
+        </div>
+        <div class="text-[10px] leading-none">---------------------------------------</div>
+      </div>
+
+      <div class="text-center mb-4">
+        <div class="text-[10px] font-bold uppercase">
+          {{ receiptConfig?.header_two?.value || 'DETAIL SUMMARY' }}
+        </div>
+        <div class="text-[10px] leading-none">=======================================</div>
+      </div>
+
+      <div v-for="(group, gIdx) in receiptConfig?.summary_groups" :key="gIdx" class="mb-4">
+        <template v-if="group.status && group.label">
+          <div class="text-[10px] font-bold uppercase mb-0.5">{{ group.label }}</div>
+          <div class="text-[9px] leading-none mb-2 text-zinc-300">.......................................</div>
+
+            <!-- Loop Subs -->
+            <div v-for="(sub, sIdx) in group.subs" :key="sIdx" class="mb-3 pl-2">
+              <template v-if="sub.status && sub.label">
+                <div class="text-[10px] font-bold uppercase mb-1">{{ sub.label }}</div>
+                
+                <!-- Ambil data dari form secara reaktif berdasarkan label -->
+                <div class="flex justify-between text-[9px] text-zinc-500 pl-1">
+                  <span>SALE</span> 
+                  <span>{{ form[group.label]?.[sub.label]?.sale_count || 0 }}</span> 
+                  <span>Rp{{ (form[group.label]?.[sub.label]?.sale_amount || 0).toLocaleString() }}</span>
                 </div>
                 
-                <!-- Loop Subs -->
-                <div v-for="(sub, sIdx) in group.subs" :key="sIdx" class="mb-3 pl-2">
-                  <template v-if="sub.status && sub.label">
-                    <div class="text-[10px] font-bold uppercase mb-1">{{ sub.label }}</div>
-                    
-                    <!-- Ambil data dari form secara reaktif berdasarkan label -->
-                    <div class="flex justify-between text-[9px] text-zinc-500 pl-1">
-                      <span>SALE</span> 
-                      <span>{{ form[group.label]?.[sub.label]?.sale_count || 0 }}</span> 
-                      <span>Rp{{ (form[group.label]?.[sub.label]?.sale_amount || 0).toLocaleString() }}</span>
-                    </div>
-                    
-                    <div class="flex justify-between text-[9px] text-zinc-500 pl-1 border-b border-zinc-50 pb-1">
-                      <span>VOID</span> 
-                      <span>{{ form[group.label]?.[sub.label]?.void_count || 0 }}</span> 
-                      <span>Rp{{ (form[group.label]?.[sub.label]?.void_amount || 0).toLocaleString() }}</span>
-                    </div>
-
-                    <div class="flex justify-between text-[9px] font-bold pt-1">
-                      <span>TOTAL {{ sub.label }}</span> 
-                      <span>Rp{{ ( (form[group.label]?.[sub.label]?.sale_amount || 0) - (form[group.label]?.[sub.label]?.void_amount || 0) ).toLocaleString() }}</span>
-                    </div>
-                  </template>
+                <div class="flex justify-between text-[9px] text-zinc-500 pl-1 border-b border-zinc-50 pb-1">
+                  <span>VOID</span> 
+                  <span>{{ form[group.label]?.[sub.label]?.void_count || 0 }}</span> 
+                  <span>Rp{{ (form[group.label]?.[sub.label]?.void_amount || 0).toLocaleString() }}</span>
                 </div>
 
-                <!-- Grand Total per Group -->
-                <div class="mt-2 p-1.5 bg-zinc-50 flex justify-between text-[10px] font-black border-y-2 border-double border-zinc-200 uppercase">
-                  <span>GRAND TOTAL {{ group.label }}</span>
-                  <span>Rp{{ getGroupTotal(group.label).toLocaleString() }}</span>
+                <div class="flex justify-between text-[9px] font-bold pt-1">
+                  <span>TOTAL {{ sub.label }}</span> 
+                  <span>Rp{{ ( (form[group.label]?.[sub.label]?.sale_amount || 0) - (form[group.label]?.[sub.label]?.void_amount || 0) ).toLocaleString() }}</span>
                 </div>
               </template>
             </div>
 
-            <!-- Header Title -->
-            <div v-if="receiptConfig?.header_three?.status" class="text-center text-[10px] font-bold border-y border-dashed border-zinc-300 py-1 uppercase mb-4">
-              {{ receiptConfig.header_three.value }}
-            </div>
-
-            <!-- Settlement Total (Grand Total Akhir) -->
-            <div class="my-4 border-t-2 border-zinc-900"></div>
-            <div class="flex justify-between font-black text-xs uppercase">
-              <span>Settlement Total</span>
-              <span>Rp{{ grandTotal.toLocaleString() }}</span>
-            </div>
-
-            <!-- Footer -->
-            <div v-if="receiptConfig?.footer_note?.status" class="mt-8 text-center text-[9px] italic text-zinc-400 border-t border-dashed pt-4">
-              "{{ receiptConfig.footer_note.value }}"
-            </div>
+          <div class="text-[10px] leading-none">=======================================</div>
+          <div class="flex justify-between text-[10px] font-bold py-1">
+            <span>TOTAL {{ group.label }}</span>
+            <span>Rp{{ getGroupTotal(group.label).toLocaleString() }}</span>
           </div>
-          
-          <div class="mt-6 flex items-center gap-2 text-zinc-400">
-            <Printer :size="14" />
-            <span class="text-[10px] font-bold tracking-widest uppercase">Paper Size 58mm</span>
-          </div>
+          <div class="text-[10px] leading-none mb-4">=======================================</div>
+        </template>
+      </div>
+
+      <div class="text-center mt-6">
+        <div class="text-[10px] font-bold uppercase">{{ receiptConfig?.header_three?.value || 'GRAND SUMMARY' }}</div>
+        <div class="text-[10px] leading-none">-----------------------------</div>
+      </div>
+
+      <div class="space-y-1 mb-2">
+        <div v-for="group in receiptConfig?.summary_groups" :key="group.label" class="flex justify-between text-[10px]">
+          <span v-if="group.status">{{ group.label }}</span>
+          <span v-if="group.status">Rp{{ getGroupTotal(group.label).toLocaleString() }}</span>
         </div>
       </div>
+
+      <div class="text-[10px] leading-none">=============================</div>
+      <div class="flex justify-between text-xs font-black uppercase py-1">
+        <span>SETTLEMENT TOTAL</span>
+        <span>Rp{{ grandTotal.toLocaleString() }}</span>
+      </div>
+      <div class="text-[10px] leading-none mb-6">=============================</div>
+
+      <div v-if="receiptConfig?.footer_note?.status" class="text-center">
+        <p class="text-[9px] italic text-zinc-400">"{{ receiptConfig.footer_note.value }}"</p>
+      </div>
+
+      <div class="flex justify-between text-[8px] text-zinc-300 mt-6 pt-4 border-t border-dashed">
+        <span>f{{ form.date?.replace(/-/g, '.') }}.{{ new Date().toLocaleTimeString('id-ID').replace(/:/g, '.') }}</span>
+        <span>PE{{ form.trx_id || '000' }}</span>
+      </div>
+    </div>
+
+    <div class="mt-6 flex items-center gap-2 text-zinc-400">
+      <Printer :size="14" />
+      <span class="text-[10px] font-black tracking-widest uppercase">Laporan Summary 58mm</span>
+    </div>
+  </div>
+</div>
 
     </div>
   </div>

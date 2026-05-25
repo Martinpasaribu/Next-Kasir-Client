@@ -33,220 +33,492 @@ if (process.client && navigator.serial) {
 
 const charWidth = 30; 
 
-  const commands = {
-    init: '\x1B\x40',
-    center: '\x1B\x61\x01',
-    left: '\x1B\x61\x00',
-    right: '\x1B\x61\x02',
-    boldOn: '\x1B\x45\x01',
-    boldOff: '\x1B\x45\x00',
-    // setMargin: '\x1D\x4C\x10\x00', 
-    setMargin: '\x1D\x4C\x10\x00',
-    feed: '\x0A\x0A\x0A\x0A\x0A',
-    fontSmall: '\x1b\x21\x01', // Font B
-    fontNormal: '\x1b\x21\x00', // Font A
-  };
+const commands = {
+  init: '\x1B\x40',
+  center: '\x1B\x61\x01',
+  left: '\x1B\x61\x00',
+  right: '\x1B\x61\x02',
+  boldOn: '\x1B\x45\x01',
+  boldOff: '\x1B\x45\x00',
+  // setMargin: '\x1D\x4C\x10\x00', 
+  setMargin: '\x1D\x4C\x10\x00',
+  feed: '\x0A\x0A\x0A\x0A\x0A',
+  fontSmall: '\x1b\x21\x01', // Font B
+  fontNormal: '\x1b\x21\x00', // Font A
+};
 
-  // Helper untuk garis yang selalu pas dengan charWidth
-  const drawLine = (char = '-') => char.repeat(charWidth);
 
-  // Helper format line yang fleksibel terhadap lebar (w)
-  const formatLine = (left: string, right: string, w = charWidth) => {
-    const spaceCount = w - (left.length + right.length);
+// Helper untuk garis yang selalu pas dengan charWidth
+const drawLine = (char = '-') => char.repeat(charWidth);
+
+// Helper format line yang fleksibel terhadap lebar (w)
+const formatLine = (left: string, right: string, w = charWidth) => {
+  const spaceCount = w - (left.length + right.length);
+  return left + " ".repeat(Math.max(0, spaceCount)) + right;
+};
+
+
+/**
+ * BUILD SUMMARY SETTLEMENT 80MM (FORCE MARGIN TENGAH - TEKS WAJIB KIRI-KANAN)
+ */
+const buildManualSummary80mm = (data: any) => {
+  const cfg = data.config || {};
+  
+// 1. Kembalikan ke lebar maksimal kertas 80mm agar teks memanfaatkan space kanan
+  const WIDTH_80MM = 42; 
+
+  // Helper formatting khusus (Teks kiri-kanan presisi)
+  const formatLine80 = (left: string, right: string) => {
+    const spaceCount = WIDTH_80MM - (left.length + right.length);
     return left + " ".repeat(Math.max(0, spaceCount)) + right;
   };
 
+  const drawLine80 = (char = '-') => char.repeat(WIDTH_80MM);
+  const drawLine0180 = (char = '=') => char.repeat(WIDTH_80MM);
 
-
-const buildSummaryString = (data: any) => {
-  const cfg = data.config || {};
-  const WIDTH_NORMAL = 29; 
-  const WIDTH_SMALL = 39;  
+  // =========================================================================
+  // NATIVE ESC/POS HEX COMMANDS (PENYESUAIAN RUANG KANAN-KIRI)
+  // =========================================================================
+  const setLineSpacing = '\x1b\x33\x28'; 
+  const resetLineSpacing = '\x1b\x32';   
   
-  let p = commands.init + commands.setMargin;
+  // Kita sesuaikan margin kiri menjadi 16 atau 24 dots (\x10 atau \x18)
+  // Nilai ini sangat pas untuk membuat teks mepet kanan-kiri secara seimbang di kertas 80mm
+  const setLeftMargin = '\x1d\x4c\x14\x00';  // Menggunakan nilai kesetimbangan 20 dots
+  const resetLeftMargin = '\x1d\x4c\x00\x00'; 
 
+  const FORCE_LEFT = '\x1b\x61\x00';   
+  const FORCE_CENTER = '\x1b\x61\x01';
+  // =========================================================================
 
-  /**
-   * GENERATOR KODE DINAMIS BERDASARKAN DATA
-   */
-  // 1. Ambil tanggal dari data (Asumsi format data.date: "YYYY-MM-DD")
-  // Kita bersihkan tanda "-" atau "/" agar menjadi format f2026.05.13
-  const dateSource = data.date ? data.date.replace(/-/g, '.') : '0.0.0';
-  const timeSource = data.time ? data.time.replace(/:/g, '.') : '0.0';
-  const vCode = `f${dateSource}.${timeSource}`;
+  // Ambil nilai nominal data
+  const menuSales = data.menu_sales || 0;
+  const menuDiscount = data.menu_discount || 0;
+  const menuNetSales1 = menuSales - menuDiscount;
+  const billDiscount = data.bill_discount || 0;
+  const menuNetSales2 = menuNetSales1 - billDiscount;
 
-  // 2. Kode Serial (Gunakan data.trx_id sebagai benih agar konsisten, atau tetap random)
-  // Di sini saya buat kombinasi ID transaksi agar terlihat autentik
-  const sCode = `PE${data.trx_id || '000'}E${Math.floor(1000 + Math.random() * 9000)}`;
+  const servCharge = data.service_charge || 0;
+  const taxAmount = data.tax_amount || 0;
+  const roundAmount = data.round_amount || 0;
+  const extraCharge = data.extra_charge || 0;
 
-  // --- CETAK KODE DINAMIS DI ATAS ---
-  p += commands.fontSmall + commands.left;
-  p += formatLine(vCode, sCode.substring(0, 13), WIDTH_SMALL) + "\n";
-  p += commands.fontNormal;
-  p += "\n\n"; 
+  const finalNetSales = menuNetSales2 + servCharge + taxAmount + roundAmount + extraCharge;
 
-  // 1. Branding
-  p += commands.center + commands.boldOn;
-  if (cfg.name?.status) p += `${cfg.name.value.toUpperCase()}\n`;
-  p += commands.boldOff;
-  if (cfg.address?.status) p += `${cfg.address.value}\n`;
-  p += "-".repeat(WIDTH_NORMAL) + "\n";
+  // Inisialisasi awal: Set Spacing, Set Margin Geser Tengah, Paksa Teks Rata Kiri
+  let p = commands.init + setLineSpacing + setLeftMargin + FORCE_LEFT;
+  
+  // 1. BRANDING & HEADER (Nama Toko saja yang kita paksa Center)
+  p += FORCE_CENTER + commands.boldOn;
+  p += `${(cfg.name?.value || 'NAMA USAHA').toUpperCase()}\n\n`; 
+  
+  // Kembalikan ke Kiri untuk data Header lainnya
+  p += FORCE_LEFT + commands.boldOff; 
+  p += formatLine80(`Work Date  : ${data.work_date || '01-04-2026'}`, "") + "\n";
+  p += formatLine80(`Print Date : ${data.print_date || '01-04-2026 - 21:00'}`, "") + "\n";
+  p += drawLine80() + "\n\n"; 
 
-  // 2. Title Laporan Utama
-  p += commands.boldOn + (cfg.header_one?.value || 'SUMMARY REPORT').toUpperCase() + "\n" + commands.boldOff;
-  p += "-".repeat(WIDTH_NORMAL) + "\n\n";
+  // 2. MAIN FINANCIAL SUMMARY (Setiap line dipastikan mewarisi FORCE_LEFT)
+  p += FORCE_LEFT;
+  p += formatLine80("Menu Sales :", menuSales.toLocaleString('id-ID')) + "\n";
+  p += formatLine80("Menu Discount :", menuDiscount.toLocaleString('id-ID')) + "\n";
+  p += formatLine80("", "--------") + "\n";
+  p += formatLine80("Menu Net Sales :", menuNetSales1.toLocaleString('id-ID')) + "\n";
+  p += formatLine80("Bill Discount :", billDiscount.toLocaleString('id-ID')) + "\n";
+  p += formatLine80("", "--------") + "\n";
+  p += formatLine80("Menu Net Sales :", menuNetSales2.toLocaleString('id-ID')) + "\n\n";
 
-  // 3. Metadata (Font Small)
-  p += commands.fontSmall + commands.left;
-  p += formatLine(`ID: ${data.trx_id}`, `MID: 000034`, WIDTH_SMALL) + "\n";
-  if (cfg.show_time) {
-    p += formatLine(`DATE: ${data.date}`, `TIME: ${data.time}`, WIDTH_SMALL) + "\n";
-  }
-  p += "-".repeat(WIDTH_SMALL) + "\n\n";
-
-  // Header Detail Section
-  p += commands.center + commands.boldOn;
-  p += (cfg.header_two?.value || 'DETAIL SUMMARY').toUpperCase() + "\n";
-  p += "=".repeat(WIDTH_SMALL) + "\n\n";
-  p += commands.left;
-
-  // Variabel untuk menampung total per grup guna dicetak di summary bawah
-  const groupTotalsSummary: { label: string, total: number }[] = [];
-
-  // 4. Looping Detail Group Summary
-  cfg.summary_groups?.forEach((group: any) => {
-    if (group.status && group.label) {
-      p += commands.boldOn + group.label.toUpperCase() + commands.boldOff + "\n";
-      p += ".".repeat(WIDTH_SMALL) + "\n";
-
-      group.subs?.forEach((sub: any) => {
-        if (sub.status && sub.label) {
-          const val = data.summary_data[group.label]?.[sub.label] || { 
-            sale_count: 0, sale_amount: 0, void_count: 0, void_amount: 0 
-          };
-          const netAmount = val.sale_amount - val.void_amount;
-
-          p += commands.boldOn + sub.label.toUpperCase() + commands.boldOff + "\n";
-
-          const formatThreeColumnSmall = (label: string, qty: number, amount: number) => {
-            const qtyStr = qty.toString();
-            const amtStr = `Rp${amount.toLocaleString()}`;
-            const labelPart = label.padEnd(12, ' '); 
-            const amountPart = amtStr.padStart(14, ' '); 
-            const middleSpace = WIDTH_SMALL - labelPart.length - amountPart.length;
-            const padLeft = Math.floor((middleSpace - qtyStr.length) / 2);
-            const qtyPart = qtyStr.padStart(padLeft + qtyStr.length, ' ').padEnd(middleSpace, ' ');
-            return labelPart + qtyPart + amountPart;
-          };
-
-          p += formatThreeColumnSmall("  SALE", val.sale_count, val.sale_amount) + "\n";
-          p += formatThreeColumnSmall("  VOID", val.void_count, val.void_amount) + "\n";
-          p += formatLine(`  TOTAL ${sub.label}`, `Rp${netAmount.toLocaleString()}`, WIDTH_SMALL) + "\n\n";
-        }
-      });
-
-      // Hitung Total per Group
-      const groupTotal = Object.values(data.summary_data[group.label] || {}).reduce((acc: number, curr: any) => {
-        return acc + (Number(curr.sale_amount) - Number(curr.void_amount));
-      }, 0);
-      
-      // Simpan untuk summary di bawah
-      groupTotalsSummary.push({ label: group.label, total: groupTotal });
-
-      p += "=".repeat(WIDTH_SMALL) + "\n";
-      p += formatLine(`TOTAL ${group.label}`, `Rp${groupTotal.toLocaleString()}`, WIDTH_SMALL) + "\n";
-      p += "=".repeat(WIDTH_SMALL) + "\n\n";
-    }
-  });
-
-  // 5. GRAND SUMMARY (REKAPITULASI DI BAWAH)
-  p += commands.fontNormal + commands.center;
-  p += commands.boldOn + (cfg.header_three?.value || 'GRAND SUMMARY').toUpperCase() + "\n" + commands.boldOff;
-  p += "-".repeat(WIDTH_NORMAL) + "\n";
-  p += commands.left;
-
-  // Cetak ulang total tiap grup di sini dengan Font Normal
-  groupTotalsSummary.forEach(item => {
-    p += formatLine(item.label, `Rp${item.total.toLocaleString()}`, WIDTH_NORMAL) + "\n";
-  });
-
-  // 6. SETTLEMENT TOTAL (FINAL)
-  p += "=".repeat(WIDTH_NORMAL) + "\n";
+  p += formatLine80("Serv Charge :", servCharge.toLocaleString('id-ID')) + "\n";
+  p += formatLine80("Tax :", taxAmount.toLocaleString('id-ID')) + "\n";
+  p += formatLine80("Round Amount :", roundAmount.toLocaleString('id-ID')) + "\n";
+  p += formatLine80("Extra Charge :", extraCharge.toLocaleString('id-ID')) + "\n";
+  p += formatLine80("", "--------") + "\n";
+  
   p += commands.boldOn;
-  p += formatLine("SETTLEMENT TOTAL", `Rp${data.total_amount.toLocaleString()}`, WIDTH_NORMAL) + "\n";
-  p += commands.boldOff;
-  p += "=".repeat(WIDTH_NORMAL) + "\n";
+  p += formatLine80("Menu Net Sales :", finalNetSales.toLocaleString('id-ID')) + "\n";
+  p += commands.boldOff + "\n\n"; 
 
-  // 7. Footer Note
-  if (cfg.footer_note?.status && cfg.footer_note?.value) {
-    p += "\n" + commands.center + commands.fontSmall;
-    p += `${cfg.footer_note.value}\n`;
-    p += commands.fontNormal + commands.left; 
-  }
+  // 3. TRAFFIC & AUDIT METRICS
+  p += FORCE_LEFT;
+  p += formatLine80("Total # Of Bills :", (data.total_bills || 0).toString()) + "\n";
+  p += formatLine80("Sales per Bill :", (data.sales_per_bill || 0).toLocaleString('id-ID')) + "\n\n";
+  p += formatLine80("Total # Of Guest :", (data.total_guests || 0).toString()) + "\n";
+  p += formatLine80("Sales per Guest :", (data.sales_per_guest || 0).toLocaleString('id-ID')) + "\n\n";
+  p += formatLine80("Cancel # Menu :", (data.cancel_menu_count || 0).toString()) + "\n";
+  p += formatLine80("Total Amount :", (data.cancel_total_amount || 0).toLocaleString('id-ID')) + "\n\n";
 
-
-  // --- CETAK KODE DINAMIS DI ATAS ---
-  p += "\n\n"; 
-  p += commands.fontSmall + commands.left;
-  p += formatLine(vCode, sCode.substring(0, 13), WIDTH_SMALL) + "\n";
-  p += commands.fontNormal;
-
-  // 8. PUSH PAPER
-  p += "\n\n\n\n\n"; 
+  // 4. SALES BY TYPE
+  p += FORCE_LEFT;
+  // p += "======================================\n";
+  p += drawLine0180() + "\n"; 
+  // p += "Sales By Type\n";
+  p += FORCE_CENTER + "Sales By Type\n" + FORCE_LEFT;
+  p += drawLine0180() + "\n\n"; 
+  // p += "======================================\n";
   
+  const salesType = data.sales_by_type || {};
+  p += "Dine-In :\n";
+  p += formatLine80("  Qty (100%) :", (salesType.qty || 0).toString()) + "\n";
+  p += formatLine80("  Item Sales (100%) :", (salesType.item_sales || 0).toLocaleString('id-ID')) + "\n";
+  p += formatLine80("  Discount Item :", (salesType.discount_item || 0).toLocaleString('id-ID')) + "\n";
+  p += formatLine80("  Discount Bill :", (salesType.discount_bill || 0).toLocaleString('id-ID')) + "\n";
+  p += formatLine80("  Net Sales (100%) :", (salesType.net_sales || 0).toLocaleString('id-ID')) + "\n";
+  // p += "--------------------------------------\n";
+  p += drawLine80() + "\n";
+  p += formatLine80("Total :", (salesType.net_sales || 0).toLocaleString('id-ID')) + "\n";
+  // p += "======================================\n\n";
+  p += drawLine0180() + "\n\n"; 
+
+  // 5. SALES BY CATEGORY
+  p += FORCE_LEFT;
+  // p += "======================================\n";
+  p += drawLine0180() + "\n"; 
+  // p += "Sales By Category\n";
+  p += FORCE_CENTER + "Sales By Category\n" + FORCE_LEFT;
+  p += drawLine0180() + "\n\n"; 
+  // p += "======================================\n";
+  
+  const cat = data.sales_by_category || {};
+  p += "Foods :\n";
+  p += formatLine80(`  Item Sales (${cat.food_pct || 0}%) :`, (cat.food_sales || 0).toLocaleString('id-ID')) + "\n";
+  p += formatLine80(`  Discount (${cat.food_disc_pct || 0}%) :`, (cat.food_discount || 0).toLocaleString('id-ID')) + "\n";
+  p += formatLine80(`  Net Sales (${cat.food_pct || 0}%) :`, (cat.food_net || 0).toLocaleString('id-ID')) + "\n\n";
+
+  p += "Beverages :\n";
+  p += formatLine80(`  Item Sales (${cat.bev_pct || 0}%) :`, (cat.bev_sales || 0).toLocaleString('id-ID')) + "\n";
+  p += formatLine80(`  Discount (${cat.bev_disc_pct || 0}%) :`, (cat.bev_discount || 0).toLocaleString('id-ID')) + "\n";
+  p += formatLine80(`  Net Sales (${cat.bev_pct || 0}%) :`, (cat.bev_net || 0).toLocaleString('id-ID')) + "\n";
+  
+  // p += "--------------------------------------\n";
+  p += drawLine80() + "\n"; 
+  p += formatLine80("Total :", ((cat.food_net || 0) + (cat.bev_net || 0)).toLocaleString('id-ID')) + "\n";
+  // p += "======================================\n\n";
+  p += drawLine0180() + "\n\n"; 
+
+  // 6. SALES BY PROMO
+  p += FORCE_LEFT;
+  // p += "======================================\n";
+  p += drawLine0180() + "\n"; 
+  // p += "Sales By Promo\n";
+  p += FORCE_CENTER + "Sales By Promo\n" + FORCE_LEFT;
+  p += drawLine0180() + "\n\n"; 
+  // p += "======================================\n";
+  
+  const promo = data.sales_by_promo || {};
+  p += `${promo.name || 'NO Promo'} :\n`;
+  p += formatLine80(`  Item Sales (${promo.pct || 100}%) :`, (promo.item_sales || 0).toLocaleString('id-ID')) + "\n";
+  p += formatLine80("  Disc. Item (0%) :", (promo.disc_item || 0).toLocaleString('id-ID')) + "\n";
+  p += formatLine80("  Disc. Bill (0%) :", (promo.disc_bill || 0).toLocaleString('id-ID')) + "\n";
+  p += formatLine80("", "-------------") + "\n";
+  p += formatLine80(`Net Sales (${promo.pct || 100}%) :`, (promo.net_sales || 0).toLocaleString('id-ID')) + "\n";
+  // p += "======================================\n\n";
+  p += drawLine0180() + "\n\n"; 
+
+  // 7. PAYMENT TYPE SUMMARY
+  p += FORCE_LEFT;
+  // p += "======================================\n";
+  p += drawLine0180() + "\n"; 
+  // p += "Payment Type Summary\n";
+  p += FORCE_CENTER + "Payment Type Summary\n" + FORCE_LEFT;
+  p += drawLine0180() + "\n\n"; 
+  // p += "======================================\n";
+  
+  const pay = data.payments || {};
+  const ccOthers = pay.cc_others || 0;
+  const debitOthers = pay.debit_others || 0;
+  const qrisBri = pay.qris_bri || 0;
+  const dpAmount = pay.dp || 0;
+  
+  const cashAmount = finalNetSales - (ccOthers + debitOthers + qrisBri + dpAmount);
+
+  p += formatLine80("CC Others :", ccOthers.toLocaleString('id-ID')) + "\n";
+  p += formatLine80("Debit Others :", debitOthers.toLocaleString('id-ID')) + "\n";
+  p += formatLine80("Qris BRI :", qrisBri.toLocaleString('id-ID')) + "\n";
+  p += formatLine80("DP :", dpAmount.toLocaleString('id-ID')) + "\n";
+  p += formatLine80("CASH :", cashAmount.toLocaleString('id-ID')) + "\n";
+  // p += "--------------------------------------\n";
+  p += drawLine80() + "\n"; 
+  
+  p += commands.boldOn;
+  p += formatLine80("Total :", finalNetSales.toLocaleString('id-ID')) + "\n";
+  p += commands.boldOff;
+  // p += "======================================\n";
+  p += drawLine0180() + "\n\n"; 
+
+  // Reset margin dan line spacing ke default pabrik sebelum pemotongan kertas
+  p += resetLeftMargin + resetLineSpacing + FORCE_LEFT;
+
+  // Dorong kertas kosong akhir
+  p += "\n\n\n\n\n\n";
+  
+  if (commands.feed) p += commands.feed;
+  if (commands.paperCut) p += commands.paperCut;
+
   return p;
 };
 
-  // CORE PRINT LOGIC (Bluetooth)
-const printViaBluetoothSummary = async (data: any) => {
-  try {
-    if (!cachedServer || !cachedServer.connected) {
-      cachedDevice = await navigator.bluetooth.requestDevice({
-        acceptAllDevices: true,
-        optionalServices: ['000018f0-0000-1000-8000-00805f9b34fb', '00001101-0000-1000-8000-00805f9b34fb']
-      });
-      cachedServer = await cachedDevice.gatt?.connect();
-    }
 
-    const services = await cachedServer.getPrimaryServices();
-    let characteristic: any = null;
-    for (const service of services) {
-      const characteristics = await service.getCharacteristics();
-      characteristic = characteristics.find((c: any) => c.properties.write || c.properties.writeWithoutResponse);
-      if (characteristic) break;
-    }
 
-    if (!characteristic) throw new Error("Characteristic not found");
+  const printManualSettlement = async (data: any) => {
+      try {
+        // Menggunakan cached connection agar tidak pairing ulang (sesuai logic sebelumnya)
+        if (!cachedServer || !cachedServer.connected) {
+          cachedDevice = await navigator.bluetooth.requestDevice({
+            acceptAllDevices: true,
+            optionalServices: [
+              '000018f0-0000-1000-8000-00805f9b34fb', 
+              '00001101-0000-1000-8000-00805f9b34fb'
+            ]
+          });
+          cachedServer = await cachedDevice.gatt?.connect();
+        }
 
-    const finalString = data.type === 'SUMMARY_REPORT' 
-      ? buildSummaryString(data) 
-      : buildReceiptString(data);
+        const services = await cachedServer.getPrimaryServices();
+        let characteristic: any = null;
+        for (const service of services) {
+          const characteristics = await service.getCharacteristics();
+          characteristic = characteristics.find((c: any) => c.properties.write || c.properties.writeWithoutResponse);
+          if (characteristic) break;
+        }
 
-    const encoder = new TextEncoder();
-    const payload = encoder.encode(finalString);
+        if (!characteristic) throw new Error("Characteristic write tidak ditemukan");
+
+        // Compile string payload laporan 80mm
+        const finalString = buildManualSummary80mm(data);
+
+        const encoder = new TextEncoder();
+        const payload = encoder.encode(finalString);
+
+        // Kirim chunk per 20 byte dengan throttle delay 30ms
+        const CHUNK_SIZE = 20; 
+        for (let i = 0; i < payload.length; i += CHUNK_SIZE) {
+          const chunk = payload.slice(i, i + CHUNK_SIZE);
+          if (characteristic.properties.writeWithoutResponse) {
+            await characteristic.writeValueWithoutResponse(chunk);
+          } else {
+            await characteristic.writeValue(chunk);
+          }
+          await new Promise(resolve => setTimeout(resolve, 30));
+        }
+
+        console.log("✅ Settlement Report 80mm Berhasil Dicetak!");
+      } catch (error: any) {
+        if (error.name !== 'NotFoundError') cachedServer = null;
+        alert(`Gagal cetak: ${error.message}`);
+      }
+    };
+
+
+  const buildSummaryString = (data: any) => {
+    const cfg = data.config || {};
+    const WIDTH_NORMAL = 29; 
+    const WIDTH_SMALL = 39;  
+    
+    let p = commands.init + commands.setMargin;
+
 
     /**
-     * PERBAIKAN DI SINI:
-     * Gunakan CHUNK_SIZE kecil (20 bytes adalah standar MTU Bluetooth Low Energy)
-     * Tambahkan delay agar printer tidak 'tersedak' (Buffer Overflow)
+     * GENERATOR KODE DINAMIS BERDASARKAN DATA
      */
-    const CHUNK_SIZE = 20; 
-    for (let i = 0; i < payload.length; i += CHUNK_SIZE) {
-      const chunk = payload.slice(i, i + CHUNK_SIZE);
-      
-      await characteristic.writeValueWithoutResponse(chunk);
-      
-      // Tunggu 30ms setiap chunk agar printer sempat memproses buffer
-      await new Promise(resolve => setTimeout(resolve, 30));
+    // 1. Ambil tanggal dari data (Asumsi format data.date: "YYYY-MM-DD")
+    // Kita bersihkan tanda "-" atau "/" agar menjadi format f2026.05.13
+    const dateSource = data.date ? data.date.replace(/-/g, '.') : '0.0.0';
+    const timeSource = data.time ? data.time.replace(/:/g, '.') : '0.0';
+    const vCode = `f${dateSource}.${timeSource}`;
+
+    // 2. Kode Serial (Gunakan data.trx_id sebagai benih agar konsisten, atau tetap random)
+    // Di sini saya buat kombinasi ID transaksi agar terlihat autentik
+    const sCode = `PE${data.trx_id || '000'}E${Math.floor(1000 + Math.random() * 9000)}`;
+
+    // --- CETAK KODE DINAMIS DI ATAS ---
+    p += commands.fontSmall + commands.left;
+    p += formatLine(vCode, sCode.substring(0, 13), WIDTH_SMALL) + "\n";
+    p += commands.fontNormal;
+    p += "\n\n"; 
+
+    // 1. Branding
+    p += commands.center + commands.boldOn;
+    if (cfg.name?.status) p += `${cfg.name.value.toUpperCase()}\n`;
+    p += commands.boldOff;
+    if (cfg.address?.status) p += `${cfg.address.value}\n`;
+    p += "-".repeat(WIDTH_NORMAL) + "\n";
+
+    // 2. Title Laporan Utama
+    p += commands.boldOn + (cfg.header_one?.value || 'SUMMARY REPORT').toUpperCase() + "\n" + commands.boldOff;
+    p += "-".repeat(WIDTH_NORMAL) + "\n\n";
+
+    // 3. Metadata (Font Small)
+    p += commands.fontSmall + commands.left;
+    p += formatLine(`ID: ${data.trx_id}`, `MID: 000034`, WIDTH_SMALL) + "\n";
+    if (cfg.show_time) {
+      p += formatLine(`DATE: ${data.date}`, `TIME: ${data.time}`, WIDTH_SMALL) + "\n";
+    }
+    p += "-".repeat(WIDTH_SMALL) + "\n\n";
+
+    // Header Detail Section
+    p += commands.center + commands.boldOn;
+    p += (cfg.header_two?.value || 'DETAIL SUMMARY').toUpperCase() + "\n";
+    p += "=".repeat(WIDTH_SMALL) + "\n\n";
+    p += commands.left;
+
+    // Variabel untuk menampung total per grup guna dicetak di summary bawah
+    const groupTotalsSummary: { label: string, total: number }[] = [];
+
+    // 4. Looping Detail Group Summary
+    cfg.summary_groups?.forEach((group: any) => {
+      if (group.status && group.label) {
+        p += commands.boldOn + group.label.toUpperCase() + commands.boldOff + "\n";
+        p += ".".repeat(WIDTH_SMALL) + "\n";
+
+        group.subs?.forEach((sub: any) => {
+          if (sub.status && sub.label) {
+            const val = data.summary_data[group.label]?.[sub.label] || { 
+              sale_count: 0, sale_amount: 0, void_count: 0, void_amount: 0 
+            };
+            const netAmount = val.sale_amount - val.void_amount;
+
+            p += commands.boldOn + sub.label.toUpperCase() + commands.boldOff + "\n";
+
+            const formatThreeColumnSmall = (label: string, qty: number, amount: number) => {
+              const qtyStr = qty.toString();
+              const amtStr = `Rp${amount.toLocaleString()}`;
+              const labelPart = label.padEnd(12, ' '); 
+              const amountPart = amtStr.padStart(14, ' '); 
+              const middleSpace = WIDTH_SMALL - labelPart.length - amountPart.length;
+              const padLeft = Math.floor((middleSpace - qtyStr.length) / 2);
+              const qtyPart = qtyStr.padStart(padLeft + qtyStr.length, ' ').padEnd(middleSpace, ' ');
+              return labelPart + qtyPart + amountPart;
+            };
+
+            p += formatThreeColumnSmall("  SALE", val.sale_count, val.sale_amount) + "\n";
+            p += formatThreeColumnSmall("  VOID", val.void_count, val.void_amount) + "\n";
+            p += formatLine(`  TOTAL ${sub.label}`, `Rp${netAmount.toLocaleString()}`, WIDTH_SMALL) + "\n\n";
+          }
+        });
+
+        // Hitung Total per Group
+        const groupTotal = Object.values(data.summary_data[group.label] || {}).reduce((acc: number, curr: any) => {
+          return acc + (Number(curr.sale_amount) - Number(curr.void_amount));
+        }, 0);
+        
+        // Simpan untuk summary di bawah
+        groupTotalsSummary.push({ label: group.label, total: groupTotal });
+
+        p += "=".repeat(WIDTH_SMALL) + "\n";
+        p += formatLine(`TOTAL ${group.label}`, `Rp${groupTotal.toLocaleString()}`, WIDTH_SMALL) + "\n";
+        p += "=".repeat(WIDTH_SMALL) + "\n\n";
+      }
+    });
+
+    // 5. GRAND SUMMARY (REKAPITULASI DI BAWAH)
+    p += commands.fontNormal + commands.center;
+    p += commands.boldOn + (cfg.header_three?.value || 'GRAND SUMMARY').toUpperCase() + "\n" + commands.boldOff;
+    p += "-".repeat(WIDTH_NORMAL) + "\n";
+    p += commands.left;
+
+    // Cetak ulang total tiap grup di sini dengan Font Normal
+    groupTotalsSummary.forEach(item => {
+      p += formatLine(item.label, `Rp${item.total.toLocaleString()}`, WIDTH_NORMAL) + "\n";
+    });
+
+    // 6. SETTLEMENT TOTAL (FINAL)
+    p += "=".repeat(WIDTH_NORMAL) + "\n";
+    p += commands.boldOn;
+    p += formatLine("SETTLEMENT TOTAL", `Rp${data.total_amount.toLocaleString()}`, WIDTH_NORMAL) + "\n";
+    p += commands.boldOff;
+    p += "=".repeat(WIDTH_NORMAL) + "\n";
+
+    // 7. Footer Note
+    if (cfg.footer_note?.status && cfg.footer_note?.value) {
+      p += "\n" + commands.center + commands.fontSmall;
+      p += `${cfg.footer_note.value}\n`;
+      p += commands.fontNormal + commands.left; 
     }
 
-    console.log("Cetak selesai terkirim");
 
-  } catch (error: any) {
-    cachedServer = null;
-    alert(`Gagal cetak: ${error.message}`);
-  }
-};
+    // --- CETAK KODE DINAMIS DI ATAS ---
+    p += "\n\n"; 
+    p += commands.fontSmall + commands.left;
+    p += formatLine(vCode, sCode.substring(0, 13), WIDTH_SMALL) + "\n";
+    p += commands.fontNormal;
+
+    // 8. PUSH PAPER
+    p += "\n\n\n\n\n"; 
+    
+    return p;
+  };
+
+  // CORE PRINT LOGIC (Bluetooth)
+  const printViaBluetoothSummary = async (data: any) => {
+      try {
+        // 1. CEK KONEKSI AKTIF
+        // Kita hanya panggil requestDevice jika cachedServer belum ada atau sudah disconnect
+        if (!cachedServer || !cachedServer.connected) {
+          console.log("Memulai koneksi baru...");
+          
+          cachedDevice = await navigator.bluetooth.requestDevice({
+            acceptAllDevices: true,
+            optionalServices: [
+              '000018f0-0000-1000-8000-00805f9b34fb', 
+              '00001101-0000-1000-8000-00805f9b34fb'
+            ]
+          });
+
+          // Simpan server ke cache
+          cachedServer = await cachedDevice.gatt?.connect();
+
+          // Tambahkan listener agar jika printer mati/diskonek manual, state kita reset
+          cachedDevice.addEventListener('gattserverdisconnected', () => {
+            console.log("Printer terputus secara fisik.");
+            isConnected.value = false;
+            cachedServer = null;
+          });
+        }
+
+        // Update state UI
+        isConnected.value = true;
+        deviceName.value = cachedDevice.name || 'Printer BT';
+
+        // 2. PROSES SEARCH SERVICE (Sangat cepat jika sudah terkoneksi)
+        const services = await cachedServer.getPrimaryServices();
+        let characteristic: any = null;
+        for (const service of services) {
+          const characteristics = await service.getCharacteristics();
+          characteristic = characteristics.find((c: any) => 
+            c.properties.write || c.properties.writeWithoutResponse
+          );
+          if (characteristic) break;
+        }
+
+        if (!characteristic) throw new Error("Characteristic tidak ditemukan");
+
+        // 3. GENERATE DATA
+        const finalString = data.type === 'SUMMARY_REPORT' 
+          ? buildSummaryString(data) 
+          : buildReceiptString(data);
+
+        const encoder = new TextEncoder();
+        const payload = encoder.encode(finalString);
+
+        // 4. KIRIM DATA DENGAN DELAY
+        const CHUNK_SIZE = 20; 
+        for (let i = 0; i < payload.length; i += CHUNK_SIZE) {
+          const chunk = payload.slice(i, i + CHUNK_SIZE);
+          await characteristic.writeValueWithoutResponse(chunk);
+          await new Promise(resolve => setTimeout(resolve, 30));
+        }
+
+        console.log("✅ Berhasil cetak menggunakan koneksi yang ada.");
+
+      } catch (error: any) {
+        // PENTING: Jangan reset cachedServer jika user hanya membatalkan dialog bluetooth
+        if (error.name !== 'NotFoundError') {
+          cachedServer = null;
+        }
+        console.error("BT Error:", error);
+        alert(`Gagal cetak: ${error.message}`);
+      }
+    };
   
   /**
    * BUILD RECEIPT STRING
@@ -341,80 +613,84 @@ const printViaBluetoothSummary = async (data: any) => {
 
 
 
-  const printViaBluetooth = async (data: any) => {
+ const printViaBluetooth = async (data: any) => {
     try {
+      // 1. CEK KONEKSI (Jangan pairing ulang jika sudah ada cache)
       if (!cachedServer || !cachedServer.connected) {
+        console.log("Memulai koneksi Bluetooth baru...");
+        
         cachedDevice = await navigator.bluetooth.requestDevice({
-          // GUNAKAN INI: Terima semua perangkat yang punya nama "Printer" atau sejenisnya
-          // atau gunakan acceptAllDevices tapi tetap definisikan optionalServices
           acceptAllDevices: true,
           optionalServices: [
-            '000018f0-0000-1000-8000-00805f9b34fb', // Custom Service
-            '00001101-0000-1000-8000-00805f9b34fb', // Serial Port Profile (Sangat Umum)
-            '49535343-fe7d-4ae5-8fa9-9fafd205e455'  // Service alternatif
+            '000018f0-0000-1000-8000-00805f9b34fb', 
+            '00001101-0000-1000-8000-00805f9b34fb',
+            '49535343-fe7d-4ae5-8fa9-9fafd205e455'
           ]
         });
 
         cachedServer = await cachedDevice.gatt?.connect();
         
+        // Listener saat koneksi terputus secara fisik (printer mati/jauh)
         cachedDevice.addEventListener('gattserverdisconnected', () => {
+          console.log("Printer terputus.");
           isConnected.value = false;
           connectionType.value = null;
-          cachedServer = null;
+          cachedServer = null; // Reset cache agar bisa pairing ulang nanti
         });
       }
 
+      // Update State UI
       isConnected.value = true;
       connectionType.value = 'BT';
       deviceName.value = cachedDevice.name || 'Printer BT';
 
-      // --- PERBAIKAN DI SINI ---
-      // Ambil semua service yang tersedia di printer
+      // 2. SEARCH SERVICES & CHARACTERISTICS
       const services = await cachedServer.getPrimaryServices();
-      
-      if (services.length === 0) {
-        throw new Error("Printer tidak melaporkan adanya Service GATT.");
-      }
+      if (services.length === 0) throw new Error("Printer tidak melaporkan adanya Service GATT.");
 
       let characteristic: any = null;
-
-      // Loop semua service untuk mencari characteristic yang bisa di-write
       for (const service of services) {
         const characteristics = await service.getCharacteristics();
         characteristic = characteristics.find((c: any) => 
           c.properties.write || c.properties.writeWithoutResponse
         );
-        if (characteristic) break; // Ketemu!
+        if (characteristic) break;
       }
 
-      if (!characteristic) {
-        throw new Error("Printer ditemukan, tapi tidak ada jalur untuk mengirim data (Write Characteristic not found).");
-      }
+      if (!characteristic) throw new Error("Jalur data (Characteristic) tidak ditemukan.");
 
-      // 3. Kirim Data
+      // 3. GENERATE PAYLOAD
       const encoder = new TextEncoder();
       const payload = encoder.encode(buildReceiptString(data));
 
-      // Gunakan writeValue atau writeValueWithoutResponse (lebih cepat)
-      const CHUNK_SIZE = 20;
+      // 4. KIRIM DATA DENGAN CHUNKING & DELAY (Agar printer tidak error/tersedak)
+      const CHUNK_SIZE = 20; // Ukuran standar MTU BLE
       for (let i = 0; i < payload.length; i += CHUNK_SIZE) {
         const chunk = payload.slice(i, i + CHUNK_SIZE);
+        
         if (characteristic.properties.writeWithoutResponse) {
            await characteristic.writeValueWithoutResponse(chunk);
         } else {
            await characteristic.writeValue(chunk);
         }
+
+        // Delay kecil 30ms per chunk sangat penting untuk printer Bluetooth thermal murah
+        await new Promise(resolve => setTimeout(resolve, 30));
       }
       
-      console.log("✅ Berhasil cetak!");
+      console.log("✅ Berhasil cetak struk!");
 
     } catch (error: any) {
       console.error("BT Error:", error);
-      cachedServer = null; 
+      
+      // Jangan hapus cache jika user hanya menekan 'Cancel' pada popup
+      if (error.name !== 'NotFoundError') {
+        cachedServer = null; 
+      }
+      
       alert(`Gagal cetak: ${error.message}`);
     }
   };
-
   
   const printViaUSB = async (data: any) => {
     try {
@@ -436,5 +712,6 @@ const printViaBluetoothSummary = async (data: any) => {
     }
   };
 
-  return { isConnected, connectionType, deviceName, printViaBluetooth,printViaBluetoothSummary, printViaUSB };
+  return { isConnected, connectionType, deviceName, printViaBluetoothSummary, printManualSettlement, printViaBluetooth,printViaBluetoothSummary, printViaUSB };
+
 };

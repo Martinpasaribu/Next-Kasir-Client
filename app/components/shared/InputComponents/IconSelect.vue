@@ -15,7 +15,7 @@ const emit = defineEmits(['update:modelValue'])
 
 /** ---------- Styling Konsisten ---------- **/
 const labelClass = "block text-xs font-black uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-2"
-const inputClass = "w-full bg-gray-50 dark:bg-[#0d1117] border border-gray-200 dark:border-[#30363d] rounded-xl px-4 pl-10 py-3 text-sm focus:ring-2 focus:ring-sky-500 focus:border-transparent outline-none transition-all disabled:opacity-50 appearance-none text-white"
+const inputClass = "w-full bg-gray-50 dark:bg-[#0d1117] border border-gray-200 dark:border-[#30363d] rounded-xl px-4 pl-10 py-3 text-sm focus:ring-2 focus:ring-sky-500 focus:border-transparent outline-none transition-all disabled:opacity-50 appearance-none text-nuxt-gray-500 dark:text-white"
 
 /** ---------- Data Logic ---------- **/
 // mapping data untuk list dropdown agar menampilkan Nama Kategori

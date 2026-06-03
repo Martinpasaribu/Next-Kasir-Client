@@ -137,7 +137,7 @@ const inputClass = "w-full bg-white dark:bg-black-2 px-4 py-2.5 border border-sl
   >
     <div class="max-h-[65vh] overflow-y-auto custom-scrollbar px-1 -mx-1">
 
-      <div class="mb-8">
+      <div class="mb-8 space-y-2">
         <h3 class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4">Informasi Produk</h3>
 
           <IconSelect 

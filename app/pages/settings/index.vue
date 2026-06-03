@@ -139,11 +139,11 @@ const cleanTenantId = computed(() => tenantId.value?.replace('tenant_', '') || '
         <section class="space-y-4">
           <div class="flex items-center gap-2 px-1">
             <Store :size="16" class="text-nuxt-green" />
-            <h2 class="text-xs font-black text-nuxt-gray-950 dark:text-white uppercase tracking-[0.2em]">Pindah Terminal / Outlet</h2>
+            <h2 class="text-xs font-black text-nuxt-gray-950 dark:text-white uppercase tracking-[0.2em]">Pindah Outlet</h2>
           </div>
-          <div class="bg-white dark:bg-nuxt-gray-900 border border-nuxt-gray-200 dark:border-nuxt-gray-800 p-3 rounded-3xl shadow-sm">
+          <div class="bg-white w-full dark:bg-nuxt-gray-900 border border-nuxt-gray-200 dark:border-nuxt-gray-800 p-3 rounded-3xl shadow-sm">
             <OutletSelector />
-            <p class="px-6 py-2 text-[10px] text-nuxt-gray-400 italic">* Mengganti outlet akan menyesuaikan stok dan laporan transaksi otomatis.</p>
+            <p class=" py-2 text-[10px] text-nuxt-gray-400 italic">* Mengganti outlet akan menyesuaikan stok dan laporan transaksi otomatis.</p>
           </div>
         </section>
 
@@ -192,15 +192,15 @@ const cleanTenantId = computed(() => tenantId.value?.replace('tenant_', '') || '
           <h2 class="text-xs font-black text-nuxt-gray-950 dark:text-white uppercase tracking-[0.2em] px-1">Konfigurasi Pajak Global</h2>
           <div class="bg-white dark:bg-nuxt-gray-900 border border-nuxt-gray-200 dark:border-nuxt-gray-800 p-6 md:p-8 rounded-[2.5rem] shadow-sm flex flex-col md:flex-row gap-6 items-center">
             <div class="flex-1 w-full space-y-2">
-              <label class="text-[10px] font-black text-nuxt-gray-400 uppercase tracking-widest px-1">Besaran Pajak (%)</label>
+              <!-- <label class="text-[10px] font-black text-nuxt-gray-400 uppercase tracking-widest px-1">Besaran Pajak (%)</label> -->
               <div class="relative">
                   <NumberInput 
                     v-model="globalTax.tax_value"
-                    label="Urut Tampil"
-                    prefix="#"
+                    label="Besaran Pajak (%)"
+                    prefix="%"
                     placeholder="0"
                   />
-                <span class="absolute right-4 top-1/2 -translate-y-1/2 font-black text-nuxt-gray-300">%</span>
+                <!-- <span class="absolute right-4 top-2 -translate-y-1/2 font-black text-nuxt-gray-300">%</span> -->
               </div>
             </div>
             <div class="flex flex-col items-center gap-2">

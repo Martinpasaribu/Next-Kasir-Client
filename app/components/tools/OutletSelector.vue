@@ -39,12 +39,12 @@ const onOutletChange = async (event: Event) => {
 
 <template>
   <div 
-    class="flex w-full max-w-[14rem] items-center gap-2 bg-[#424242] dark:bg-[#161b22] border border-[#30363d] rounded-xl px-3 py-2 transition-all group relative"
+    class="flex w-full max-w-[14rem] items-center gap-2 bg-nuxt-green dark:bg-[#424242] dark:bg-[#161b22] border border-[#30363d] rounded-xl px-3 py-2 transition-all group relative"
     :class="[isSwitching ? 'opacity-50 border-sky-500/50' : 'hover:border-sky-500/50']"
   >
     <Store 
       :size="14" 
-      class="text-sky-400 group-hover:scale-110 transition-transform" 
+      class="bg-nuxt-green dark:text-sky-400 group-hover:scale-110 transition-transform" 
     />
     
     <select 

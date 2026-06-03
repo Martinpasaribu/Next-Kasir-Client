@@ -3,13 +3,14 @@ import type { ICategory, MediaObject } from '~/types/Categories/categories'
 import type { CreateProductForm } from '~/types/Product/create_form'
 // Import composable
 import { useCategoryOptions } from '~/composables/Category/useCategoryOptions';
-import { UNIT_OPTIONS } from '~/components/constants';
+import { UNIT_OPTIONS, TYPE_OPTIONS } from '~/components/constants';
 import TextInput from '~/components/shared/InputComponents/TextInput.vue';
 import NumberInput from '~/components/shared/InputComponents/NumberInput.vue';
 import CheckboxInput from '~/components/shared/InputComponents/CheckboxInput.vue';
 import ImageUpload from '~/components/shared/InputComponents/ImageUpload.vue';
 import TextEditor from '~/components/shared/InputComponents/TextEditor.vue';
 import { useMyNotification } from '~/stores/useMyNotification';
+import OptionInput from '~/components/shared/InputComponents/OptionInput.vue';
 
 
 const props = defineProps<{ 
@@ -32,6 +33,7 @@ const isSubmitting = ref(false)
 
 const form = ref<CreateProductForm>({
   name: '', 
+  type:'',
   sku:'',
   description: '',
   sub_description: '',
@@ -134,7 +136,8 @@ const handleAdd = async () => {
 
   } catch (err: any) {
     const msg = err.data?.message || err.message || 'Terjadi kesalahan'
-    notify.addToast(msg, 'error');
+    const msgDetaiil = err.data?.errors ? (Array.isArray(err.data.errors) ? err.data.errors.join(', ') : err.data.errors) : null
+    notify.addToast(msg + (msgDetaiil ? `: ${msgDetaiil}` : ''), 'error');
   } finally {
     isSubmitting.value = false
     notify.removeToast(loadingId);
@@ -173,7 +176,15 @@ const inputClass = "w-full bg-white dark:bg-gray-700 px-4 py-2.5 border border-s
 
       <div class="mb-8">
         <h3 class="text-[11px] font-bold text-slate-400 uppercase tracking-[0.1em] mb-4">Informasi Produk</h3>
+     
         <div class="space-y-5">
+
+          <OptionInput 
+            v-model="form.type"
+            label="Tipe Produk"
+            :options="TYPE_OPTIONS"
+            placeholder="Pilih Tipe"
+          />
 
           <TextInput 
             v-model="form.name"
@@ -214,7 +225,7 @@ const inputClass = "w-full bg-white dark:bg-gray-700 px-4 py-2.5 border border-s
             <NumberInput 
               v-model="form.stock"
               label="Stock"
-              :suffix="form.unit" 
+              :suffix="form.stock" 
               placeholder="0"
             />
 

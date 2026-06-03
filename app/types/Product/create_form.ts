@@ -1,6 +1,7 @@
 export interface CreateProductForm  {
 
   name: string
+  type: string,
   sku: string
   description: string
   sub_description: string

@@ -29,7 +29,7 @@ onMounted(() => {
       leave-from-class="opacity-100 scale-100"
       leave-to-class="opacity-0 scale-95"
     >
-      <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div v-if="show" class="select-none fixed inset-0 z-50 flex items-center justify-center p-4">
         
         <div class="fixed inset-0 bg-slate-900/60 dark:bg-black-1/60 backdrop-blur-sm" @click="emit('close')"></div>
 
@@ -46,10 +46,10 @@ onMounted(() => {
             <slot />
           </div>
 
-          <div class="px-6 py-4 border-t border-slate-100 bg-slate-50/50 dark:bg-nuxt-gray-900 flex justify-end gap-3">
+          <div class="select-none px-6 py-1 md:py-2 border-t border-slate-100 bg-slate-50/50 dark:bg-nuxt-gray-900 flex justify-end gap-3">
             <button 
               @click="emit('close')" 
-              class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 dark:text-white-1 dark:bg-nuxt-gray-200 dark:hover:bg-nuxt-gray-400 transition-colors disabled:opacity-50  
+              class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 dark:text-white-1 bg-nuxt-gray-200 dark:hover:bg-nuxt-gray-400 transition-colors disabled:opacity-50  
               rounded-xl"
             >
               Batal
@@ -57,11 +57,11 @@ onMounted(() => {
             <button 
               @click="emit('confirm')" 
               :disabled="loading"
-              class="px-6 py-2 text-sm font-semibold text-black-2 bg-primary-2 dark:text-nuxt-green-dark hover:bg-primary-2 dark:bg-nuxt-gray-950 dark:hover:bg-green-950 transition-colors
+              class="px-6 py-2 text-sm font-semibold text-white bg-black dark:text-black hover:bg-primary-2 dark:bg-nuxt-green dark:hover:bg-green-400 transition-colors
                disabled:opacity-50 rounded-xl flex items-center gap-2"
             >
               <span v-if="loading" class="text-lg">
-                <Loader :size="17"  class="text-white animate-spin dark:text-nuxt-green-dark "/>
+                <Loader :size="17"  class="text-white animate-spin dark:text-nuxt-gray-800 "/>
               </span>
               {{ confirmLabel || 'Simpan' }}
             </button>

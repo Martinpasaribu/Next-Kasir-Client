@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-zinc-950 text-zinc-100 p-6 lg:p-10">
+  <div class=" bg-zinc-950 text-zinc-100 p-6 lg:p-10">
     <div class="max-w-7xl mx-auto mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-zinc-800 pb-6">
       <div>
         <h1 class="text-2xl font-black tracking-tight uppercase italic text-white flex items-center gap-2">
@@ -105,7 +105,31 @@
 
         <div class="bg-zinc-900/50 border border-zinc-800/80 p-6 rounded-2xl space-y-4">
           <h2 class="text-xs font-black uppercase tracking-widest text-zinc-400 flex items-center gap-2 mb-2">
-            <span>04.</span> Distribusi Produk (Category & Type)
+            <span>04.</span> Sales by Type
+          </h2>
+          <div class="p-4 bg-zinc-950 border border-zinc-800 rounded-xl space-y-3">
+            <p class="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">QTY (100%)</p>
+            <div class="grid grid-cols-2 gap-3">
+              <input v-model.number="form.sales_by_type.qty" type="number" step="0.1" placeholder="Persentase (%)" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs" />
+            </div>
+          </div>
+          <div class=" hidden p-4 flex bg-zinc-950 border border-zinc-800 rounded-xl space-y-3">
+            <p class="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">Item Sales (100%)</p>
+            <div class="grid grid-cols-2 gap-3">
+              <input v-model.number="form.sales_by_category.bev_pct" type="number" step="0.1" placeholder="Item Sales (100%)" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs" />
+            </div>
+            <p class="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">Item Sales (100%)</p>
+            <div class="grid grid-cols-2 gap-3">
+              <input v-model.number="form.sales_by_category.bev_pct" type="number" step="0.1" placeholder="Item Sales (100%)" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs" />
+            </div>
+            </div>
+        </div>
+
+
+        
+        <div class="bg-zinc-900/50 border border-zinc-800/80 p-6 rounded-2xl space-y-4">
+          <h2 class="text-xs font-black uppercase tracking-widest text-zinc-400 flex items-center gap-2 mb-2">
+            <span>05.</span> Distribusi Produk (Category & Type)
           </h2>
           <div class="p-4 bg-zinc-950 border border-zinc-800 rounded-xl space-y-3">
             <p class="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">Kategori Makanan (Foods)</p>
@@ -194,7 +218,7 @@
           <div class="text-center my-1">==================================</div>
           <div class="space-y-0.5">
             <p class="font-bold">Dine-In :</p>
-            <div class="flex justify-between pl-2 text-zinc-600"><span>Qty (100%) :</span><span>133</span></div>
+            <div class="flex justify-between pl-2 text-zinc-600"><span>Qty (100%) :</span><span>{{form.sales_by_type.qty}}</span></div>
             <div class="flex justify-between pl-2 text-zinc-600"><span>Item Sales (100%) :</span><span>{{ (form.menu_sales || 0).toLocaleString('id-ID') }}</span></div>
             <div class="flex justify-between pl-2 text-zinc-600"><span>Net Sales (100%) :</span><span>{{ (form.menu_sales || 0).toLocaleString('id-ID') }}</span></div>
             <div class="text-center tracking-tighter opacity-30">----------------------------------</div>

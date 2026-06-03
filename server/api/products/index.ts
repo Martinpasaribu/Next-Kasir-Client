@@ -1,31 +1,12 @@
 // server/api/bab/index.ts
 
+import { getTenantHeaders } from "~~/server/utils/tenantFetch"
+
 export default defineEventHandler(async (event) => {
   const method = event.method
 
-  // 1. Ambil Tenant ID (Auto-check Header/Cookie/Subdomain)
-  const tenantId = getRequestTenantDTO(event)
-  const outletId = getRequestOutletDTO(event)
-  
-  // 2. Ambil Token & Cookie mentah untuk diteruskan ke NestJS
-  const token = getCookie(event, 'auth_token')
-  const cookie = getHeader(event, 'cookie')
-
-  // Validasi Awal: Cegah request kosong ke database
-  if (!tenantId) {
-    throw createError({
-      statusCode: 400,
-      message: 'Node Tenant tidak terdeteksi. Akses ditolak.'
-    })
-  }
-
-  // Helper untuk Header agar tidak menulis ulang di GET & POST
-  const headers = {
-    'x-tenant-id': tenantId,
-    'x-outlet-id': outletId || '',
-    'Authorization': token ? `Bearer ${token}` : '',
-    'cookie': cookie || ''
-  }
+  // 1. Ambil headers otomatis (Pasti tervalidasi tenantId-nya di dalam helper)
+  const headers = getTenantHeaders(event)
 
   try {
     if (method === 'GET') {
@@ -49,7 +30,8 @@ export default defineEventHandler(async (event) => {
     
     return {
       success: false,
-      message: err?.response?.data?.message || 'Gagal menyambung ke Backend NestJS'
+      message: err?.response?.data?.message || 'Gagal menyambung ke Backend NestJS',
+      errors: err?.response?.data?.errors || null
     }
   }
 })

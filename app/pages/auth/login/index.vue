@@ -2,11 +2,15 @@
 import { Rocket, Mail, Lock, ChevronRight } from 'lucide-vue-next'
 import { useMyNotification } from '~/stores/useMyNotification';
 import http from '../../../utils/http'
+import { useLoading } from '~/stores/useLoading'
 
 
 definePageMeta({
   layout: false
 })
+
+
+const loading = useLoading()
 
 const isSubmitting = ref(false)
 const notify = useMyNotification();
@@ -16,7 +20,7 @@ const form = reactive({
   password: ''
 })
 
-const loading = ref(false)
+const loadings = ref(false)
 const url = useRequestURL()
 
 // Logika Subdomain yang Anti-Gagal
@@ -88,6 +92,8 @@ const handleLogin = async () => {
   console.log('Current Hostname:', url.hostname)
   console.log('Detected Subdomain:', subdomain.value)
 
+  loading.showLoading('auth','Memverifikasi Akun');
+
   isSubmitting.value = true
   const loadingId = notify.addToast('Masuk..', 'loading');
 
@@ -96,7 +102,7 @@ const handleLogin = async () => {
     return
   }
 
-  loading.value = true
+  loadings.value = true
   try {
     const { data } = await http.post('/auth/merchant-admin/login', form, {
       headers: {
@@ -133,7 +139,7 @@ const handleLogin = async () => {
         return
       }
 
-      notify.addToast('Autentikasi berhasil!', 'success');
+     
 
       if (userOutlets.length === 1) {
         // Langsung masuk jika cuma punya 1 akses (misal Kasir di 1 cabang)
@@ -148,15 +154,20 @@ const handleLogin = async () => {
 
     }
 
+    notify.addToast('Autentikasi berhasil!', 'success');
+
   } catch (err: any) {
 
     const msg = err.response?.data?.message || 'Unauthorized Access'
     notify.addToast(msg, 'error');
 
   } finally {
-    loading.value = false
+    loadings.value = false
     notify.removeToast(loadingId);
     isSubmitting.value = false
+    setTimeout(() => {
+      loading.hideLoading();
+    }, 1000);
   }
 }
 </script>
@@ -212,10 +223,10 @@ const handleLogin = async () => {
 
           <button 
             type="submit" 
-            :disabled="loading"
+            :disabled="loadings"
             class="w-full py-4 bg-sky-500 hover:bg-white text-black font-black uppercase tracking-widest rounded-2xl transition-all flex items-center justify-center gap-2 text-[11px] group disabled:opacity-50"
           >
-            <span v-if="loading" class="animate-spin border-2 border-black border-t-transparent rounded-full h-4 w-4" />
+            <span v-if="loadings" class="animate-spin border-2 border-black border-t-transparent rounded-full h-4 w-4" />
             <template v-else>
               Authorize Access <ChevronRight :size="16" class="group-hover:translate-x-1 transition-transform" />
             </template>

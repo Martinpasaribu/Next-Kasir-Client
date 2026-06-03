@@ -121,8 +121,8 @@ const toggleExit = async () => {
           v-for="item in filteredMenus" 
           :key="item.label"
           :to="item.to"
-          class="group flex flex-col items-center justify-center p-3 rounded-2xl transition-all duration-300 text-nuxt-gray-400 hover:bg-nuxt-gray-100 dark:hover:bg-nuxt-gray-800"
-          active-class="bg-nuxt-green text-nuxt-gray-950 shadow-md"
+          class="group flex flex-col items-center justify-center p-3 rounded-2xl transition-all duration-300 dark:text-nuxt-gray-400  hover:bg-nuxt-gray-100 dark:hover:bg-nuxt-gray-800"
+          active-class="bg-nuxt-green  shadow-md text-nuxt-gray-100 dark:text-nuxt-gray-950 hover:bg-nuxt-green dark:hover:bg-nuxt-green"
         >
           <Icon :name="item.icon" size="20" stroke-width="2.5" />
           <span class="text-[9px] font-black uppercase mt-1.5">{{ item.label }}</span>
@@ -135,7 +135,7 @@ const toggleExit = async () => {
       
       <div class="flex items-center justify-around flex-1">
         <NuxtLink v-for="item in filteredMenus.slice(0, 3)" :key="item.label" :to="item.to"
-          class="flex flex-col items-center justify-center gap-1 w-12 text-nuxt-gray-400"
+          class="flex flex-col items-center justify-center gap-1 w-12  text-nuxt-gray-600 dark:text-nuxt-gray-400 "
           active-class="text-nuxt-green"
         >
           <Icon :name="item.icon" size="15" stroke-width="2.5" />
@@ -147,7 +147,7 @@ const toggleExit = async () => {
 
       <div class="flex items-center justify-around flex-1">
         <NuxtLink v-for="item in filteredMenus.slice(3, 6)" :key="item.label" :to="item.to"
-          class="flex flex-col items-center justify-center gap-1 w-12 text-nuxt-gray-400"
+          class="flex flex-col items-center justify-center gap-1 w-12  text-nuxt-gray-600 dark:text-nuxt-gray-400"
           active-class="text-nuxt-green"
         >
           <Icon :name="item.icon" size="15" stroke-width="2.5" />
@@ -176,7 +176,7 @@ const toggleExit = async () => {
       
       <div class="flex items-center justify-around flex-1">
         <NuxtLink v-for="item in menuItems.slice(0, 2)" :key="item.label" :to="item.to"
-          class="flex flex-col items-center justify-center gap-1 w-12 text-nuxt-gray-400"
+          class="flex flex-col items-center justify-center gap-1 w-12  text-nuxt-gray-600 dark:text-nuxt-gray-400"
           active-class="text-nuxt-green"
         >
           <Icon :name="item.icon" size="20" stroke-width="2.5" />
@@ -188,7 +188,7 @@ const toggleExit = async () => {
 
       <div class="flex items-center justify-around flex-1">
         <NuxtLink v-for="item in menuItems.slice(3, 5)" :key="item.label" :to="item.to"
-          class="flex flex-col items-center justify-center gap-1 w-12 text-nuxt-gray-400"
+          class="flex flex-col items-center justify-center gap-1 w-12  text-nuxt-gray-600 dark:text-nuxt-gray-400"
           active-class="text-nuxt-green"
         >
           <Icon :name="item.icon" size="20" stroke-width="2.5" />

@@ -6,7 +6,7 @@ import CategoryList from './sub-pages/CategoryList.vue';
 import ProductList from './sub-pages/ProductList.vue';
 import CreateProduct from './compoents/CreateProduct.vue';
 import CreateCategory from './compoents/CreateCategory.vue';
-
+import { SquareArrowOutUpRight } from 'lucide-vue-next'
 const productStore = useProductStore()
 const { search, sortBy, viewMode, activeTab, filterAndSort } = useProductFilter();
 
@@ -61,31 +61,48 @@ const addCate = () => {
 
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
       <div @click="activeTab = 'all'" :class="activeTab === 'all' ? 'border-nuxt-green' : 'border-nuxt-gray-200'"
-           class="cursor-pointer bg-white dark:bg-nuxt-gray-900 p-5 md:p-6 rounded-2xl md:rounded-3xl border dark:border-nuxt-gray-800 shadow-sm transition-all hover:ring-1 ring-nuxt-green">
+           class="relative cursor-pointer bg-white dark:bg-nuxt-gray-900 p-5 md:p-6 rounded-2xl md:rounded-3xl border dark:border-nuxt-gray-800 shadow-sm transition-all hover:ring-1 ring-nuxt-green">
+
         <p class="text-nuxt-gray-400 text-[10px] md:text-xs font-black uppercase tracking-widest">Total Produk</p>
         <div class="flex items-center gap-2 mt-2">
           <Icon :name="getCategoryIcon('PRD')" size="25" class="text-nuxt-green"/>
           <h2 class="text-2xl md:text-3xl font-black text-nuxt-gray-950 dark:text-white">{{ stats.total }}</h2>
         </div>
+
+        <SquareArrowOutUpRight
+          class="absolute bottom-4 right-4 w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6"
+        />
+
       </div>
 
       <div @click="activeTab = 'categories'" :class="activeTab === 'categories' ? 'border-nuxt-green' : 'border-nuxt-gray-200'"
-           class="cursor-pointer bg-white dark:bg-nuxt-gray-900 p-5 md:p-6 rounded-2xl md:rounded-3xl border dark:border-nuxt-gray-800 shadow-sm transition-all hover:ring-1 ring-nuxt-green">
+           class="relative cursor-pointer bg-white dark:bg-nuxt-gray-900 p-5 md:p-6 rounded-2xl md:rounded-3xl border dark:border-nuxt-gray-800 shadow-sm transition-all hover:ring-1 ring-nuxt-green">
         <p class="text-nuxt-gray-400 text-[10px] md:text-xs font-black uppercase tracking-widest">Kategori Aktif</p>
         <div class="flex items-center gap-2 mt-2">
           <Icon :name="getCategoryIcon('CTG')" size="25" class="text-nuxt-green"/>
           <h2 class="text-2xl md:text-3xl font-black text-nuxt-gray-950 dark:text-white">{{ stats.activeCategories }}</h2>
         </div>
+
+        <SquareArrowOutUpRight
+          class="absolute bottom-4 right-4 w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6"
+        />
       </div>
 
       <div @click="activeTab = 'out-of-stock'" :class="activeTab === 'out-of-stock' ? 'border-red-500' : 'border-nuxt-gray-200'"
-           class="cursor-pointer bg-white dark:bg-nuxt-gray-900 p-5 md:p-6 rounded-2xl md:rounded-3xl border dark:border-nuxt-gray-800 shadow-sm transition-all hover:ring-1 ring-red-500">
+           class=" relative cursor-pointer bg-white dark:bg-nuxt-gray-900 p-5 md:p-6 rounded-2xl md:rounded-3xl border dark:border-nuxt-gray-800 shadow-sm transition-all hover:ring-1 ring-red-500">
         <p class="text-nuxt-gray-400 text-[10px] md:text-xs font-black uppercase tracking-widest">Produk Habis</p>
         <div class="flex items-center gap-2 mt-2">
           <Icon :name="getCategoryIcon('PDF')" size="25" class="text-red-500"/>
           <h2 class="text-2xl md:text-3xl font-black text-red-500">{{ stats.outOfStock }}</h2>
         </div>
+
+        <SquareArrowOutUpRight
+          class="absolute bottom-4 right-4 w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6"
+        />
+
       </div>
+
+      
     </div>
 
     <div class="flex items-center gap-2 md:gap-3">

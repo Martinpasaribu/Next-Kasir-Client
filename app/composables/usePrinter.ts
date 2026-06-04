@@ -194,7 +194,8 @@ const buildManualSummary80mm = (data: any) => {
   p += formatLine80("  Net Sales (100%) :", formatNumber(menuNetSales1)) + "\n";
   // p += "--------------------------------------\n";
   p += drawLine80() + "\n";
-  p += formatLine80("Total :", formatNumber(salesType.net_sales || 0)) + "\n";
+  // p += formatLine80("Total :", formatNumber(salesType.net_sales || 0)) + "\n";
+  p += formatLine80("Total :", formatNumber(menuNetSales1)) + "\n";
   // p += "======================================\n\n";
   p += drawLine0180() + "\n\n"; 
 

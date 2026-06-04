@@ -42,7 +42,7 @@
             </div>
             <div>
               <label class="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Menu Sales gross (Rp)</label>
-              <input v-model.number="form.menu_sales" type="number" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500" />
+              <input v-model.number="menuNetSales1" disabled type="number" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500" />
             </div>
             <div>
               <label class="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Menu Discount (Rp)</label>
@@ -184,7 +184,7 @@
           <div class="text-center tracking-tighter opacity-40 mb-3">------------------------------------------</div>
 
           <div class="space-y-1">
-            <div class="flex justify-between"><span>Menu Sales :</span><span>{{ (form.menu_sales || 0).toLocaleString('id-ID') }}</span></div>
+            <div class="flex justify-between"><span>Menu Sales :</span><span>{{ (menuNetSales1 || 0).toLocaleString('id-ID') }}</span></div>
             <div class="flex justify-between"><span>Menu Discount :</span><span>{{ (form.menu_discount || 0).toLocaleString('id-ID') }}</span></div>
             <div class="text-right tracking-tighter opacity-40">--------</div>
             <div class="flex justify-between"><span>Menu Net Sales :</span><span>{{ menuNetSales1.toLocaleString('id-ID') }}</span></div>
@@ -218,11 +218,11 @@
           <div class="text-center my-1">==================================</div>
           <div class="space-y-0.5">
             <p class="font-bold">Dine-In :</p>
-            <div class="flex justify-between pl-2 text-zinc-600"><span>Qty (100%) :</span><span>{{form.sales_by_type.qty}}</span></div>
-            <div class="flex justify-between pl-2 text-zinc-600"><span>Item Sales (100%) :</span><span>{{ (form.menu_sales || 0).toLocaleString('id-ID') }}</span></div>
-            <div class="flex justify-between pl-2 text-zinc-600"><span>Net Sales (100%) :</span><span>{{ (form.menu_sales || 0).toLocaleString('id-ID') }}</span></div>
+            <div class="flex justify-between pl-2 text-zinc-600"><span>Qty (100%) :</span><span>{{Number(form.sales_by_type.qty)}}</span></div>
+            <div class="flex justify-between pl-2 text-zinc-600"><span>Item Sales (100%) :</span><span>{{ (menuNetSales1 || 0).toLocaleString('id-ID') }}</span></div>
+            <div class="flex justify-between pl-2 text-zinc-600"><span>Net Sales (100%) :</span><span>{{ (menuNetSales1 || 0).toLocaleString('id-ID') }}</span></div>
             <div class="text-center tracking-tighter opacity-30">----------------------------------</div>
-            <div class="flex justify-between font-bold"><span>Total :</span><span>{{ (form.menu_sales || 0).toLocaleString('id-ID') }}</span></div>
+            <div class="flex justify-between font-bold"><span>Total :</span><span>{{ (menuNetSales1 || 0).toLocaleString('id-ID') }}</span></div>
           </div>
 
           <div class="text-center my-3 font-bold">==================================</div>
@@ -282,45 +282,44 @@ const form = ref({
   shop_name: 'NEXT KASIR CORE',
   trx_id: '88291',
   work_date: new Date().toISOString().substring(0, 10),
-  menu_sales: 3922500, // Akan di-override oleh computedMenuSales di payload printer
+  menu_sales: 0, // Akan di-override oleh computedMenuSales di payload printer
   menu_discount: 0,
   bill_discount: 0,
-  round_amount: 196125,
-  extra_charge: 196125,
+  round_amount: 0,
   total_bills: 17,
   total_guests: 17,
   cancel_menu_count: 1,
-  cancel_total_amount: 25000,
+  cancel_total_amount: 0,
   sales_by_type: {
-    qty: 133,
-    item_sales: 3922500,
+    qty: 0,
+    item_sales: 0,
     discount_item: 0,
     discount_bill: 0,
-    net_sales: 3922500
+    net_sales: 0,
   },
   sales_by_category: {
     food_pct: 64.2,
-    food_sales: 2518500,
+    food_sales: 0,
     food_discount: 0,
-    food_net: 2518500,
+    food_net: 0,
     bev_pct: 35.8,
-    bev_sales: 1404000,
+    bev_sales: 0,
     bev_discount: 0,
-    bev_net: 1404000
+    bev_net: 0
   },
   sales_by_promo: {
     name: 'NO Promo',
     pct: 100,
-    item_sales: 3922500,
+    item_sales: 0,
     disc_item: 0,
     disc_bill: 0,
-    net_sales: 3922500
+    net_sales: 0
   },
   payments: {
-    cc_others: 673273,
-    debit_others: 1311410,
-    qris_bri: 2145807,
-    dp: 400000
+    cc_others: 0,
+    debit_others: 0,
+    qris_bri: 0,
+    dp: 0
   }
 })
 

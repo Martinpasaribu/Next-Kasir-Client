@@ -186,7 +186,7 @@ const buildManualSummary80mm = (data: any) => {
   
   const salesType = data.sales_by_type || {};
   p += "Dine-In :\n";
-  p += formatLine80("  Qty (100%) :", (salesType.qty || 0).toString()) + "\n";
+  p += formatLine80("  Qty (100%) :", (formatNumber(salesType.qty) || 0).toString()) + "\n";
   p += formatLine80("  Item Sales (100%) :", (salesType.item_sales || 0).toLocaleString('id-ID')) + "\n";
   p += formatLine80("  Discount Item :", (salesType.discount_item || 0).toLocaleString('id-ID')) + "\n";
   p += formatLine80("  Discount Bill :", (salesType.discount_bill || 0).toLocaleString('id-ID')) + "\n";

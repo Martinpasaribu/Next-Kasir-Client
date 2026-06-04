@@ -265,6 +265,7 @@ const buildManualSummary80mm = (data: any) => {
   p += formatLine80("Qris BRI :", qrisBri.toLocaleString('id-ID')) + "\n";
   p += formatLine80("DP :", dpAmount.toLocaleString('id-ID')) + "\n";
   p += formatLine80("CASH :", formatNumber(cashAmount)) + "\n";
+  p += formatLine80("CASH :", cashAmount.toLocaleString('id-ID')) + "\n";
   // p += "--------------------------------------\n";
   p += drawLine80() + "\n"; 
   

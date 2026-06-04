@@ -127,10 +127,11 @@ const buildManualSummary80mm = (data: any) => {
 
 
   // Metrik Audit Trafik Restoran
-  const salesPerBill = computed(() => data.total_bills ? Math.round(grandTotal.value / data.total_bills) : 0)
-  const salesPerGuest = computed(() => data.total_guests ? Math.round(grandTotal.value / data.total_guests) : 0)
+  const salesPerBill = computed(() => data.total_bills ? Math.trunc(grandTotal.value / data.total_bills) : 0)
+  const salesPerGuest = computed(() => data.total_guests ? Math.trunc(grandTotal.value / data.total_guests) : 0)
 
-  const formatNumber = (value: any) => Math.round(value || 0).toLocaleString('id-ID');
+  // const formatNumber = (value: any) => Math.round(value || 0).toLocaleString('id-ID');
+  const formatNumber = (value: any) => Math.trunc(value || 0).toLocaleString('id-ID');
 
 
   // Inisialisasi awal: Set Spacing, Set Margin Geser Tengah, Paksa Teks Rata Kiri
@@ -163,7 +164,7 @@ const buildManualSummary80mm = (data: any) => {
   p += formatLine80("", "--------") + "\n";
   
   p += commands.boldOn;
-  p += formatLine80("Menu Net Sales :", formatNumber(finalNetSales)) + "\n";
+  p += formatLine80("Menu Net Sales :",  Math.trunc(finalNetSales).toLocaleString('id-ID' )) + "\n";
   p += commands.boldOff + "\n\n";   
 
   // 3. TRAFFIC & AUDIT METRICS
@@ -222,7 +223,8 @@ const buildManualSummary80mm = (data: any) => {
   
   // p += "--------------------------------------\n";
   p += drawLine80() + "\n"; 
-  p += formatLine80("Total :", ((cat.food_sales || 0) + (cat.bev_sales || 0)).toLocaleString('id-ID')) + "\n";
+  // p += formatLine80("Total :", ((cat.food_sales || 0) + (cat.bev_sales || 0)).toLocaleString('id-ID')) + "\n";
+  p += formatLine80("Total :", (formatNumber((cat.food_sales || 0) + (cat.bev_sales || 0)))) + "\n";
   // p += "======================================\n\n";
   p += drawLine0180() + "\n\n"; 
 
@@ -237,11 +239,11 @@ const buildManualSummary80mm = (data: any) => {
   
   const promo = data.sales_by_promo || {};
   p += `${promo.name || 'NO Promo'} :\n`;
-  p += formatLine80(`  Item Sales (${promo.pct || 100}%) :`, (menuNetSales1 || 0).toLocaleString('id-ID')) + "\n";
+  p += formatLine80(`  Item Sales (${promo.pct || 100}%) :`, (formatNumber(menuNetSales1) || 0).toLocaleString('id-ID')) + "\n";
   p += formatLine80("  Disc. Item (0%) :", (promo.disc_item || 0).toLocaleString('id-ID')) + "\n";
   p += formatLine80("  Disc. Bill (0%) :", (promo.disc_bill || 0).toLocaleString('id-ID')) + "\n";
   p += formatLine80("", "-------------") + "\n";
-  p += formatLine80(`Net Sales (${promo.pct || 100}%) :`, (menuNetSales1 || 0).toLocaleString('id-ID')) + "\n";
+  p += formatLine80(`Net Sales (${promo.pct || 100}%) :`, (formatNumber(menuNetSales1) || 0).toLocaleString('id-ID')) + "\n";
   // p += "======================================\n\n";
   p += drawLine0180() + "\n\n"; 
 
@@ -267,12 +269,12 @@ const buildManualSummary80mm = (data: any) => {
   p += formatLine80("Qris BRI :", qrisBri.toLocaleString('id-ID')) + "\n";
   p += formatLine80("DP :", dpAmount.toLocaleString('id-ID')) + "\n";
   // p += formatLine80("CASH :", formatNumber(cashAmount)) + "\n";
-  p += formatLine80("CASH :", cashAmount.toLocaleString('id-ID')) + "\n";
+  p += formatLine80("CASH :", formatNumber(cashAmount)) + "\n";
   // p += "--------------------------------------\n";
   p += drawLine80() + "\n"; 
   
   p += commands.boldOn;
-  p += formatLine80("Total :", formatNumber(finalNetSales)) + "\n";
+  p += formatLine80("Total :", Math.trunc(finalNetSales).toLocaleString('id-ID' )) + "\n";
   p += commands.boldOff;
   // p += "======================================\n";
   p += drawLine0180() + "\n\n"; 

@@ -125,39 +125,71 @@
             </div>
         </div>
 
+<div class="p-4 bg-zinc-950 border border-zinc-800 rounded-xl space-y-2 mb-4">
+  <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Total Penjualan Gabungan</label>
+  <input 
+    v-model.number="form.total_sales" 
+    @input="calculateSalesByPercentage"
+    type="number" 
+    placeholder="Masukkan Total Penjualan (Rp)" 
+    class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-500" 
+  />
+</div>
 
-        
-          <!-- Kategori Makanan -->
-        <div class="p-4 bg-zinc-950 border border-zinc-800 rounded-xl space-y-3">
-          <p class="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">Kategori Makanan (Foods)</p>
-          <div class="grid grid-cols-2 gap-3">
-            <input v-model.number="form.sales_by_category.food_pct" type="number" step="0.1" placeholder="Persentase (%)" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs" />
-            <div class="space-y-1">
-              <input v-model.number="form.sales_by_category.food_sales" type="number" placeholder="Gross Sales (Rp)" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs" :class="{'border-amber-500/50 ring-1 ring-amber-500/20': form.sales_by_category.food_sales >= 1000000000}" />
-              
-              <!-- Warning Alert -->
-              <p v-if="form.sales_by_category.food_sales >= 1000000000" class="text-[9px] text-amber-500 font-medium leading-tight">
-                ⚠️ Nilai mencapai Miliar. Pastikan nominal sudah benar (cek kelebihan nol).
-              </p>
-            </div>
-          </div>
-        </div>
+<div class="bg-zinc-900/50 border border-zinc-800/80 p-6 rounded-2xl space-y-4">
+  <h2 class="text-xs font-black uppercase tracking-widest text-zinc-400 flex items-center gap-2 mb-2">
+    <span>05.</span> Distribusi Produk (Category & Type)
+  </h2>
 
-        <!-- Kategori Minuman -->
-        <div class="p-4 bg-zinc-950 border border-zinc-800 rounded-xl space-y-3">
-          <p class="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">Kategori Minuman (Beverages)</p>
-          <div class="grid grid-cols-2 gap-3">
-            <input v-model.number="form.sales_by_category.bev_pct" type="number" step="0.1" placeholder="Persentase (%)" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs" />
-            <div class="space-y-1">
-              <input v-model.number="form.sales_by_category.bev_sales" type="number" placeholder="Gross Sales (Rp)" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs" :class="{'border-amber-500/50 ring-1 ring-amber-500/20': form.sales_by_category.bev_sales >= 1000000000}" />
-              
-              <!-- Warning Alert -->
-              <p v-if="form.sales_by_category.bev_sales >= 1000000000" class="text-[9px] text-amber-500 font-medium leading-tight">
-                ⚠️ Nilai mencapai Miliar. Pastikan nominal sudah benar (cek kelebihan nol).
-              </p>
-            </div>
-          </div>
-        </div>
+  <div class="p-4 bg-zinc-950 border border-zinc-800 rounded-xl space-y-3">
+    <p class="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">Kategori Makanan (Foods)</p>
+    <div class="grid grid-cols-2 gap-3">
+      <input 
+        v-model.number="form.sales_by_category.food_pct" 
+        @input="calculateSalesFromPct('food')"
+        type="number" step="0.1" placeholder="Persentase (%)" 
+        class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs" 
+      />
+      <div class="space-y-1">
+        <input 
+          v-model.number="form.sales_by_category.food_sales" 
+          @input="calculatePctFromSales('food')"
+          type="number" placeholder="Gross Sales (Rp)" 
+          class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs" 
+          :class="{'border-amber-500/50 ring-1 ring-amber-500/20': form.sales_by_category.food_sales >= 1000000000}" 
+        />
+        <p v-if="form.sales_by_category.food_sales >= 1000000000" class="text-[9px] text-amber-500 font-medium leading-tight">
+          ⚠️ Nilai mencapai Miliar. Pastikan nominal sudah benar.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="p-4 bg-zinc-950 border border-zinc-800 rounded-xl space-y-3">
+    <p class="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">Kategori Minuman (Beverages)</p>
+    <div class="grid grid-cols-2 gap-3">
+      <input 
+        v-model.number="form.sales_by_category.bev_pct" 
+        @input="calculateSalesFromPct('bev')"
+        type="number" step="0.1" placeholder="Persentase (%)" 
+        class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs" 
+      />
+      <div class="space-y-1">
+        <input 
+          v-model.number="form.sales_by_category.bev_sales" 
+          @input="calculatePctFromSales('bev')"
+          type="number" placeholder="Gross Sales (Rp)" 
+          class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs" 
+          :class="{'border-amber-500/50 ring-1 ring-amber-500/20': form.sales_by_category.bev_sales >= 1000000000}" 
+        />
+        <p v-if="form.sales_by_category.bev_sales >= 1000000000" class="text-[9px] text-amber-500 font-medium leading-tight">
+          ⚠️ Nilai mencapai Miliar. Pastikan nominal sudah benar.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
 
         <div class="bg-zinc-900/50 border border-zinc-800/80 p-6 rounded-2xl space-y-4">
           <h2 class="text-xs font-black uppercase tracking-widest text-zinc-400 flex items-center gap-2 mb-2">
@@ -199,28 +231,28 @@
             <div class="flex justify-between"><span>Menu Sales :</span><span>{{ (menuNetSales1 || 0).toLocaleString('id-ID') }}</span></div>
             <div class="flex justify-between"><span>Menu Discount :</span><span>{{ (form.menu_discount || 0).toLocaleString('id-ID') }}</span></div>
             <div class="text-right tracking-tighter opacity-40">--------</div>
-            <div class="flex justify-between"><span>Menu Net Sales :</span><span>{{ menuNetSales1.toLocaleString('id-ID') }}</span></div>
+            <div class="flex justify-between"><span>Menu Net Sales :</span><span>{{ Math.trunc(menuNetSales1).toLocaleString('id-ID') }}</span></div>
             <div class="flex justify-between"><span>Bill Discount :</span><span>{{ (form.bill_discount || 0).toLocaleString('id-ID') }}</span></div>
             <div class="text-right tracking-tighter opacity-40">--------</div>
-            <div class="flex justify-between font-bold"><span>Menu Net Sales :</span><span>{{ menuNetSales2.toLocaleString('id-ID') }}</span></div>
+            <div class="flex justify-between font-bold"><span>Menu Net Sales :</span><span>{{ (menuNetSales2).toLocaleString('id-ID') }}</span></div>
           </div>
 
           <div class="space-y-1 mt-4">
-            <div class="flex justify-between"><span>Serv Charge (5%) :</span><span>{{ computedServiceCharge.toLocaleString('id-ID') }}</span></div>
+            <div class="flex justify-between"><span>Serv Charge (5%) :</span><span>{{ (computedServiceCharge).toLocaleString('id-ID') }}</span></div>
             <div class="flex justify-between"><span>Tax (10%) :</span><span>{{ computedTaxAmount.toLocaleString('id-ID') }}</span></div>
             <div class="flex justify-between"><span>Round Amount :</span><span>{{ (form.round_amount || 0).toLocaleString('id-ID') }}</span></div>
             <div class="flex justify-between"><span>Extra Charge :</span><span>{{ (form.extra_charge || 0).toLocaleString('id-ID') }}</span></div>
             <div class="text-right tracking-tighter opacity-40">--------</div>
             <div class="flex justify-between font-black border-y border-zinc-900 py-1 uppercase">
-              <span>Menu Net Sales :</span><span>{{ grandTotal.toLocaleString('id-ID') }}</span>
+              <span>Menu Net Sales :</span><span>{{ Math.trunc(grandTotal).toLocaleString('id-ID') }}</span>
             </div>
           </div>
 
           <div class="space-y-1 mt-4 text-[11px] text-zinc-700">
             <div class="flex justify-between"><span>Total # Of Bills :</span><span>{{ form.total_bills }}</span></div>
-            <div class="flex justify-between"><span>Sales per Bill :</span><span>{{ salesPerBill.toLocaleString('id-ID') }}</span></div>
+            <div class="flex justify-between"><span>Sales per Bill :</span><span>{{ Math.trunc(salesPerBill).toLocaleString('id-ID') }}</span></div>
             <div class="flex justify-between mt-1"><span>Total # Of Guest :</span><span>{{ form.total_guests }}</span></div>
-            <div class="flex justify-between"><span>Sales per Guest :</span><span>{{ salesPerGuest.toLocaleString('id-ID') }}</span></div>
+            <div class="flex justify-between"><span>Sales per Guest :</span><span>{{ Math.trunc(salesPerGuest).toLocaleString('id-ID') }}</span></div>
             <div class="flex justify-between mt-1 text-red-600"><span>Cancel # Menu :</span><span>{{ form.cancel_menu_count }}</span></div>
             <div class="flex justify-between text-red-600"><span>Total Amount :</span><span>{{ (form.cancel_total_amount || 0).toLocaleString('id-ID') }}</span></div>
           </div>
@@ -268,6 +300,7 @@
             </div>
             <div class="text-center tracking-tighter opacity-30">----------------------------------</div>
             <div class="flex justify-between font-black text-sm uppercase"><span>Total :</span><span>{{ grandTotal.toLocaleString('id-ID') }}</span></div>
+            <!-- <div class="flex justify-between font-black text-sm uppercase"><span>Total :</span><span>{{ Math.trunc(grandTotal).toLocaleString('id-ID') }}</span></div> -->
           </div>
 
         </div>
@@ -291,16 +324,18 @@ const { printManualSettlement } = usePrinter()
 
 // 1. STATE FORM AWAL
 const form = ref({
-  shop_name: 'NEXT KASIR CORE',
+  shop_name: 'Chilli & Chill',
   trx_id: '88291',
+  work_date: new Date().toISOString().substring(0, 10),
+  total_sales: 0,
   work_date: new Date().toISOString().substring(0, 10),
   menu_sales: 0, // Akan di-override oleh computedMenuSales di payload printer
   menu_discount: 0,
   bill_discount: 0,
   round_amount: 0,
-  total_bills: 17,
-  total_guests: 17,
-  cancel_menu_count: 1,
+  total_bills: 0,
+  total_guests: 0,
+  cancel_menu_count: 0,
   cancel_total_amount: 0,
   sales_by_type: {
     qty: 0,
@@ -347,7 +382,7 @@ const computedPrintDate = computed(() => {
 
 // Menu Sales Bruto otomatis dijumlahkan dari distribusi kategori (Food + Beverage)
 const computedMenuSales = computed(() => {
-  return Number(form.value.sales_by_category.food_sales || 0) + Number(form.value.sales_by_category.bev_sales || 0)
+  return (form.value.sales_by_category.food_sales || 0) + (form.value.sales_by_category.bev_sales || 0)
 })
 
 // Menu Net Sales 1: Total Bruto dikurangi Diskon Menu/Item
@@ -361,34 +396,62 @@ const menuNetSales2 = computed(() => {
 })
 
 // RUMUS AKURAT: Service Charge dihitung 5% dari (Food + Beverage - Total Discount)
+// const computedServiceCharge = computed(() => {
+//   return Math.round(menuNetSales2.value * 0.05)
+// })
+
 const computedServiceCharge = computed(() => {
-  return Math.round(menuNetSales2.value * 0.05)
+  const tax = menuNetSales2.value * 0.05
+  return Number(tax.toFixed(2))
 })
 
 // RUMUS AKURAT: Tax dihitung 10% dari (Food + Beverage - Total Discount + Service Charge)
+
+// const computedTaxAmount = computed(() => {
+//   const baseTaxable = menuNetSales2.value + computedServiceCharge.value
+//   return baseTaxable * 0.10
+// })
+
 const computedTaxAmount = computed(() => {
-  const baseTaxable = menuNetSales2.value + computedServiceCharge.value
-  return Math.round(baseTaxable * 0.10)
+const baseTaxable = menuNetSales2.value + computedServiceCharge.value
+  const tax = baseTaxable * 0.10
+  return Number(tax.toFixed(2))
 })
+
+const computedTaxAmountView = computed(() => {
+  const baseTaxable = menuNetSales2.value + computedServiceCharge.value
+  return Math.trunc(baseTaxable * 0.10)
+})
+
+// const computedTaxAmount = computed(() => {
+//   const baseTaxable = menuNetSales2.value + computedServiceCharge.value
+//   return baseTaxable * 0.10
+// })
 
 // Grand Total Akumulasi Akhir setelah Pajak, Service, Pembulatan, & Biaya Tambahan
 const grandTotal = computed(() => {
   return menuNetSales2.value + 
          computedServiceCharge.value + 
-         computedTaxAmount.value + 
+         computedTaxAmount.value +
          (form.value.round_amount || 0) + 
          (form.value.extra_charge || 0)
 })
 
+// const grandTotal = computed(() => {
+//   return form.value.payments.cc_others + 
+//          form.value.payments.debit_others + 
+//          form.value.payments.qris_bri 
+// })
+
 // Metrik Audit Trafik Restoran
-const salesPerBill = computed(() => form.value.total_bills ? Math.round(grandTotal.value / form.value.total_bills) : 0)
-const salesPerGuest = computed(() => form.value.total_guests ? Math.round(grandTotal.value / form.value.total_guests) : 0)
+const salesPerBill = computed(() => form.value.total_bills ? grandTotal.value / form.value.total_bills : 0)
+const salesPerGuest = computed(() => form.value.total_guests ? grandTotal.value / form.value.total_guests : 0)
 
 // RUMUS CASH: Sisa nilai Grand Total setelah dikurangi semua instrumen pembayaran Non-Tunai
 const calculatedCash = computed(() => {
   const p = form.value.payments
   const totalNonCash = (p.cc_others || 0) + (p.debit_others || 0) + (p.qris_bri || 0) + (p.dp || 0)
-  return Math.max(0, grandTotal.value - totalNonCash)
+  return Math.trunc(0, grandTotal.value - totalNonCash)
 })
 
 // 3. ACTION TRIGGER PRINTER
@@ -406,6 +469,38 @@ const handlePrint = async () => {
   
   await printManualSettlement(payload)
 }
+
+// 1. Jika Total Sales berubah, update nilai nominal rupiah berdasarkan persentase yang ada
+const calculateSalesByPercentage = () => {
+  const total = form.value.total_sales || 0
+  
+  if (form.value.sales_by_category.food_pct) {
+    form.value.sales_by_category.food_sales = (form.value.sales_by_category.food_pct / 100) * total
+  }
+  if (form.value.sales_by_category.bev_pct) {
+    form.value.sales_by_category.bev_sales = (form.value.sales_by_category.bev_pct / 100) * total
+  }
+}
+
+// 2. Jika user mengubah Persentase (%) secara manual
+const calculateSalesFromPct = (type) => {
+  const total = form.value.total_sales || 0
+  const pct = form.value.sales_by_category[`${type}_pct`] || 0
+  
+  form.value.sales_by_category[`${type}_sales`] = (pct / 100) * total
+}
+
+// 3. Jika user mengubah Nominal Rupiah (Gross Sales) secara manual
+const calculatePctFromSales = (type) => {
+  const total = form.value.total_sales || 0
+  const sales = form.value.sales_by_category[`${type}_sales`] || 0
+  
+  if (total > 0) {
+    // Membulatkan 1 angka di belakang koma untuk persentase
+    form.value.sales_by_category[`${type}_pct`] = parseFloat(((sales / total) * 100).toFixed(1))
+  }
+}
+
 </script>
 
 <style scoped>

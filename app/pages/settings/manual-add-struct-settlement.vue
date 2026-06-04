@@ -127,22 +127,34 @@
 
 
         
-        <div class="bg-zinc-900/50 border border-zinc-800/80 p-6 rounded-2xl space-y-4">
-          <h2 class="text-xs font-black uppercase tracking-widest text-zinc-400 flex items-center gap-2 mb-2">
-            <span>05.</span> Distribusi Produk (Category & Type)
-          </h2>
-          <div class="p-4 bg-zinc-950 border border-zinc-800 rounded-xl space-y-3">
-            <p class="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">Kategori Makanan (Foods)</p>
-            <div class="grid grid-cols-2 gap-3">
-              <input v-model.number="form.sales_by_category.food_pct" type="number" step="0.1" placeholder="Persentase (%)" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs" />
-              <input v-model.number="form.sales_by_category.food_sales" type="number" placeholder="Gross Sales (Rp)" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs" />
+          <!-- Kategori Makanan -->
+        <div class="p-4 bg-zinc-950 border border-zinc-800 rounded-xl space-y-3">
+          <p class="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">Kategori Makanan (Foods)</p>
+          <div class="grid grid-cols-2 gap-3">
+            <input v-model.number="form.sales_by_category.food_pct" type="number" step="0.1" placeholder="Persentase (%)" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs" />
+            <div class="space-y-1">
+              <input v-model.number="form.sales_by_category.food_sales" type="number" placeholder="Gross Sales (Rp)" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs" :class="{'border-amber-500/50 ring-1 ring-amber-500/20': form.sales_by_category.food_sales >= 1000000000}" />
+              
+              <!-- Warning Alert -->
+              <p v-if="form.sales_by_category.food_sales >= 1000000000" class="text-[9px] text-amber-500 font-medium leading-tight">
+                ⚠️ Nilai mencapai Miliar. Pastikan nominal sudah benar (cek kelebihan nol).
+              </p>
             </div>
           </div>
-          <div class="p-4 bg-zinc-950 border border-zinc-800 rounded-xl space-y-3">
-            <p class="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">Kategori Minuman (Beverages)</p>
-            <div class="grid grid-cols-2 gap-3">
-              <input v-model.number="form.sales_by_category.bev_pct" type="number" step="0.1" placeholder="Persentase (%)" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs" />
-              <input v-model.number="form.sales_by_category.bev_sales" type="number" placeholder="Gross Sales (Rp)" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs" />
+        </div>
+
+        <!-- Kategori Minuman -->
+        <div class="p-4 bg-zinc-950 border border-zinc-800 rounded-xl space-y-3">
+          <p class="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">Kategori Minuman (Beverages)</p>
+          <div class="grid grid-cols-2 gap-3">
+            <input v-model.number="form.sales_by_category.bev_pct" type="number" step="0.1" placeholder="Persentase (%)" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs" />
+            <div class="space-y-1">
+              <input v-model.number="form.sales_by_category.bev_sales" type="number" placeholder="Gross Sales (Rp)" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs" :class="{'border-amber-500/50 ring-1 ring-amber-500/20': form.sales_by_category.bev_sales >= 1000000000}" />
+              
+              <!-- Warning Alert -->
+              <p v-if="form.sales_by_category.bev_sales >= 1000000000" class="text-[9px] text-amber-500 font-medium leading-tight">
+                ⚠️ Nilai mencapai Miliar. Pastikan nominal sudah benar (cek kelebihan nol).
+              </p>
             </div>
           </div>
         </div>

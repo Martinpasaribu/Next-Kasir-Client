@@ -230,9 +230,14 @@
         <div class="bg-white text-zinc-900 p-6 rounded-sm font-mono leading-tight w-[340px] shadow-[0_25px_60px_rgba(0,0,0,0.8)] border-t-[12px] border-emerald-500 text-xs">
           
           <div class="text-center space-y-0.5 mb-3">
-            <h2 class="text-sm font-black uppercase tracking-tighter">{{ form.shop_name || 'NAMA USAHA' }}</h2>
-            <p class="text-[10px]">Work Date  : {{ form.work_date || '01-04-2026' }}</p>
-            <p class="text-[10px]">Print Date : {{ computedPrintDate }}</p>
+            <h2 class="text-sm font-black uppercase tracking-tighter">{{ form.shop_name || 'Chilli &  Chill' }}</h2>
+            <p class="text-[10px]">
+              Work Date : {{ formattedWorkDate }}
+            </p>
+
+            <p class="text-[10px]">
+              Print Date : {{ computedPrintDate }}
+            </p>
           </div>
           <div class="text-center tracking-tighter opacity-40 mb-3">------------------------------------------</div>
 
@@ -389,10 +394,19 @@ const form = ref({
 
 // Format tanggal & waktu cetak
 const computedPrintDate = computed(() => {
-  const now = new Date()
-  const dateStr = form.value.work_date.split('-').reverse().join('-')
-  const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':')
-  return `${dateStr} - ${timeStr}`
+  const [datePart, timePart] = form.value.work_date.split('T')
+
+  const [year, month, day] = datePart.split('-')
+
+  return `${day}-${month}-${year} - ${timePart}`
+})
+
+const formattedWorkDate = computed(() => {
+  const [datePart] = form.value.work_date.split('T')
+
+  const [year, month, day] = datePart.split('-')
+
+  return `${day}-${month}-${year}`
 })
 
 // Menu Sales Bruto otomatis dijumlahkan dari distribusi kategori (Food + Beverage)

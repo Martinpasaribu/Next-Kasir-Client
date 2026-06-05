@@ -130,6 +130,23 @@ const buildManualSummary80mm = (data: any) => {
   const salesPerBill = computed(() => data.total_bills ? Math.trunc(grandTotal.value / data.total_bills) : 0)
   const salesPerGuest = computed(() => data.total_guests ? Math.trunc(grandTotal.value / data.total_guests) : 0)
 
+  const formattedWorkDate = computed(() => {
+    const [datePart] = data.value.work_date.split('T')
+
+    const [year, month, day] = datePart.split('-')
+
+    return `${day}-${month}-${year}`
+  })
+
+  const computedPrintDate = computed(() => {
+    const [datePart, timePart] = data.value.work_date.split('T')
+
+    const [year, month, day] = datePart.split('-')
+
+    return `${day}-${month}-${year} - ${timePart}`
+  })
+
+
   // const formatNumber = (value: any) => Math.round(value || 0).toLocaleString('id-ID');
   const formatNumber = (value: any) => Math.trunc(value || 0).toLocaleString('id-ID');
 
@@ -143,8 +160,8 @@ const buildManualSummary80mm = (data: any) => {
   
   // Kembalikan ke Kiri untuk data Header lainnya
   p += FORCE_LEFT + commands.boldOff; 
-  p += formatLine80(`Work Date  : ${data.work_date || '01-04-2026'}`, "") + "\n";
-  p += formatLine80(`Print Date : ${data.print_date || '01-04-2026 - 21:00'}`, "") + "\n";
+  p += formatLine80(`Work Date  : ${formattedWorkDate.value || '01-04-2026'}`, "") + "\n";
+  p += formatLine80(`Print Date : ${computedPrintDate.value || '01-04-2026 - 21:33'}`, "") + "\n";
   p += drawLine80() + "\n\n"; 
 
   // 2. MAIN FINANCIAL SUMMARY (Setiap line dipastikan mewarisi FORCE_LEFT)

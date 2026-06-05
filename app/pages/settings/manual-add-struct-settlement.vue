@@ -229,8 +229,16 @@
       <div class="lg:col-span-5 sticky top-8 flex flex-col items-center">
         <div class="bg-white text-zinc-900 p-6 rounded-sm font-mono leading-tight w-[340px] shadow-[0_25px_60px_rgba(0,0,0,0.8)] border-t-[12px] border-emerald-500 text-xs">
           
-          <div class="text-center space-y-0.5 mb-3">
-            <h2 class="text-sm font-black uppercase tracking-tighter">{{ form.shop_name || 'Chilli &  Chill' }}</h2>
+
+          <div class="text-center space-y-0.5 mb-4">
+
+            <h2 class="text-sm font-black uppercase tracking-tighter">LAPORAN SEMENTARA</h2>
+            <h2 class="text-sm font-black uppercase tracking-tighter">RINGKASAN PENJUALAN</h2>
+
+          </div>
+
+          <div class="text-left space-y-0.5 mb-3">
+            <h2 class="text-sm font-black tracking-tighter">{{ form.shop_name || 'Chilli &  Chill' }}</h2>
             <p class="text-[10px]">
               Work Date : {{ formattedWorkDate }}
             </p>
@@ -248,7 +256,7 @@
             <div class="flex justify-between"><span>Menu Net Sales :</span><span>{{ Math.trunc(menuNetSales1).toLocaleString('id-ID') }}</span></div>
             <div class="flex justify-between"><span>Bill Discount :</span><span>{{ (form.bill_discount || 0).toLocaleString('id-ID') }}</span></div>
             <div class="text-right tracking-tighter opacity-40">--------</div>
-            <div class="flex justify-between font-bold"><span>Menu Net Sales :</span><span>{{ (menuNetSales2).toLocaleString('id-ID') }}</span></div>
+            <div class="flex justify-between font-bold"><span>Total Net Sales :</span><span>{{ (menuNetSales2).toLocaleString('id-ID') }}</span></div>
           </div>
 
           <div class="space-y-1 mt-4">
@@ -258,14 +266,14 @@
             <div class="flex justify-between"><span>Extra Charge :</span><span>{{ (form.extra_charge || 0).toLocaleString('id-ID') }}</span></div>
             <div class="text-right tracking-tighter opacity-40">--------</div>
             <div class="flex justify-between font-black border-y border-zinc-900 py-1 uppercase">
-              <span>Menu Net Sales :</span><span>{{ Math.trunc(grandTotal).toLocaleString('id-ID') }}</span>
+              <span>Total Sales :</span><span>{{ Math.trunc(grandTotal).toLocaleString('id-ID') }}</span>
             </div>
           </div>
 
           <div class="space-y-1 mt-4 text-[11px] text-zinc-700">
             <div class="flex justify-between"><span>Total # Of Bills :</span><span>{{ form.total_bills }}</span></div>
             <div class="flex justify-between"><span>Sales per Bill :</span><span>{{ Math.trunc(salesPerBill).toLocaleString('id-ID') }}</span></div>
-            <div class="flex justify-between mt-1"><span>Total # Of Guest :</span><span>{{ form.total_guests }}</span></div>
+            <div class="flex justify-between mt-1"><span>Total # of Guest :</span><span>{{ form.total_guests }}</span></div>
             <div class="flex justify-between"><span>Sales per Guest :</span><span>{{ Math.trunc(salesPerGuest).toLocaleString('id-ID') }}</span></div>
             <div class="flex justify-between mt-1"><span>Void # Payment :</span><span>{{ form.void_payment_count }}</span></div>
             <div class="flex justify-between"><span>Void Amount :</span><span>{{ Math.trunc(form.void_payment_amount).toLocaleString('id-ID') }}</span></div>
@@ -307,13 +315,13 @@
           <div class="text-center font-black uppercase tracking-wide">Payment Type Summary</div>
           <div class="text-center my-1">==================================</div>
           <div class="space-y-1">
+            <div class="flex justify-between font-bold text-emerald-700 bg-emerald-50 px-1 rounded-sm">
+              <span>Cash :</span><span>{{ calculatedCash.toLocaleString('id-ID') }}</span>
+            </div>
             <div class="flex justify-between"><span>CC Others :</span><span>{{ (form.payments.cc_others || 0).toLocaleString('id-ID') }}</span></div>
             <div class="flex justify-between"><span>Debit Others :</span><span>{{ (form.payments.debit_others || 0).toLocaleString('id-ID') }}</span></div>
             <div class="flex justify-between"><span>Qris BRI :</span><span>{{ (form.payments.qris_bri || 0).toLocaleString('id-ID') }}</span></div>
             <div class="flex justify-between"><span>DP :</span><span>{{ (form.payments.dp || 0).toLocaleString('id-ID') }}</span></div>
-            <div class="flex justify-between font-bold text-emerald-700 bg-emerald-50 px-1 rounded-sm">
-              <span>CASH (Otomatis) :</span><span>{{ calculatedCash.toLocaleString('id-ID') }}</span>
-            </div>
             <div class="text-center tracking-tighter opacity-30">----------------------------------</div>
             <div class="flex justify-between font-black text-sm uppercase"><span>Total :</span><span>{{ grandTotal.toLocaleString('id-ID') }}</span></div>
             <!-- <div class="flex justify-between font-black text-sm uppercase"><span>Total :</span><span>{{ Math.trunc(grandTotal).toLocaleString('id-ID') }}</span></div> -->
@@ -375,7 +383,7 @@ const form = ref({
     bev_net: 0
   },
   sales_by_promo: {
-    name: 'NO Promo',
+    name: 'NO PROMO',
     pct: 100,
     item_sales: 0,
     disc_item: 0,

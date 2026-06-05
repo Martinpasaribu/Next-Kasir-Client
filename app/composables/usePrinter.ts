@@ -166,7 +166,7 @@ const buildManualSummary80mm = (data: any) => {
   // baru aktifkan margin untuk isi laporan
   p += FORCE_LEFT;
 
-  p += `${(cfg.name?.value || 'NAMA USAHA')}\n\n`;
+  p += `${(cfg.name?.value || 'NAMA USAHA')}\n`;
 
   // Kembalikan ke Kiri untuk data Header lainnya
   p += FORCE_LEFT + commands.boldOff; 

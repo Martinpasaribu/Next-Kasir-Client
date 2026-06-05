@@ -36,10 +36,11 @@
               <label class="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">ID Transaksi/Laporan</label>
               <input v-model="form.trx_id" type="text" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500" />
             </div>
-            <div>
-              <label class="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Work Date</label>
-              <input v-model="form.work_date" type="date" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500" />
-            </div>
+            <input
+              v-model="form.work_date"
+              type="datetime-local"
+              class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500"
+            />
             <div>
               <label class="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Menu Sales gross (Rp)</label>
               <input v-model.number="menuNetSales1" disabled type="number" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500" />
@@ -99,6 +100,14 @@
             <div>
               <label class="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Total Amount Cancel (Rp)</label>
               <input v-model.number="form.cancel_total_amount" type="number" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Void # Payment (qty)</label>
+              <input v-model.number="form.void_payment_count" type="number" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Void Amount(Rp)</label>
+              <input v-model.number="form.void_payment_amount" type="number" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500" />
             </div>
           </div>
         </div>
@@ -253,6 +262,8 @@
             <div class="flex justify-between"><span>Sales per Bill :</span><span>{{ Math.trunc(salesPerBill).toLocaleString('id-ID') }}</span></div>
             <div class="flex justify-between mt-1"><span>Total # Of Guest :</span><span>{{ form.total_guests }}</span></div>
             <div class="flex justify-between"><span>Sales per Guest :</span><span>{{ Math.trunc(salesPerGuest).toLocaleString('id-ID') }}</span></div>
+            <div class="flex justify-between mt-1"><span>Void # Payment :</span><span>{{ form.void_payment_count }}</span></div>
+            <div class="flex justify-between"><span>Void Amount :</span><span>{{ Math.trunc(form.void_payment_amount).toLocaleString('id-ID') }}</span></div>
             <div class="flex justify-between mt-1 text-red-600"><span>Cancel # Menu :</span><span>{{ form.cancel_menu_count }}</span></div>
             <div class="flex justify-between text-red-600"><span>Total Amount :</span><span>{{ (form.cancel_total_amount || 0).toLocaleString('id-ID') }}</span></div>
           </div>
@@ -320,21 +331,25 @@ import { ref, computed } from 'vue'
 import { Printer } from 'lucide-vue-next'
 import { usePrinter } from '~/composables/usePrinter'
 
+
 const { printManualSettlement } = usePrinter()
+
+const today = new Date().toISOString().substring(0, 10);
 
 // 1. STATE FORM AWAL
 const form = ref({
   shop_name: 'Chilli & Chill',
   trx_id: '88291',
-  work_date: new Date().toISOString().substring(0, 10),
   total_sales: 0,
-  work_date: new Date().toISOString().substring(0, 10),
+  work_date: `${today}T21:30`,
   menu_sales: 0, // Akan di-override oleh computedMenuSales di payload printer
   menu_discount: 0,
   bill_discount: 0,
   round_amount: 0,
   total_bills: 0,
   total_guests: 0,
+  void_payment_count: 0,
+  void_payment_amount: 0,
   cancel_menu_count: 0,
   cancel_total_amount: 0,
   sales_by_type: {
@@ -451,7 +466,8 @@ const salesPerGuest = computed(() => form.value.total_guests ? grandTotal.value 
 const calculatedCash = computed(() => {
   const p = form.value.payments
   const totalNonCash = (p.cc_others || 0) + (p.debit_others || 0) + (p.qris_bri || 0) + (p.dp || 0)
-  return Math.trunc(0, grandTotal.value - totalNonCash)
+  // return Math.trunc(0, grandTotal.value - totalNonCash)
+  return Math.max(0, grandTotal.value - totalNonCash)
 })
 
 // 3. ACTION TRIGGER PRINTER

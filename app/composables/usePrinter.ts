@@ -245,8 +245,13 @@ const buildManualSummary80mm = (data: any) => {
   p += formatLine80("", "-------------") + "\n";
   p += formatLine80(`Net Sales (${promo.pct || 100}%) :`, (formatNumber(menuNetSales1) || 0).toLocaleString('id-ID')) + "\n";
   // p += "======================================\n\n";
-  p += drawLine0180() + "\n\n"; 
+    // p += "--------------------------------------\n";
+  p += drawLine80() + "\n"; 
+  // p += formatLine80("Total :", ((cat.food_sales || 0) + (cat.bev_sales || 0)).toLocaleString('id-ID')) + "\n";
+  p += formatLine80("Total :",  (formatNumber(menuNetSales1) || 0).toLocaleString('id-ID')) + "\n";
 
+
+  p += drawLine0180() + "\n\n"; 
   // 7. PAYMENT TYPE SUMMARY
   p += FORCE_LEFT;
   // p += "======================================\n";

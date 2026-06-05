@@ -343,7 +343,7 @@ const today = new Date().toISOString().substring(0, 10);
 
 // 1. STATE FORM AWAL
 const form = ref({
-  shop_name: 'Chilli & Chill',
+  shop_name: 'Chilli And Chill',
   trx_id: '88291',
   total_sales: 0,
   work_date: `${today}T21:30`,

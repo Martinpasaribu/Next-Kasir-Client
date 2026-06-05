@@ -253,7 +253,7 @@
             <div class="flex justify-between"><span>Menu Sales :</span><span>{{ (menuNetSales1 || 0).toLocaleString('id-ID') }}</span></div>
             <div class="flex justify-between"><span>Menu Discount :</span><span>{{ (form.menu_discount || 0).toLocaleString('id-ID') }}</span></div>
             <div class="text-right tracking-tighter opacity-40">--------</div>
-            <div class="flex justify-between"><span>Menu Net Sales :</span><span>{{ Math.trunc(menuNetSales1).toLocaleString('id-ID') }}</span></div>
+            <div class="flex justify-between"><span>Menu Net Sales :</span><span>{{ (menuNetSales1).toLocaleString('id-ID') }}</span></div>
             <div class="flex justify-between"><span>Bill Discount :</span><span>{{ (form.bill_discount || 0).toLocaleString('id-ID') }}</span></div>
             <div class="text-right tracking-tighter opacity-40">--------</div>
             <div class="flex justify-between font-bold"><span>Total Net Sales :</span><span>{{ (menuNetSales2).toLocaleString('id-ID') }}</span></div>
@@ -450,7 +450,7 @@ const computedServiceCharge = computed(() => {
 // })
 
 const computedTaxAmount = computed(() => {
-const baseTaxable = menuNetSales2.value + computedServiceCharge.value
+  const baseTaxable = menuNetSales2.value + computedServiceCharge.value
   const tax = baseTaxable * 0.10
   return Number(tax.toFixed(2))
 })

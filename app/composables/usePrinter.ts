@@ -166,7 +166,7 @@ const buildManualSummary80mm = (data: any) => {
   // baru aktifkan margin untuk isi laporan
   p += FORCE_LEFT;
 
-  p += `${(cfg.name?.value || 'NAMA USAHA').toUpperCase()}\n\n`;
+  p += `${(cfg.name?.value || 'NAMA USAHA')}\n\n`;
 
   // Kembalikan ke Kiri untuk data Header lainnya
   p += FORCE_LEFT + commands.boldOff; 
@@ -182,25 +182,25 @@ const buildManualSummary80mm = (data: any) => {
   p += formatLine80("Menu Net Sales :", formatNumber(menuNetSales1)) + "\n";
   p += formatLine80("Bill Discount :", formatNumber(billDiscount)) + "\n";
   p += formatLine80("", "--------") + "\n";
-  p += formatLine80("Menu Net Sales :", formatNumber(menuNetSales2)) + "\n\n";
+  p += formatLine80("Total Net Sales :", formatNumber(menuNetSales2)) + "\n\n";
 
-  p += formatLine80("Serv Charge :", formatNumber(servCharge)) + "\n";
+  p += formatLine80("Serv. Charge :", formatNumber(servCharge)) + "\n";
   p += formatLine80("Tax :", formatNumber(taxAmount)) + "\n";
   p += formatLine80("Round Amount :", formatNumber(roundAmount)) + "\n";
   p += formatLine80("Extra Charge :", formatNumber(extraCharge)) + "\n";
   p += formatLine80("", "--------") + "\n";
   
   p += commands.boldOn;
-  p += formatLine80("Menu Net Sales :",  Math.trunc(finalNetSales).toLocaleString('id-ID' )) + "\n";
+  p += formatLine80("Gross Sales :",  Math.trunc(finalNetSales).toLocaleString('id-ID' )) + "\n";
   p += commands.boldOff + "\n\n";   
 
   // 3. TRAFFIC & AUDIT METRICS
   p += FORCE_LEFT;
-  p += formatLine80("Total # Of Bills :", (data.total_bills || 0).toString()) + "\n";
+  p += formatLine80("Total # of Bills :", (data.total_bills || 0).toString()) + "\n";
   p += formatLine80("Sales per Bill :", (salesPerBill.value  || 0).toLocaleString('id-ID')) + "\n\n";
-  p += formatLine80("Total # Of Guest :", (data.total_guests || 0).toString()) + "\n";
+  p += formatLine80("Total # of Guest :", (data.total_guests || 0).toString()) + "\n";
   p += formatLine80("Sales per Guest :", (salesPerGuest.value  || 0).toLocaleString('id-ID')) + "\n\n";
-  p += formatLine80("Cancel # Menu :", (data.cancel_menu_count || 0).toString()) + "\n";
+  p += formatLine80("Cancel # Menu(s) :", (data.cancel_menu_count || 0).toString()) + "\n";
   p += formatLine80("Total Amount :", (data.cancel_total_amount || 0).toLocaleString('id-ID')) + "\n\n";
 
   // 4. SALES BY TYPE
@@ -265,7 +265,7 @@ const buildManualSummary80mm = (data: any) => {
   // p += "======================================\n";
   
   const promo = data.sales_by_promo || {};
-  p += `${promo.name || 'NO Promo'} :\n`;
+  p += `${promo.name || 'NO PROMO'} :\n`;
   p += formatLine80(`  Item Sales (${promo.pct || 100}%) :`, (formatNumber(menuNetSales1) || 0).toLocaleString('id-ID')) + "\n";
   p += formatLine80("  Disc. Item (0%) :", (promo.disc_item || 0).toLocaleString('id-ID')) + "\n";
   p += formatLine80("  Disc. Bill (0%) :", (promo.disc_bill || 0).toLocaleString('id-ID')) + "\n";
@@ -296,12 +296,12 @@ const buildManualSummary80mm = (data: any) => {
   
   const cashAmount = finalNetSales - (ccOthers + debitOthers + qrisBri + dpAmount);
 
+  p += formatLine80("Cash :", formatNumber(cashAmount)) + "\n";
   p += formatLine80("CC Others :", ccOthers.toLocaleString('id-ID')) + "\n";
   p += formatLine80("Debit Others :", debitOthers.toLocaleString('id-ID')) + "\n";
   p += formatLine80("Qris BRI :", qrisBri.toLocaleString('id-ID')) + "\n";
   p += formatLine80("DP :", dpAmount.toLocaleString('id-ID')) + "\n";
   // p += formatLine80("CASH :", formatNumber(cashAmount)) + "\n";
-  p += formatLine80("CASH :", formatNumber(cashAmount)) + "\n";
   // p += "--------------------------------------\n";
   p += drawLine80() + "\n"; 
   

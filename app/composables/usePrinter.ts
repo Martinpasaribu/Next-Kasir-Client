@@ -131,7 +131,7 @@ const buildManualSummary80mm = (data: any) => {
   const salesPerGuest = computed(() => data.total_guests ? Math.trunc(grandTotal.value / data.total_guests) : 0)
 
   const formattedWorkDate = computed(() => {
-    const [datePart] = data.value.work_date.split('T')
+    const [datePart] = data.work_date.split('T')
 
     const [year, month, day] = datePart.split('-')
 
@@ -139,7 +139,7 @@ const buildManualSummary80mm = (data: any) => {
   })
 
   const computedPrintDate = computed(() => {
-    const [datePart, timePart] = data.value.work_date.split('T')
+    const [datePart, timePart] = data.work_date.split('T')
 
     const [year, month, day] = datePart.split('-')
 
@@ -150,14 +150,24 @@ const buildManualSummary80mm = (data: any) => {
   // const formatNumber = (value: any) => Math.round(value || 0).toLocaleString('id-ID');
   const formatNumber = (value: any) => Math.trunc(value || 0).toLocaleString('id-ID');
 
+  
 
-  // Inisialisasi awal: Set Spacing, Set Margin Geser Tengah, Paksa Teks Rata Kiri
-  let p = commands.init + setLineSpacing + setLeftMargin + FORCE_LEFT;
-  
-  // 1. BRANDING & HEADER (Nama Toko saja yang kita paksa Center)
-  p += FORCE_CENTER + commands.boldOn;
-  p += `${(cfg.name?.value || 'NAMA USAHA').toUpperCase()}\n\n`; 
-  
+
+// Inisialisasi awal: Set Spacing, Set Margin Geser Tengah, Paksa Teks Rata Kiri
+  let p = commands.init + setLineSpacing;
+
+  // reset margin dulu
+  p += resetLeftMargin;
+
+  p += FORCE_CENTER;
+  p += "LAPORAN SEMENTARA\n";
+  p += "RINGKASAN PENJUALAN\n\n";
+
+  // baru aktifkan margin untuk isi laporan
+  p += FORCE_LEFT;
+
+  p += `${(cfg.name?.value || 'NAMA USAHA').toUpperCase()}\n\n`;
+
   // Kembalikan ke Kiri untuk data Header lainnya
   p += FORCE_LEFT + commands.boldOff; 
   p += formatLine80(`Work Date  : ${formattedWorkDate.value || '01-04-2026'}`, "") + "\n";

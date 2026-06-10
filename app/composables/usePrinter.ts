@@ -95,8 +95,8 @@ const buildManualSummary80mm = (data: any) => {
   const menuSales = data.menu_sales || 0;
   const menuDiscount = data.menu_discount || 0;
   const menuNetSales1 = menuSales - menuDiscount;
-  const billDiscount = data.bill_discount || 0;
-  const menuNetSales2 = menuNetSales1 - billDiscount;
+  const billDiscount = data.sales_by_promo.m_disc_bill || 0;
+  const menuNetSales2 = menuSales - billDiscount;
 
   const servCharge = data.service_charge || 0;
   const taxAmount = data.tax_amount || 0;
@@ -104,6 +104,10 @@ const buildManualSummary80mm = (data: any) => {
   const extraCharge = data.extra_charge || 0;
 
   const finalNetSales = menuNetSales2 + servCharge + taxAmount + roundAmount + extraCharge;
+  
+  
+  const NetSalesCategory = data.net_sales_category || 0;
+  const NetSalesPromo = data.net_sales_promo || 0;
 
   // RUMUS AKURAT: Service Charge dihitung 5% dari (Food + Beverage - Total Discount)
   const computedServiceCharge = computed(() => {
@@ -179,7 +183,7 @@ const buildManualSummary80mm = (data: any) => {
   p += formatLine80("Menu Sales :", formatNumber(menuSales)) + "\n";
   p += formatLine80("Menu Discount :", formatNumber(menuDiscount)) + "\n";
   p += formatLine80("", "--------") + "\n";
-  p += formatLine80("Menu Net Sales :", formatNumber(menuNetSales1)) + "\n";
+  p += formatLine80("Menu Net Sales :", formatNumber(menuNetSales1)) + "\n\n";
   p += formatLine80("Bill Discount :", formatNumber(billDiscount)) + "\n";
   p += formatLine80("", "--------") + "\n";
   p += formatLine80("Total Net Sales :", formatNumber(menuNetSales2)) + "\n\n";
@@ -196,6 +200,7 @@ const buildManualSummary80mm = (data: any) => {
 
   // 3. TRAFFIC & AUDIT METRICS
   p += FORCE_LEFT;
+  p += formatLine80("Total # of Bills Disc :", (data.sales_by_promo.m_disc_bill_qty || 0).toString()) + "\n";
   p += formatLine80("Total # of Bills :", (data.total_bills || 0).toString()) + "\n";
   p += formatLine80("Sales per Bill :", (salesPerBill.value  || 0).toLocaleString('id-ID')) + "\n\n";
   p += formatLine80("Total # of Guest :", (data.total_guests || 0).toString()) + "\n";
@@ -208,22 +213,26 @@ const buildManualSummary80mm = (data: any) => {
   // p += "======================================\n";
   p += drawLine0180() + "\n"; 
   // p += "Sales By Type\n";
+
   p += FORCE_CENTER + "Sales By Type\n" + FORCE_LEFT;
+
   p += drawLine0180() + "\n\n"; 
   // p += "======================================\n";
   
   const salesType = data.sales_by_type || {};
+  const salesPromo = data.sales_by_promo || {};
+
   p += "Dine-In :\n";
   p += formatLine80("  Qty (100%) :", (formatNumber(salesType.qty) || 0).toString()) + "\n";
   // p += formatLine80("  Item Sales (100%) :", (salesType.item_sales || 0).toLocaleString('id-ID')) + "\n";
-  p += formatLine80("  Item Sales (100%) :", formatNumber(menuNetSales1)) + "\n";
-  p += formatLine80("  Discount Item :", (salesType.discount_item || 0).toLocaleString('id-ID')) + "\n";
-  p += formatLine80("  Discount Bill :", (salesType.discount_bill || 0).toLocaleString('id-ID')) + "\n";
-  p += formatLine80("  Net Sales (100%) :", formatNumber(menuNetSales1)) + "\n";
+  p += formatLine80("  Item Sales (100%) :", formatNumber(menuSales)) + "\n";
+  p += formatLine80("  Discount Item :", (salesPromo.m_disc_item || 0).toLocaleString('id-ID')) + "\n";
+  p += formatLine80("  Discount Bill :", (salesPromo.m_disc_bill || 0).toLocaleString('id-ID')) + "\n";
+  p += formatLine80("  Net Sales (100%) :", formatNumber(menuNetSales2)) + "\n";
   // p += "--------------------------------------\n";
   p += drawLine80() + "\n";
   // p += formatLine80("Total :", formatNumber(salesType.net_sales || 0)) + "\n";
-  p += formatLine80("Total :", formatNumber(menuNetSales1)) + "\n";
+  p += formatLine80("Total :", formatNumber(menuNetSales2)) + "\n";
   // p += "======================================\n\n";
   p += drawLine0180() + "\n\n"; 
 
@@ -238,47 +247,61 @@ const buildManualSummary80mm = (data: any) => {
   
 
   const cat = data.sales_by_category || {};
+
   p += "Foods :\n";
   p += formatLine80(`  Item Sales (${cat.food_pct || 0}%) :`, (formatNumber(cat.food_sales) || 0).toLocaleString('id-ID')) + "\n";
-  p += formatLine80(`  Discount (${cat.food_disc_pct || 0}%) :`, (formatNumber(cat.food_discount) || 0).toLocaleString('id-ID')) + "\n";
-  p += formatLine80(`  Net Sales (${cat.food_pct || 0}%) :`, (formatNumber(cat.food_sales) || 0).toLocaleString('id-ID')) + "\n\n";
+  p += formatLine80(`  Discount (${cat.food_discount_pct || 0}%) :`, (formatNumber(cat.food_discount) || 0).toLocaleString('id-ID')) + "\n";
+  p += formatLine80(`  Net Sales (${cat.food_net_pct || 0}%) :`, (formatNumber(cat.food_net) || 0).toLocaleString('id-ID')) + "\n\n";
 
   p += "Beverages :\n";
   p += formatLine80(`  Item Sales (${cat.bev_pct || 0}%) :`, (formatNumber(cat.bev_sales) || 0).toLocaleString('id-ID')) + "\n";
-  p += formatLine80(`  Discount (${cat.bev_disc_pct || 0}%) :`, (formatNumber(cat.bev_discount) || 0).toLocaleString('id-ID')) + "\n";
-  p += formatLine80(`  Net Sales (${cat.bev_pct || 0}%) :`, (formatNumber(cat.bev_sales) || 0).toLocaleString('id-ID')) + "\n";
+  p += formatLine80(`  Discount (${cat.bev_discount_pct || 0}%) :`, (formatNumber(cat.bev_discount) || 0).toLocaleString('id-ID')) + "\n";
+  p += formatLine80(`  Net Sales (${cat.bev_net_pct || 0}%) :`, (formatNumber(cat.bev_net) || 0).toLocaleString('id-ID')) + "\n";
   
   // p += "--------------------------------------\n";
   p += drawLine80() + "\n"; 
   // p += formatLine80("Total :", ((cat.food_sales || 0) + (cat.bev_sales || 0)).toLocaleString('id-ID')) + "\n";
-  p += formatLine80("Total :", (formatNumber((cat.food_sales || 0) + (cat.bev_sales || 0)))) + "\n";
+  p += formatLine80("Total :", (formatNumber(NetSalesCategory))) + "\n";
   // p += "======================================\n\n";
   p += drawLine0180() + "\n\n"; 
 
-  // 6. SALES BY PROMO
-  p += FORCE_LEFT;
-  // p += "======================================\n";
-  p += drawLine0180() + "\n"; 
-  // p += "Sales By Promo\n";
-  p += FORCE_CENTER + "Sales By Promo\n" + FORCE_LEFT;
-  p += drawLine0180() + "\n\n"; 
-  // p += "======================================\n";
   
-  const promo = data.sales_by_promo || {};
-  p += `${promo.name || 'NO PROMO'} :\n`;
-  p += formatLine80(`  Item Sales (${promo.pct || 100}%) :`, (formatNumber(menuNetSales1) || 0).toLocaleString('id-ID')) + "\n";
-  p += formatLine80("  Disc. Item (0%) :", (promo.disc_item || 0).toLocaleString('id-ID')) + "\n";
-  p += formatLine80("  Disc. Bill (0%) :", (promo.disc_bill || 0).toLocaleString('id-ID')) + "\n";
-  p += formatLine80("", "-------------") + "\n";
-  p += formatLine80(`Net Sales (${promo.pct || 100}%) :`, (formatNumber(menuNetSales1) || 0).toLocaleString('id-ID')) + "\n";
-  // p += "======================================\n\n";
-    // p += "--------------------------------------\n";
-  p += drawLine80() + "\n"; 
-  // p += formatLine80("Total :", ((cat.food_sales || 0) + (cat.bev_sales || 0)).toLocaleString('id-ID')) + "\n";
-  p += formatLine80("Total :",  (formatNumber(menuNetSales1) || 0).toLocaleString('id-ID')) + "\n";
+  // 6. SALES BY PROMO
+  // p += FORCE_LEFT;
+  // // p += "======================================\n";
+  // p += drawLine0180() + "\n"; 
+
+  // // p += "Sales By Promo\n";
+  // p += FORCE_CENTER + "Sales By Promo\n" + FORCE_LEFT;
+  // p += drawLine0180() + "\n\n"; 
+  // // p += "======================================\n";
+  
+  // const promo = data.sales_by_promo || {};
+
+  // p += `${promo.name || 'NO PROMO'} :\n`;
+  // p += formatLine80(`  Item Sales (${promo.item_sales_pct || 0}%) :`, (formatNumber(promo.item_sales) || 0).toLocaleString('id-ID')) + "\n";
+  // p += formatLine80(`  Disc. Item (${promo.disc_item_pct || 0}%) :`, (promo.disc_item || 0).toLocaleString('id-ID')) + "\n";
+  // p += formatLine80(`  Disc. Bill (${promo.disc_bill_pct || 0}%) :`, (promo.disc_bill || 0).toLocaleString('id-ID')) + "\n";
+  // p += formatLine80("", "-------------") + "\n";
+  // p += formatLine80(`Net Sales (${promo.net_sales_pct || 100}%) :`, (formatNumber(promo.np_n) || 0).toLocaleString('id-ID')) + "\n\n";
+  // // p += "======================================\n\n";
 
 
-  p += drawLine0180() + "\n\n"; 
+  // p += `${promo.name_m || 'MANUAL PROMO'} :\n`;
+  // p += formatLine80(`  Item Sales (${promo.m_item_sales_pct || 0}%) :`, (formatNumber(promo.m_item_sales) || 0).toLocaleString('id-ID')) + "\n";
+  // p += formatLine80(`  Disc. Item (${promo.m_disc_item_pct || 0}%) :`, (promo.m_disc_item || 0).toLocaleString('id-ID')) + "\n";
+  // p += formatLine80(`  Disc. Bill (${promo.m_disc_bill_pct || 0}%) :`, (promo.m_disc_bill || 0).toLocaleString('id-ID')) + "\n";
+  // p += formatLine80("", "-------------") + "\n";
+  // p += formatLine80(`Net Sales (${promo.m_net_sales_pct || 100}%) :`, (formatNumber(promo.m_n) || 0).toLocaleString('id-ID')) + "\n";
+  // // p += "======================================\n\n";
+  //   // p += "--------------------------------------\n";
+  // p += drawLine80() + "\n\n"; 
+  // // p += formatLine80("Total :", ((cat.food_sales || 0) + (cat.bev_sales || 0)).toLocaleString('id-ID')) + "\n";
+  // p += formatLine80("Total :",  (formatNumber(NetSalesPromo) || 0).toLocaleString('id-ID')) + "\n";
+  // p += drawLine0180() + "\n\n"; 
+
+
+
   // 7. PAYMENT TYPE SUMMARY
   p += FORCE_LEFT;
   // p += "======================================\n";
@@ -297,7 +320,7 @@ const buildManualSummary80mm = (data: any) => {
   const cashAmount = finalNetSales - (ccOthers + debitOthers + qrisBri + dpAmount);
 
   p += formatLine80("Cash :", formatNumber(cashAmount)) + "\n";
-  p += formatLine80("CC Others :", ccOthers.toLocaleString('id-ID')) + "\n";
+  // p += formatLine80("CC Others :", ccOthers.toLocaleString('id-ID')) + "\n";
   p += formatLine80("Debit Others :", debitOthers.toLocaleString('id-ID')) + "\n";
   p += formatLine80("Qris BRI :", qrisBri.toLocaleString('id-ID')) + "\n";
   p += formatLine80("DP :", dpAmount.toLocaleString('id-ID')) + "\n";

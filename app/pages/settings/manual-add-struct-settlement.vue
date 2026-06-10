@@ -24,7 +24,7 @@
       <div class="lg:col-span-7 space-y-6">
         
         <div class="bg-zinc-900/50 border border-zinc-800/80 p-6 rounded-2xl space-y-4">
-          <h2 class="text-xs font-black uppercase tracking-widest text-zinc-400 flex items-center gap-2 mb-2">
+          <h2 class="text-xs font-black uppercase tracking-widest text-emerald-500 flex items-center gap-2 mb-2">
             <span>01.</span> Informasi Utama & Laporan Menu
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -45,19 +45,32 @@
               <label class="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Menu Sales gross (Rp)</label>
               <input v-model.number="menuNetSales1" disabled type="number" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500" />
             </div>
-            <div>
-              <label class="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Menu Discount (Rp)</label>
-              <input v-model.number="form.menu_discount" type="number" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500" />
-            </div>
-            <div>
-              <label class="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Bill Discount (Rp)</label>
-              <input v-model.number="form.bill_discount" type="number" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500" />
+
+            <div class="col-span-2 gap-2 w-full grid grid-cols-3 justify-between">
+              <div>
+                <label class="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Menu Discount (Rp)</label>
+                <input v-model.number="form.menu_discount" type="number" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500" />
+              </div>
+
+              <div>
+                <label class="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Total Bills Disc (Qty)</label>
+                <input v-model.number="form.sales_by_promo.m_disc_bill_qty" type="number" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500" />
+              </div>
+
+              <div>
+                <label class="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Bill Discount (Rp)</label>
+                <input 
+                  v-model.number="form.sales_by_promo.m_disc_bill" 
+                  @input="calculatePromoByPercentageForByCategory"
+                  type="number"class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500" />
+              </div>
+              
             </div>
           </div>
         </div>
 
         <div class="bg-zinc-900/50 border border-zinc-800/80 p-6 rounded-2xl space-y-4">
-          <h2 class="text-xs font-black uppercase tracking-widest text-zinc-400 flex items-center gap-2 mb-2">
+          <h2 class="text-xs font-black uppercase tracking-widest text-emerald-500 flex items-center gap-2 mb-2">
             <span>02.</span> Biaya Operasional & Pajak (Kalkulasi Otomatis)
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -81,10 +94,11 @@
         </div>
 
         <div class="bg-zinc-900/50 border border-zinc-800/80 p-6 rounded-2xl space-y-4">
-          <h2 class="text-xs font-black uppercase tracking-widest text-zinc-400 flex items-center gap-2 mb-2">
+          <h2 class="text-xs font-black uppercase tracking-widest text-emerald-500 flex items-center gap-2 mb-2">
             <span>03.</span> Audit Trafik & Pembatalan (Cancel)
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
             <div>
               <label class="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Total # Of Bills</label>
               <input v-model.number="form.total_bills" type="number" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500" />
@@ -113,11 +127,11 @@
         </div>
 
         <div class="bg-zinc-900/50 border border-zinc-800/80 p-6 rounded-2xl space-y-4">
-          <h2 class="text-xs font-black uppercase tracking-widest text-zinc-400 flex items-center gap-2 mb-2">
+          <h2 class="text-xs font-black uppercase tracking-widest text-emerald-500  flex items-center gap-2 mb-2">
             <span>04.</span> Sales by Type
           </h2>
           <div class="p-4 bg-zinc-950 border border-zinc-800 rounded-xl space-y-3">
-            <p class="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">QTY (100%)</p>
+            <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">DINE-IN QTY (100%)</p>
             <div class="grid grid-cols-2 gap-3">
               <input v-model.number="form.sales_by_type.qty" type="number" step="0.1" placeholder="Persentase (%)" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs" />
             </div>
@@ -134,28 +148,40 @@
             </div>
         </div>
 
-<div class="p-4 bg-zinc-950 border border-zinc-800 rounded-xl space-y-2 mb-4">
-  <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Total Penjualan Gabungan</label>
+
+<div class="bg-zinc-900/50 border border-zinc-800/80 p-6 rounded-2xl space-y-4">
+  <h2 class="text-xs font-black uppercase tracking-widest text-emerald-500 flex items-center gap-2 mb-2">
+    <span class="">05.</span> Sales By Category 
+  </h2>
+
+  <div class="p-4 bg-zinc-950 border border-zinc-800 rounded-xl space-y-2 mb-4">
+  <label class="text-[10px] font-bold text-yellow-400 uppercase tracking-wider">Total Penjualan Gabungan</label>
+
   <input 
     v-model.number="form.total_sales" 
     @input="calculateSalesByPercentage"
     type="number" 
     placeholder="Masukkan Total Penjualan (Rp)" 
-    class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-500" 
+    class="w-full bg-zinc-900 border border-zinc-800 rounded-lg mt-1 px-3 py-2 text-xs focus:outline-none focus:border-emerald-500" 
   />
+
+  <!-- <input 
+    v-model.number="form.total_sales" 
+    @input="calculateSalesByPercentage"
+    type="number" 
+    placeholder="Gross Sales (Rp)" 
+    class="w-full bg-zinc-900 border border-zinc-800 rounded-lg mt-1 px-3 py-2 text-xs focus:outline-none focus:border-emerald-500" 
+  /> -->
+
 </div>
 
-<div class="bg-zinc-900/50 border border-zinc-800/80 p-6 rounded-2xl space-y-4">
-  <h2 class="text-xs font-black uppercase tracking-widest text-zinc-400 flex items-center gap-2 mb-2">
-    <span>05.</span> Distribusi Produk (Category & Type)
-  </h2>
 
   <div class="p-4 bg-zinc-950 border border-zinc-800 rounded-xl space-y-3">
-    <p class="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">Kategori Makanan (Foods)</p>
+    <p class="text-[10px] font-bold uppercase tracking-wider">Kategori Makanan (Foods)</p>
     <div class="grid grid-cols-2 gap-3">
       <input 
         v-model.number="form.sales_by_category.food_pct" 
-        @input="calculateSalesFromPct('food')"
+        @input="calculateSalesFromPct('food'); calculateCategoryNetSales()"
         type="number" step="0.1" placeholder="Persentase (%)" 
         class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs" 
       />
@@ -171,15 +197,35 @@
           ⚠️ Nilai mencapai Miliar. Pastikan nominal sudah benar.
         </p>
       </div>
+
     </div>
+
+    <!-- Discount -->
+    <div class="w-full grid grid-cols-2 gap-3">
+
+        <input 
+          v-model.number="form.sales_by_category.food_discount_pct"
+          @input="handleCategoryCalculation"
+          type="number"
+          step="0.1" placeholder="Persentase Disc (%)" 
+          class="w-full space-y-1 bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs" 
+        />
+        <input 
+          v-model.number="form.sales_by_category.food_discount" 
+          @input="calculatePromoByPercentageForByCategory"
+          type="number" step="0.1" placeholder="Disc Item (Rp)"  disabled
+          class="cursor-not-allowed w-full space-y-1 bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs" 
+        />
+    </div>
+
   </div>
 
   <div class="p-4 bg-zinc-950 border border-zinc-800 rounded-xl space-y-3">
-    <p class="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">Kategori Minuman (Beverages)</p>
+    <p class="text-[10px] font-bold  uppercase tracking-wider">Kategori Minuman (Beverages)</p>
     <div class="grid grid-cols-2 gap-3">
       <input 
         v-model.number="form.sales_by_category.bev_pct" 
-        @input="calculateSalesFromPct('bev')"
+        @input="calculateSalesFromPct('bev'); calculateCategoryNetSales()"
         type="number" step="0.1" placeholder="Persentase (%)" 
         class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs" 
       />
@@ -196,13 +242,112 @@
         </p>
       </div>
     </div>
+
+
+    <!-- Discount -->
+
+    <div class="w-full grid grid-cols-2 gap-3">
+
+        <input 
+          v-model.number="form.sales_by_category.bev_discount_pct"
+          @input="handleCategoryCalculation"
+          type="number"
+          step="0.1" placeholder="Persentase Disc (%)" 
+          class="w-full space-y-1 bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs" 
+        />
+        <input 
+          v-model.number="form.sales_by_category.bev_discount" 
+          @input="calculatePromoByPercentageForByCategory"
+          type="number" step="0.1" placeholder="Disc Item (Rp)"  disabled
+          class="cursor-not-allowed w-full space-y-1 bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs" 
+        />
+    </div>
+
+
   </div>
+
+
 </div>
 
 
+<div class="bg-zinc-900/50 border border-zinc-800/80 p-6 rounded-2xl space-y-4">
+  <h2 class="text-xs font-black uppercase tracking-widest text-emerald-500 flex items-center gap-2 mb-2">
+    <span>06.</span> Sales By Promo
+  </h2>
+
+  <div class="p-4 bg-zinc-950 border border-zinc-800 rounded-xl space-y-3">
+    <p class="text-[10px] font-bold  uppercase tracking-wider">NO PROMO</p>
+    <div class="grid grid-cols-2 gap-3">
+      <input 
+        v-model.number="form.sales_by_promo.item_sales_pct" 
+        @input="calculateSalesFromPct('food')"
+        type="number" step="0.1" placeholder="Persentase (%)" disabled
+        class="cursor-not-allowed w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs" 
+      />
+      <div class="space-y-1">
+        <input 
+          v-model.number="form.sales_by_promo.item_sales" 
+          @input="calculatePctFromSales('food')"
+          type="number" placeholder="Item Sales (Rp)"  disabled
+          class="cursor-not-allowed w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs" 
+          :class="{'border-amber-500/50 ring-1 ring-amber-500/20': form.sales_by_promo.food_sales >= 1000000000}" 
+        />
+        <p v-if="form.sales_by_promo.food_sales >= 1000000000" class="text-[9px] text-amber-500 font-medium leading-tight">
+          ⚠️ Nilai mencapai Miliar. Pastikan nominal sudah benar.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="p-4 bg-zinc-950 border border-zinc-800 rounded-xl space-y-3">
+    <p class="text-[10px] font-bold  uppercase tracking-wider">MANUAL PROMO</p>
+    <div class="grid grid-cols-2 gap-3">
+      <input 
+        v-model.number="form.sales_by_promo.m_item_sales_pct" 
+        @input="calculateSalesFromPct('bev')"
+        type="number" step="0.1" placeholder="Persentase (%)" disabled
+        class="cursor-not-allowed w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs" 
+      />
+      <div class="space-y-1">
+        <input 
+          v-model.number="form.sales_by_promo.m_item_sales" 
+          @input="handlePromoCalculation"
+          type="number" placeholder="Item Sales (Rp)" 
+          class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs" 
+          :class="{'border-amber-500/50 ring-1 ring-amber-500/20': form.sales_by_promo.m_item_sales >= 1000000000}" 
+        />
+        <p v-if="form.sales_by_promo.m_item_sales >= 1000000000" class="text-[9px] text-amber-500 font-medium leading-tight">
+          ⚠️ Nilai mencapai Miliar. Pastikan nominal sudah benar.
+        </p>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 gap-3">
+      <input 
+        v-model.number="form.sales_by_promo.m_disc_bill_pct" 
+        @input="calculateSalesFromPct('bev')"
+        type="number" step="0.1" placeholder="Persentase (%)" 
+        class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs" 
+      />
+      <div class="space-y-1">
+        <input 
+          v-model.number="form.sales_by_promo.m_disc_bill" 
+          @input="calculatePromoByPercentageForByCategory() ; handlePromoCalculation()"
+          type="number" placeholder="Discount. Bill (Rp)" 
+          class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs" 
+          :class="{'border-amber-500/50 ring-1 ring-amber-500/20': form.sales_by_promo.m_disc_bill >= 1000000000}" 
+        />
+        <p v-if="form.sales_by_promo.m_disc_bill >= 1000000000" class="text-[9px] text-amber-500 font-medium leading-tight">
+          ⚠️ Nilai mencapai Miliar. Pastikan nominal sudah benar.
+        </p>
+      </div>
+    </div>
+  </div>
+  
+</div>
+
         <div class="bg-zinc-900/50 border border-zinc-800/80 p-6 rounded-2xl space-y-4">
-          <h2 class="text-xs font-black uppercase tracking-widest text-zinc-400 flex items-center gap-2 mb-2">
-            <span>05.</span> Rekapitulasi Non-Tunai (Payments)
+          <h2 class="text-xs font-black uppercase tracking-widest text-emerald-500 items-center gap-2 mb-2">
+            <span>07.</span> Rekapitulasi Non-Tunai (Payments)
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -226,9 +371,12 @@
 
       </div>
 
-      <div class="lg:col-span-5 sticky top-8 flex flex-col items-center">
+      <!-- PREVIEW STRUCT -->
+
+    <div class="custom-scroll lg:col-span-5 sticky top-8">
+      <div class="max-h-[calc(100vh-2rem)] overflow-y-auto flex flex-col  items-center">
         <div class="bg-white text-zinc-900 p-6 rounded-sm font-mono leading-tight w-[340px] shadow-[0_25px_60px_rgba(0,0,0,0.8)] border-t-[12px] border-emerald-500 text-xs">
-          
+     
 
           <div class="text-center space-y-0.5 mb-4">
 
@@ -250,11 +398,11 @@
           <div class="text-center tracking-tighter opacity-40 mb-3">------------------------------------------</div>
 
           <div class="space-y-1">
-            <div class="flex justify-between"><span>Menu Sales :</span><span>{{ (menuNetSales1 || 0).toLocaleString('id-ID') }}</span></div>
+            <div class="flex justify-between"><span>Menu Sales :</span><span>{{ (menuNetSales || 0).toLocaleString('id-ID') }}</span></div>
             <div class="flex justify-between"><span>Menu Discount :</span><span>{{ (form.menu_discount || 0).toLocaleString('id-ID') }}</span></div>
             <div class="text-right tracking-tighter opacity-40">--------</div>
-            <div class="flex justify-between"><span>Menu Net Sales :</span><span>{{ (menuNetSales1).toLocaleString('id-ID') }}</span></div>
-            <div class="flex justify-between"><span>Bill Discount :</span><span>{{ (form.bill_discount || 0).toLocaleString('id-ID') }}</span></div>
+            <div class="flex justify-between font-bold"><span>Menu Net Sales :</span><span>{{ (menuNetSales).toLocaleString('id-ID') }}</span></div>
+            <div class="flex justify-between pt-2"><span>Bill Discount :</span><span>{{ (form.sales_by_promo.m_disc_bill || 0).toLocaleString('id-ID') }}</span></div>
             <div class="text-right tracking-tighter opacity-40">--------</div>
             <div class="flex justify-between font-bold"><span>Total Net Sales :</span><span>{{ (menuNetSales2).toLocaleString('id-ID') }}</span></div>
           </div>
@@ -265,12 +413,13 @@
             <div class="flex justify-between"><span>Round Amount :</span><span>{{ (form.round_amount || 0).toLocaleString('id-ID') }}</span></div>
             <div class="flex justify-between"><span>Extra Charge :</span><span>{{ (form.extra_charge || 0).toLocaleString('id-ID') }}</span></div>
             <div class="text-right tracking-tighter opacity-40">--------</div>
-            <div class="flex justify-between font-black border-y border-zinc-900 py-1 uppercase">
-              <span>Total Sales :</span><span>{{ Math.trunc(grandTotal).toLocaleString('id-ID') }}</span>
+            <div class="flex justify-between font-black border-y border-zinc-900 py-1">
+              <span>Groos Sales :</span><span>{{ Math.trunc(grandTotal).toLocaleString('id-ID') }}</span>
             </div>
           </div>
 
           <div class="space-y-1 mt-4 text-[11px] text-zinc-700">
+            <div class="flex justify-between"><span>Total # Of Bills Disc :</span><span>{{ form.sales_by_promo.m_disc_bill_qty }}</span></div>
             <div class="flex justify-between"><span>Total # Of Bills :</span><span>{{ form.total_bills }}</span></div>
             <div class="flex justify-between"><span>Sales per Bill :</span><span>{{ Math.trunc(salesPerBill).toLocaleString('id-ID') }}</span></div>
             <div class="flex justify-between mt-1"><span>Total # of Guest :</span><span>{{ form.total_guests }}</span></div>
@@ -287,10 +436,12 @@
           <div class="space-y-0.5">
             <p class="font-bold">Dine-In :</p>
             <div class="flex justify-between pl-2 text-zinc-600"><span>Qty (100%) :</span><span>{{Number(form.sales_by_type.qty)}}</span></div>
-            <div class="flex justify-between pl-2 text-zinc-600"><span>Item Sales (100%) :</span><span>{{ (menuNetSales1 || 0).toLocaleString('id-ID') }}</span></div>
-            <div class="flex justify-between pl-2 text-zinc-600"><span>Net Sales (100%) :</span><span>{{ (menuNetSales1 || 0).toLocaleString('id-ID') }}</span></div>
+            <div class="flex justify-between pl-2 text-zinc-600"><span>Item Sales (100%) :</span><span>{{ (menuNetSales || 0).toLocaleString('id-ID') }}</span></div>
+            <div class="flex justify-between pl-2 text-zinc-600"><span>Discount Item :</span><span>{{ (form.sales_by_promo.m_disc_item || 0).toLocaleString('id-ID') }}</span></div>
+            <div class="flex justify-between pl-2 text-zinc-600"><span>Discount Bill  :</span><span>{{ (form.sales_by_promo.m_disc_bill || 0).toLocaleString('id-ID') }}</span></div>
+            <div class="flex justify-between pl-2 text-zinc-600"><span>Net Sales (100%) :</span><span>{{ (menuNetSales2 || 0).toLocaleString('id-ID') }}</span></div>
             <div class="text-center tracking-tighter opacity-30">----------------------------------</div>
-            <div class="flex justify-between font-bold"><span>Total :</span><span>{{ (menuNetSales1 || 0).toLocaleString('id-ID') }}</span></div>
+            <div class="flex justify-between font-bold"><span>Total :</span><span>{{ (menuNetSales2 || 0).toLocaleString('id-ID') }}</span></div>
           </div>
 
           <div class="text-center my-3 font-bold">==================================</div>
@@ -300,15 +451,48 @@
             <div>
               <p class="font-bold">Foods :</p>
               <div class="flex justify-between pl-2 text-zinc-600"><span>Item Sales ({{ form.sales_by_category.food_pct }}%) :</span><span>{{ (form.sales_by_category.food_sales || 0).toLocaleString('id-ID') }}</span></div>
-              <div class="flex justify-between pl-2 text-zinc-600"><span>Net Sales ({{ form.sales_by_category.food_pct }}%) :</span><span>{{ (form.sales_by_category.food_sales || 0).toLocaleString('id-ID') }}</span></div>
+              <div class="flex justify-between pl-2 text-zinc-600"><span>Discount ({{ form.sales_by_category.food_discount_pct }}%) :</span><span>{{ (form.sales_by_category.food_discount || 0).toLocaleString('id-ID') }}</span></div>
+              <div class="flex justify-between pl-2 text-zinc-600"><span>Net Sales ({{ form.sales_by_category.food_net_pct }}%) :</span><span>{{ (form.sales_by_category.food_net || 0).toLocaleString('id-ID') }}</span></div>
+              <div class="flex justify-between pl-2 text-cyan-600"><span>Net Sales ( Check ) :</span><span>{{ (form.sales_by_category.food_sales - form.sales_by_category.food_discount ).toLocaleString('id-ID') }}</span></div>
             </div>
             <div>
               <p class="font-bold">Beverages :</p>
               <div class="flex justify-between pl-2 text-zinc-600"><span>Item Sales ({{ form.sales_by_category.bev_pct }}%) :</span><span>{{ (form.sales_by_category.bev_sales || 0).toLocaleString('id-ID') }}</span></div>
-              <div class="flex justify-between pl-2 text-zinc-600"><span>Net Sales ({{ form.sales_by_category.bev_pct }}%) :</span><span>{{ (form.sales_by_category.bev_sales || 0).toLocaleString('id-ID') }}</span></div>
-            </div>
+              <div class="flex justify-between pl-2 text-zinc-600"><span>Discount ({{ form.sales_by_category.bev_discount_pct }}%) :</span><span>{{ (form.sales_by_category.bev_discount || 0).toLocaleString('id-ID') }}</span></div>
+              <div class="flex justify-between pl-2 text-zinc-600"><span>Net Sales ({{ form.sales_by_category.bev_net_pct }}%) :</span><span>{{ (form.sales_by_category.bev_net || 0).toLocaleString('id-ID') }}</span></div>
+              <div class="flex justify-between pl-2 text-cyan-600"><span>Net Sales ( Check ) :</span><span>{{ (form.sales_by_category.bev_sales - form.sales_by_category.bev_discount  ).toLocaleString('id-ID') }}</span></div>
+            </div>              
             <div class="text-center tracking-tighter opacity-30">----------------------------------</div>
-            <div class="flex justify-between font-bold"><span>Total :</span><span>{{ (Number(form.sales_by_category.food_sales || 0) + Number(form.sales_by_category.bev_sales || 0)).toLocaleString('id-ID') }}</span></div>
+            <div class="flex justify-between font-bold"><span>Total :</span><span>{{ (Number(NetSalesCategory || 0)).toLocaleString('id-ID') }}</span></div>
+            <div class="flex justify-between font-bold text-cyan-600"><span>Total ( Check ):</span><span>{{ (form.sales_by_category.food_sales - form.sales_by_category.food_discount + form.sales_by_category.bev_sales - form.sales_by_category.bev_discount  ).toLocaleString('id-ID') }}</span></div>
+          </div>
+
+          <div class="text-center my-3 font-bold">==================================</div>
+          <div class="text-center font-black uppercase tracking-wide">Sales By Promo</div>
+          <div class="text-center my-1">==================================</div>
+          <div class="space-y-2">
+            <div>
+              <p class="font-bold">NO PROMO :</p>
+              <div class="flex justify-between pl-2 text-zinc-600"><span>Item Sales ({{ form.sales_by_promo.item_sales_pct }}%) :</span><span>{{ (form.sales_by_promo.item_sales || 0).toLocaleString('id-ID') }}</span></div>
+              <div class="flex justify-between pl-2 text-zinc-600"><span>Disc. Item ({{ form.sales_by_promo.disc_item_pct }}%) :</span><span>{{ (form.sales_by_promo.disc_item || 0).toLocaleString('id-ID') }}</span></div>
+              <div class="flex justify-between pl-2 text-zinc-600"><span>Disc. Bill ({{ form.sales_by_promo.disc_bill_pct }}%) :</span><span>{{ (form.sales_by_promo.disc_bill || 0).toLocaleString('id-ID') }}</span></div>
+            </div>            
+            <div class="text-right tracking-tighter opacity-40">--------</div>
+            <div class="flex justify-between font-bold"><span>Net Sales ({{ form.sales_by_promo.net_sales_pct }}%) :</span><span>{{ (netsalesNP).toLocaleString('id-ID') }}</span></div>
+            <div>
+              <p class="font-bold">MANUAL PROMO :</p>
+              <div class="flex justify-between pl-2 text-zinc-600"><span>Item Sales ({{ form.sales_by_promo.m_item_sales_pct }}%) :</span><span>{{ (form.sales_by_promo.m_item_sales || 0).toLocaleString('id-ID') }}</span></div>
+              <div class="flex justify-between pl-2 text-zinc-600"><span>Disc. Item ({{ form.sales_by_promo.m_disc_item_pct }}%) :</span><span>{{ (form.sales_by_promo.m_disc_item || 0).toLocaleString('id-ID') }}</span></div>
+              <div class="flex justify-between pl-2 text-zinc-600"><span>Disc. Bill ({{ form.sales_by_promo.m_disc_bill_pct }}%) :</span><span>{{ (form.sales_by_promo.m_disc_bill || 0).toLocaleString('id-ID') }}</span></div>
+            </div>
+
+            <div class="text-right tracking-tighter opacity-40">--------</div>
+            <div class="flex justify-between font-bold"><span>Net Sales ({{ form.sales_by_promo.m_net_sales_pct }}%) :</span><span>{{ (netsalesM).toLocaleString('id-ID') }}</span></div>
+            <div class="flex justify-between font-bold text-cyan-600"><span>Net Sales ( Check ) ({{ form.sales_by_promo.m_net_sales_pct }}%) :</span><span>{{ (form.sales_by_promo.m_item_sales - form.sales_by_promo.m_disc_item - form.sales_by_promo.m_disc_bill ).toLocaleString('id-ID') }}</span></div>
+
+            <div class="text-center tracking-tighter opacity-30">----------------------------------</div>
+            <div class="flex justify-between font-bold"><span>Total :</span><span>{{ (Number(SBP || 0)).toLocaleString('id-ID') }}</span></div>
+            <div class="flex justify-between font-bold text-cyan-600"><span>Total ( Check ):</span><span>{{ (Number(form.sales_by_promo.item_sales + form.sales_by_promo.m_item_sales - form.sales_by_promo.m_disc_item - form.sales_by_promo.m_disc_bill )).toLocaleString('id-ID') }}</span></div>
           </div>
 
           <div class="text-center my-3 font-bold">==================================</div>
@@ -318,7 +502,7 @@
             <div class="flex justify-between font-bold text-emerald-700 bg-emerald-50 px-1 rounded-sm">
               <span>Cash :</span><span>{{ calculatedCash.toLocaleString('id-ID') }}</span>
             </div>
-            <div class="flex justify-between"><span>CC Others :</span><span>{{ (form.payments.cc_others || 0).toLocaleString('id-ID') }}</span></div>
+            <!-- <div class="flex justify-between"><span>CC Others :</span><span>{{ (form.payments.cc_others || 0).toLocaleString('id-ID') }}</span></div> -->
             <div class="flex justify-between"><span>Debit Others :</span><span>{{ (form.payments.debit_others || 0).toLocaleString('id-ID') }}</span></div>
             <div class="flex justify-between"><span>Qris BRI :</span><span>{{ (form.payments.qris_bri || 0).toLocaleString('id-ID') }}</span></div>
             <div class="flex justify-between"><span>DP :</span><span>{{ (form.payments.dp || 0).toLocaleString('id-ID') }}</span></div>
@@ -334,6 +518,7 @@
           Spesifikasi Kertas: 80mm Thermal
         </div>
       </div>
+    </div>
 
     </div>
   </div>
@@ -375,20 +560,39 @@ const form = ref({
   sales_by_category: {
     food_pct: 64.2,
     food_sales: 0,
-    food_discount: 0,
+    food_discount: null,
+    food_discount_pct: null,
     food_net: 0,
+    food_net_pct: 0,
     bev_pct: 35.8,
     bev_sales: 0,
-    bev_discount: 0,
-    bev_net: 0
+    bev_discount: null,
+    bev_discount_pct: null,
+    bev_net: 0,
+    bev_net_pct: 0
   },
+  
   sales_by_promo: {
     name: 'NO PROMO',
     pct: 100,
-    item_sales: 0,
+    item_sales: null,
+    item_sales_pct: 0,
     disc_item: 0,
+    disc_item_pct: 0,
     disc_bill: 0,
-    net_sales: 0
+    disc_bill_pct: 0,
+    net_sales: 0,
+    net_sales_pct: 0,
+    name_m : "MANUAL PROMO",
+    m_item_sales: null,
+    m_item_sales_pct:0,
+    m_disc_item: 0,
+    m_disc_item_pct: 0,
+    m_disc_bill: null,
+    m_disc_bill_qty: 0,
+    m_disc_bill_pct: 100,
+    m_net_sales: 0,
+    m_net_sales_pct: 0
   },
   payments: {
     cc_others: 0,
@@ -423,13 +627,24 @@ const computedMenuSales = computed(() => {
 })
 
 // Menu Net Sales 1: Total Bruto dikurangi Diskon Menu/Item
+// const menuNetSales = computed(() => {
+//   return Math.max(0, computedMenuSales.value + (form.value.sales_by_promo.m_disc_bill || 0))
+// })
+
+
+const menuNetSales = computed(() => {
+  return Math.max(0, form.value.total_sales + (form.value.sales_by_promo.m_disc_bill || 0))
+})
+
+
+// Menu Net Sales 1: Total Bruto dikurangi Diskon Menu/Item
 const menuNetSales1 = computed(() => {
   return Math.max(0, computedMenuSales.value - (form.value.menu_discount || 0))
 })
 
 // Menu Net Sales 2: Hasil Net 1 dikurangi Diskon Bill (Dasar Pengenaan Pajak & Service)
 const menuNetSales2 = computed(() => {
-  return Math.max(0, menuNetSales1.value - (form.value.bill_discount || 0))
+  return Math.max(0, menuNetSales.value - (form.value.sales_by_promo.m_disc_bill || 0))
 })
 
 // RUMUS AKURAT: Service Charge dihitung 5% dari (Food + Beverage - Total Discount)
@@ -492,25 +707,13 @@ const calculatedCash = computed(() => {
   return Math.max(0, grandTotal.value - totalNonCash)
 })
 
-// 3. ACTION TRIGGER PRINTER
-const handlePrint = async () => {
-  const payload = {
-    ...form.value,
-    menu_sales: computedMenuSales.value,         // Kirim akumulasi Food + Beverage terbaru
-    service_charge: computedServiceCharge.value, // Kirim hasil kalkulasi rumus otomatis (5%)
-    tax_amount: computedTaxAmount.value,         // Kirim hasil kalkulasi rumus otomatis (10%)
-    print_date: computedPrintDate.value,
-    config: {
-      name: { value: form.value.shop_name }
-    }
-  }
-  
-  await printManualSettlement(payload)
-}
+
+// == SALES BY CATEGORY ==
 
 // 1. Jika Total Sales berubah, update nilai nominal rupiah berdasarkan persentase yang ada
 const calculateSalesByPercentage = () => {
-  const total = form.value.total_sales || 0
+  // const total = form.value.total_sales || 0
+  const total = menuNetSales.value || 0
   
   if (form.value.sales_by_category.food_pct) {
     form.value.sales_by_category.food_sales = (form.value.sales_by_category.food_pct / 100) * total
@@ -522,7 +725,9 @@ const calculateSalesByPercentage = () => {
 
 // 2. Jika user mengubah Persentase (%) secara manual
 const calculateSalesFromPct = (type) => {
-  const total = form.value.total_sales || 0
+  // const total = form.value.total_sales || 0
+  const total = menuNetSales.value || 0
+
   const pct = form.value.sales_by_category[`${type}_pct`] || 0
   
   form.value.sales_by_category[`${type}_sales`] = (pct / 100) * total
@@ -539,6 +744,201 @@ const calculatePctFromSales = (type) => {
   }
 }
 
+const calculatePromoByPercentageForByCategory = () => {
+  const totalDiscount =
+    Number(form.value.sales_by_promo.m_disc_bill) || 0
+
+  const foodPct =
+    Number(form.value.sales_by_category.food_discount_pct) || 0
+
+  const bevPct =
+    Number(form.value.sales_by_category.bev_discount_pct) || 0
+
+  if (foodPct + bevPct > 100) {
+    alert('Total persentase discount tidak boleh lebih dari 100%')
+    return
+  }
+
+  //pembulatan ke ratusan terdekat: 
+  const roundToHundreds = (value) => Math.round(value / 100) * 100
+
+  form.value.sales_by_category.food_discount =
+    roundToHundreds((foodPct / 100) * totalDiscount)
+
+  form.value.sales_by_category.bev_discount =
+    roundToHundreds((bevPct / 100) * totalDiscount)
+}
+
+// const calculateCategoryPercentageAndPriceFood = () => {
+//   const total = form.value.sales_by_category.food_sales || 0 - form.sales_by_category.food_discount || 0
+
+//   if (!total) {
+//     form.value.sales_by_category.food_net_pct = 0
+//     form.value.sales_by_category.bev_net_pct = 0
+//     return
+//   }
+
+//   const memberPct = Number(
+//     ((netsalesM.value / total) * 100).toFixed(1)
+//   )
+
+//   form.value.sales_by_category.food_net = memberPct
+//   form.value.sales_by_category.bev_net = Number(
+//     (100 - memberPct).toFixed(1)
+//   )
+// }
+
+
+const handleCategoryCalculation = () => {
+  calculatePromoByPercentageForByCategory()
+  calculateCategoryNetSales()
+}
+
+const calculateCategoryNetSales = () => {
+  const foodSales = form.value.sales_by_category.food_sales || 0
+  const foodDiscount = form.value.sales_by_category.food_discount || 0
+
+  const bevSales = form.value.sales_by_category.bev_sales || 0
+  const bevDiscount = form.value.sales_by_category.bev_discount || 0
+
+  const foodNet = foodSales - foodDiscount
+  const bevNet = bevSales - bevDiscount
+
+  form.value.sales_by_category.food_net = foodNet
+  form.value.sales_by_category.bev_net = bevNet
+
+  const totalNet = foodNet + bevNet
+
+  if (!totalNet) {
+    form.value.sales_by_category.food_net_pct = 0
+    form.value.sales_by_category.bev_net_pct = 0
+    return
+  }
+
+  form.value.sales_by_category.food_net_pct =
+    Number(((foodNet / totalNet) * 100).toFixed(1))
+
+  form.value.sales_by_category.bev_net_pct =
+    Number((100 - form.value.sales_by_category.food_net_pct).toFixed(1))
+}
+
+
+
+const NetSalesCategory = computed(() => {
+  const billDisc = form.value.sales_by_promo.m_disc_bill || 0
+  const itemFood = form.value.sales_by_category.food_sales || 0
+  const itembev = form.value.sales_by_category.bev_sales || 0
+  return Math.max(0, itemFood + itembev - billDisc ) || 0
+})
+
+
+
+
+// == SALES BY PROMO ==
+
+// fungsi untuk menghitung 
+
+const netsalesM = computed(() => {
+  const itemSales = form.value.sales_by_promo.m_item_sales || 0
+  const itemDisc = form.value.sales_by_promo.m_disc_item || 0
+  const billDisc = form.value.sales_by_promo.m_disc_bill || 0
+  return Math.max(0, itemSales - itemDisc - billDisc ) || 0
+})
+
+const netsalesNP = computed(() => {
+  const itemSales = form.value.sales_by_promo.item_sales || 0
+  const itemDisc = form.value.sales_by_promo.disc_item || 0
+  const billDisc = form.value.sales_by_promo.disc_bill || 0
+  return Math.max(0, form.value.total_sales - netsalesM.value ) || 0
+})
+
+const calculatePromoPercentage2 = () => {
+  const total = menuNetSales2.value || 0
+
+  if (!total) {
+    form.value.sales_by_promo.net_sales_pct = 0
+    form.value.sales_by_promo.m_net_sales_pct = 0
+    return
+  }
+
+  const memberPct = Number(
+    ((netsalesM.value / total) * 100).toFixed(1)
+  )
+
+  form.value.sales_by_promo.m_net_sales_pct = memberPct
+  form.value.sales_by_promo.net_sales_pct = Number(
+    (100 - memberPct).toFixed(1)
+  )
+}
+
+
+const calculatePromoPercentage = () => {
+  const memberSales =
+    Number(form.value.sales_by_promo.m_item_sales) || 0
+
+  const nonPromoSales =
+    Number(netsalesNP.value) || 0
+
+  const total = memberSales + nonPromoSales
+
+  if (!total) {
+    form.value.sales_by_promo.item_sales_pct = 0
+    form.value.sales_by_promo.m_item_sales_pct = 0
+    return
+  }
+
+  const memberPct = Number(
+    ((memberSales / total) * 100).toFixed(1)
+  )
+
+  form.value.sales_by_promo.item_sales = netsalesNP.value
+  form.value.sales_by_promo.m_item_sales_pct = memberPct
+  form.value.sales_by_promo.item_sales_pct = Number(
+    (100 - memberPct).toFixed(1)
+  )
+}
+
+
+const handlePromoCalculation = () => {
+  calculatePromoPercentage()
+  calculatePromoPercentage2()
+}
+
+// const NPNetSales = computed(() => {
+//   const itemSales = form.value.sales_by_promo.item_sales || 0
+//   const itemDisc = form.value.sales_by_promo.disc_item || 0
+//   const billDisc = form.value.sales_by_promo.disc_bill || 0
+//   return Math.max(0, itemSales - itemDisc - billDisc ) || 0
+// })
+
+const SBP = computed(() => {
+  const np = netsalesNP.value || 0
+  const m = netsalesM.value || 0
+  return np + m
+})
+
+
+
+
+// 3. ACTION TRIGGER PRINTER
+const handlePrint = async () => {
+  const payload = {
+    ...form.value,
+    ...form.value.sales_by_promo.m_n=netsalesM,
+    ...form.value.sales_by_promo.np_n=netsalesNP,
+    menu_sales: menuNetSales.value,         // Kirim akumulasi Food + Beverage terbaru
+    service_charge: computedServiceCharge.value, // Kirim hasil kalkulasi rumus otomatis (5%)
+    tax_amount: computedTaxAmount.value,         // Kirim hasil kalkulasi rumus otomatis (10%)
+    print_date: computedPrintDate.value,
+    net_sales_category : NetSalesCategory.value,
+    net_sales_promo : SBP.value,
+    config: {
+      name: { value: form.value.shop_name }
+    }
+  }
+  
+  await printManualSettlement(payload)
+}
 </script>
 
 <style scoped>

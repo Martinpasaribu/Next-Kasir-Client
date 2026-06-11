@@ -502,7 +502,7 @@
             <div class="flex justify-between font-bold text-emerald-700 bg-emerald-50 px-1 rounded-sm">
               <span>Cash :</span><span>{{ calculatedCash.toLocaleString('id-ID') }}</span>
             </div>
-            <!-- <div class="flex justify-between"><span>CC Others :</span><span>{{ (form.payments.cc_others || 0).toLocaleString('id-ID') }}</span></div> -->
+            <div class="flex justify-between"><span>CC Others :</span><span>{{ (form.payments.cc_others || 0).toLocaleString('id-ID') }}</span></div>
             <div class="flex justify-between"><span>Debit Others :</span><span>{{ (form.payments.debit_others || 0).toLocaleString('id-ID') }}</span></div>
             <div class="flex justify-between"><span>Qris BRI :</span><span>{{ (form.payments.qris_bri || 0).toLocaleString('id-ID') }}</span></div>
             <div class="flex justify-between"><span>DP :</span><span>{{ (form.payments.dp || 0).toLocaleString('id-ID') }}</span></div>

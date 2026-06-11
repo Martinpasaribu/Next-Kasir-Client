@@ -320,7 +320,7 @@ const buildManualSummary80mm = (data: any) => {
   const cashAmount = finalNetSales - (ccOthers + debitOthers + qrisBri + dpAmount);
 
   p += formatLine80("Cash :", formatNumber(cashAmount)) + "\n";
-  // p += formatLine80("CC Others :", ccOthers.toLocaleString('id-ID')) + "\n";
+  p += formatLine80("CC Others :", ccOthers.toLocaleString('id-ID')) + "\n";
   p += formatLine80("Debit Others :", debitOthers.toLocaleString('id-ID')) + "\n";
   p += formatLine80("Qris BRI :", qrisBri.toLocaleString('id-ID')) + "\n";
   p += formatLine80("DP :", dpAmount.toLocaleString('id-ID')) + "\n";
